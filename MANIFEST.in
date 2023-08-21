@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include qp_middleware *.css
+recursive-include qp_middleware *.csv
+recursive-include qp_middleware *.html
+recursive-include qp_middleware *.ico
+recursive-include qp_middleware *.js
+recursive-include qp_middleware *.json
+recursive-include qp_middleware *.md
+recursive-include qp_middleware *.png
+recursive-include qp_middleware *.py
+recursive-include qp_middleware *.svg
+recursive-include qp_middleware *.txt
+recursive-exclude qp_middleware *.pyc
