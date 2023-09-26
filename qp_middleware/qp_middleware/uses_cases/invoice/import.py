@@ -2,6 +2,7 @@ import frappe
 from qp_middleware.qp_middleware.service.customer.sync import handler as customer_sync
 from qp_middleware.qp_middleware.service.item.sync import handler as product_sync
 from qp_middleware.qp_middleware.service.patient.sync import handler as patient_sync
+from qp_middleware.qp_middleware.service.headquarter.sync import handler as headquarter_sync
 from qp_middleware.qp_middleware.service.document.save import handler as document_save
 
 from frappe.utils.xlsxutils import read_xlsx_file_from_attached_file
@@ -17,6 +18,8 @@ def handler(upload_xlsx, method):
     product_sync()
 
     patient_sync()
+
+    headquarter_sync()
 
     document_save(upload_xlsx.name)
 

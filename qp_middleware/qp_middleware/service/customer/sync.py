@@ -12,7 +12,7 @@ payload = ""
 def handler():
     
     token = get_token()
-    
+
     headers = {
         'Authorization': 'Bearer {}'.format(token)
     }
