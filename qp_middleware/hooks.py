@@ -89,13 +89,11 @@ app_license = "MIT"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-#	}
-# }
+doc_events = {
+ 	"qp_md_upload_xlsx": {
+ 		"before_save": ["qp_middleware.qp_middleware.uses_cases.invoice.import.handler"]
+	}
+ }
 
 # Scheduled Tasks
 # ---------------

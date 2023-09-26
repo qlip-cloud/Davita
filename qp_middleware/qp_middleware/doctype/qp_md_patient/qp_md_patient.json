@@ -1,0 +1,97 @@
+{
+ "actions": [],
+ "creation": "2023-09-26 12:39:55.381173",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "tipo_identificacion",
+  "numero_identificacion",
+  "primer_nombre",
+  "segundo_nombre",
+  "primer_apellido",
+  "segundo_apellido",
+  "numero_telefonico",
+  "correo_electronico",
+  "id_plan",
+  "tipo_usuario"
+ ],
+ "fields": [
+  {
+   "fieldname": "tipo_identificacion",
+   "fieldtype": "Data",
+   "label": "tipo Identificacion"
+  },
+  {
+   "fieldname": "numero_identificacion",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "numero Identificacion"
+  },
+  {
+   "fieldname": "primer_nombre",
+   "fieldtype": "Data",
+   "label": "primer Nombre"
+  },
+  {
+   "fieldname": "segundo_nombre",
+   "fieldtype": "Data",
+   "label": "segundo Nombre"
+  },
+  {
+   "fieldname": "primer_apellido",
+   "fieldtype": "Data",
+   "label": "primer Apellido"
+  },
+  {
+   "fieldname": "segundo_apellido",
+   "fieldtype": "Data",
+   "label": "segundo Apellido"
+  },
+  {
+   "fieldname": "numero_telefonico",
+   "fieldtype": "Data",
+   "label": "numero Telefonico"
+  },
+  {
+   "fieldname": "correo_electronico",
+   "fieldtype": "Data",
+   "label": "correo Electronico"
+  },
+  {
+   "fieldname": "id_plan",
+   "fieldtype": "Data",
+   "label": "id Plan"
+  },
+  {
+   "fieldname": "tipo_usuario",
+   "fieldtype": "Data",
+   "label": "tipo Usuario"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-09-26 12:49:44.093441",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_Patient",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

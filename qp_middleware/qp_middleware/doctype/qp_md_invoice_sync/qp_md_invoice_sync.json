@@ -1,0 +1,475 @@
+{
+ "actions": [],
+ "creation": "2023-08-22 14:12:21.336926",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "proveedor",
+  "numero",
+  "sede_de_origne",
+  "transitorio",
+  "responsable",
+  "unidad_renal",
+  "eps",
+  "tipo_documento",
+  "no_identificacion",
+  "nombre_paciente",
+  "primer_apellido_del_paciente",
+  "segundo_apellido__del_paciente",
+  "nombre_tercero",
+  "segundo_nombre",
+  "id_unico_ingreso_fuente_no_cargo",
+  "genero",
+  "edad",
+  "tipo_de_servicio",
+  "cantidad_a_facturar",
+  "facturable",
+  "no_factura",
+  "valor",
+  "cuota_moderadora",
+  "autorizacion_final",
+  "cod_empresa",
+  "codigo_admon",
+  "regimen",
+  "rips",
+  "fecha_de_servicio",
+  "meses_anteriores__referencia_cateter",
+  "observaciones",
+  "empty_1",
+  "sede_servinte",
+  "eps_servinte",
+  "tipo_servicio_servinte",
+  "cantidad_servinte",
+  "cantidad_corregida",
+  "nit",
+  "rango_de",
+  "rango_hasta",
+  "paquete_o_sesion",
+  "vr_a_facturar",
+  "diferencias",
+  "nombre_eps",
+  "tipo_servicio",
+  "cant_censo",
+  "codigo_centro_de_costo",
+  "nombre_centro_de_costo",
+  "admision_sin_admision",
+  "concepto_facturacion",
+  "nombre_concepto",
+  "codigo_procedimiento_facturacion",
+  "nombre_codigo_descripcion",
+  "empty_2",
+  "sede_fuente_cargo",
+  "aut_formula",
+  "estado",
+  "eps_resumida_aut",
+  "no_autorizacion_posterior_al_guion",
+  "largo",
+  "autorizacion_con_letras",
+  "longitud_aut",
+  "autorizacion_diferente_a_la_cedula",
+  "autorizacion_no_duplicada",
+  "auto_iguales",
+  "empty_3",
+  "consecutivo",
+  "empty_4",
+  "vr_paquete_en_cargos_por_usuario",
+  "vr_paquete_facturacion",
+  "vs",
+  "observaciones_1",
+  "upload_id"
+ ],
+ "fields": [
+  {
+   "fieldname": "proveedor",
+   "fieldtype": "Data",
+   "label": "Proveedor"
+  },
+  {
+   "fieldname": "numero",
+   "fieldtype": "Data",
+   "label": "Numero"
+  },
+  {
+   "fieldname": "sede_de_origne",
+   "fieldtype": "Data",
+   "label": "SEDE DE ORIGNE"
+  },
+  {
+   "fieldname": "transitorio",
+   "fieldtype": "Data",
+   "label": "TRANSITORIO"
+  },
+  {
+   "fieldname": "responsable",
+   "fieldtype": "Data",
+   "label": "RESPONSABLE"
+  },
+  {
+   "fieldname": "unidad_renal",
+   "fieldtype": "Data",
+   "label": "UNIDAD RENAL DONDE SE REALIZO EL CARGO"
+  },
+  {
+   "fieldname": "eps",
+   "fieldtype": "Data",
+   "label": "EPS"
+  },
+  {
+   "fieldname": "tipo_documento",
+   "fieldtype": "Data",
+   "label": " TIPO DOCUMENTO"
+  },
+  {
+   "fieldname": "no_identificacion",
+   "fieldtype": "Data",
+   "label": "NO. IDENTIFICACION"
+  },
+  {
+   "fieldname": "nombre_paciente",
+   "fieldtype": "Data",
+   "label": "Nombre paciente"
+  },
+  {
+   "fieldname": "primer_apellido_del_paciente",
+   "fieldtype": "Data",
+   "label": "Primer apellido del paciente"
+  },
+  {
+   "fieldname": "segundo_apellido__del_paciente",
+   "fieldtype": "Data",
+   "label": "Segundo apellido  del paciente"
+  },
+  {
+   "fieldname": "nombre_tercero",
+   "fieldtype": "Data",
+   "label": "Nombre Tercero"
+  },
+  {
+   "fieldname": "segundo_nombre",
+   "fieldtype": "Data",
+   "label": "Segundo Nombre"
+  },
+  {
+   "fieldname": "id_unico_ingreso_fuente_no_cargo",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "ID UNICO + INGRESO / FUENTE + NO. CARGO"
+  },
+  {
+   "fieldname": "genero",
+   "fieldtype": "Data",
+   "label": "GENERO"
+  },
+  {
+   "fieldname": "edad",
+   "fieldtype": "Data",
+   "label": "edad"
+  },
+  {
+   "fieldname": "tipo_de_servicio",
+   "fieldtype": "Data",
+   "label": "9 - TIPO DE SERVICIO"
+  },
+  {
+   "fieldname": "cantidad_a_facturar",
+   "fieldtype": "Data",
+   "label": "CANTIDAD A FACTURAR"
+  },
+  {
+   "fieldname": "facturable",
+   "fieldtype": "Data",
+   "label": "FACTURABLE"
+  },
+  {
+   "fieldname": "no_factura",
+   "fieldtype": "Data",
+   "label": "# FACTURA"
+  },
+  {
+   "fieldname": "valor",
+   "fieldtype": "Data",
+   "label": "VALOR"
+  },
+  {
+   "fieldname": "cuota_moderadora",
+   "fieldtype": "Data",
+   "label": "CUOTA MODERADORA"
+  },
+  {
+   "fieldname": "autorizacion_final",
+   "fieldtype": "Data",
+   "label": "AUTORIZACION FINAL"
+  },
+  {
+   "fieldname": "cod_empresa",
+   "fieldtype": "Data",
+   "label": "COD EMPRESA"
+  },
+  {
+   "fieldname": "codigo_admon",
+   "fieldtype": "Data",
+   "label": "CODIGO ADMON"
+  },
+  {
+   "fieldname": "regimen",
+   "fieldtype": "Data",
+   "label": "REGIMEN"
+  },
+  {
+   "fieldname": "rips",
+   "fieldtype": "Data",
+   "label": "RIPS"
+  },
+  {
+   "fieldname": "fecha_de_servicio",
+   "fieldtype": "Data",
+   "label": "FECHA DE SERVICIO"
+  },
+  {
+   "fieldname": "meses_anteriores__referencia_cateter",
+   "fieldtype": "Data",
+   "label": "MESES ANTERIORES / REFERENCIA CATETER"
+  },
+  {
+   "fieldname": "observaciones",
+   "fieldtype": "Data",
+   "label": "OBSERVACIONES"
+  },
+  {
+   "fieldname": "empty_1",
+   "fieldtype": "Data",
+   "label": "empty_1"
+  },
+  {
+   "fieldname": "sede_servinte",
+   "fieldtype": "Data",
+   "label": "SEDE SERVINTE"
+  },
+  {
+   "fieldname": "eps_servinte",
+   "fieldtype": "Data",
+   "label": " EPS SERVINTE"
+  },
+  {
+   "fieldname": "tipo_servicio_servinte",
+   "fieldtype": "Data",
+   "label": "9 - TIPO DE SERVICIO SERVINTE"
+  },
+  {
+   "fieldname": "cantidad_servinte",
+   "fieldtype": "Data",
+   "label": "CANTIDAD SERVINTE"
+  },
+  {
+   "fieldname": "cantidad_corregida",
+   "fieldtype": "Data",
+   "label": "CANTIDAD CORREGIDA"
+  },
+  {
+   "fieldname": "nit",
+   "fieldtype": "Data",
+   "label": "NIT"
+  },
+  {
+   "fieldname": "rango_de",
+   "fieldtype": "Data",
+   "label": "RANGO DE"
+  },
+  {
+   "fieldname": "rango_hasta",
+   "fieldtype": "Data",
+   "label": "RANGO HASTA"
+  },
+  {
+   "fieldname": "paquete_o_sesion",
+   "fieldtype": "Data",
+   "label": "PAQUETE O SESION"
+  },
+  {
+   "fieldname": "vr_a_facturar",
+   "fieldtype": "Data",
+   "label": "VR A FACTURAR"
+  },
+  {
+   "fieldname": "diferencias",
+   "fieldtype": "Data",
+   "label": "DIFERENCIAS"
+  },
+  {
+   "fieldname": "nombre_eps",
+   "fieldtype": "Data",
+   "label": "NOMBRE EPS"
+  },
+  {
+   "fieldname": "tipo_servicio",
+   "fieldtype": "Data",
+   "label": "TIPO SERVICIO"
+  },
+  {
+   "fieldname": "cant_censo",
+   "fieldtype": "Data",
+   "label": "CANT CENSO"
+  },
+  {
+   "fieldname": "codigo_centro_de_costo",
+   "fieldtype": "Data",
+   "label": "CODIGO CENTRO DE COSTO"
+  },
+  {
+   "fieldname": "nombre_centro_de_costo",
+   "fieldtype": "Data",
+   "label": "NOMBRE CENTRO DE COSTO"
+  },
+  {
+   "fieldname": "admision_sin_admision",
+   "fieldtype": "Data",
+   "label": "ADMISION / SIN ADMISION"
+  },
+  {
+   "fieldname": "concepto_facturacion",
+   "fieldtype": "Data",
+   "label": "CONCEPTO FACTURACION"
+  },
+  {
+   "fieldname": "nombre_concepto",
+   "fieldtype": "Data",
+   "label": "NOMBRE CONCEPTO"
+  },
+  {
+   "fieldname": "codigo_procedimiento_facturacion",
+   "fieldtype": "Data",
+   "label": "CODIGO PROCEDIMIENTO FACTURACION"
+  },
+  {
+   "fieldname": "nombre_codigo_descripcion",
+   "fieldtype": "Data",
+   "label": "NOMBRE CODIGO DESCRIPCION"
+  },
+  {
+   "fieldname": "empty_2",
+   "fieldtype": "Data",
+   "label": "empty_2"
+  },
+  {
+   "fieldname": "sede_fuente_cargo",
+   "fieldtype": "Data",
+   "label": "SEDE + FUENTE Y CARGO"
+  },
+  {
+   "fieldname": "aut_formula",
+   "fieldtype": "Data",
+   "label": "AUT (FORMULA)"
+  },
+  {
+   "fieldname": "estado",
+   "fieldtype": "Data",
+   "label": "ESTADO"
+  },
+  {
+   "fieldname": "eps_resumida_aut",
+   "fieldtype": "Long Text",
+   "label": "EPS RESUMIDA AUT"
+  },
+  {
+   "fieldname": "no_autorizacion_posterior_al_guion",
+   "fieldtype": "Data",
+   "label": "No. Autorizaci\u00f3n posterior al Guion"
+  },
+  {
+   "fieldname": "largo",
+   "fieldtype": "Data",
+   "label": "largo"
+  },
+  {
+   "fieldname": "autorizacion_con_letras",
+   "fieldtype": "Data",
+   "label": "AUTORIZACION CON LETRAS"
+  },
+  {
+   "fieldname": "longitud_aut",
+   "fieldtype": "Data",
+   "label": "LONGITUD AUT"
+  },
+  {
+   "fieldname": "autorizacion_diferente_a_la_cedula",
+   "fieldtype": "Data",
+   "label": "AUTORIZACION DIFERENTE A LA CEDULA"
+  },
+  {
+   "fieldname": "autorizacion_no_duplicada",
+   "fieldtype": "Data",
+   "label": "AUTORIZACION NO DUPLICADA"
+  },
+  {
+   "fieldname": "auto_iguales",
+   "fieldtype": "Data",
+   "label": "AUTO IGUALES?"
+  },
+  {
+   "fieldname": "empty_3",
+   "fieldtype": "Data",
+   "label": "empty 3"
+  },
+  {
+   "fieldname": "consecutivo",
+   "fieldtype": "Data",
+   "label": "consecutivo"
+  },
+  {
+   "fieldname": "empty_4",
+   "fieldtype": "Data",
+   "label": "empty 4"
+  },
+  {
+   "fieldname": "vr_paquete_en_cargos_por_usuario",
+   "fieldtype": "Data",
+   "label": "VR PAQUETE EN CARGOS POR USUARIO"
+  },
+  {
+   "fieldname": "vr_paquete_facturacion",
+   "fieldtype": "Data",
+   "label": "VR PAQUETE FACTURACION"
+  },
+  {
+   "fieldname": "vs",
+   "fieldtype": "Data",
+   "label": "VS"
+  },
+  {
+   "fieldname": "observaciones_1",
+   "fieldtype": "Data",
+   "label": "observaciones 1"
+  },
+  {
+   "fieldname": "upload_id",
+   "fieldtype": "Data",
+   "label": "upload_id"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-09-26 15:02:39.094521",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_invoice_sync",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

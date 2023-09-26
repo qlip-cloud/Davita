@@ -1,0 +1,205 @@
+{
+ "actions": [],
+ "creation": "2023-09-20 15:15:11.092289",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "document_code",
+  "document_type",
+  "customer_code",
+  "posting_date",
+  "headquarter_code",
+  "patient_code",
+  "lhc_punto_de_facturacion",
+  "vat_registration_no",
+  "lhc_contrato",
+  "lhc_cuota_moderadora",
+  "lhc_copago",
+  "lhc_cuota_recuperacion",
+  "lhc_pagos_compartidos_pvs",
+  "lhc_numero_autorizacion",
+  "lhc_periodo_inicio_fecha_fact",
+  "lhc_periodo_fin_fecha_fact",
+  "lhc_numero_contacto",
+  "lhc_numero_orden_compra",
+  "lhc_consecutivo_interno",
+  "lhc_documento",
+  "items",
+  "is_valid",
+  "error",
+  "request",
+  "response",
+  "is_complete"
+ ],
+ "fields": [
+  {
+   "fieldname": "document_type",
+   "fieldtype": "Link",
+   "label": "Document_Type",
+   "options": "qp_md_DocumentType"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "posting Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_valid",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "is valid"
+  },
+  {
+   "fieldname": "error",
+   "fieldtype": "Long Text",
+   "label": "error"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "qp_md_DocumentItem"
+  },
+  {
+   "fieldname": "document_code",
+   "fieldtype": "Data",
+   "label": "Document Code"
+  },
+  {
+   "fieldname": "customer_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "customer_code"
+  },
+  {
+   "fieldname": "headquarter_code",
+   "fieldtype": "Data",
+   "label": "headquarter_code"
+  },
+  {
+   "fieldname": "request",
+   "fieldtype": "Long Text",
+   "label": "request"
+  },
+  {
+   "fieldname": "response",
+   "fieldtype": "Long Text",
+   "label": "response"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_complete",
+   "fieldtype": "Check",
+   "label": "is_complete"
+  },
+  {
+   "default": "FAC VENT",
+   "fieldname": "lhc_punto_de_facturacion",
+   "fieldtype": "Data",
+   "label": "LHC Punto de facturacion"
+  },
+  {
+   "fieldname": "vat_registration_no",
+   "fieldtype": "Data",
+   "label": "VAT_Registration_No"
+  },
+  {
+   "fieldname": "lhc_contrato",
+   "fieldtype": "Data",
+   "label": "LHC Contrato"
+  },
+  {
+   "fieldname": "lhc_cuota_moderadora",
+   "fieldtype": "Int",
+   "label": "LHC Cuota Moderadora"
+  },
+  {
+   "default": "0",
+   "fieldname": "lhc_copago",
+   "fieldtype": "Int",
+   "label": "LHC Copago"
+  },
+  {
+   "default": "0",
+   "fieldname": "lhc_cuota_recuperacion",
+   "fieldtype": "Int",
+   "label": "LHC Cuota Recuperacion"
+  },
+  {
+   "default": "0",
+   "fieldname": "lhc_pagos_compartidos_pvs",
+   "fieldtype": "Int",
+   "label": "LHC Pagos Compartidos PVS"
+  },
+  {
+   "fieldname": "lhc_numero_autorizacion",
+   "fieldtype": "Data",
+   "label": "LHC Numero Autorizacion"
+  },
+  {
+   "fieldname": "lhc_periodo_inicio_fecha_fact",
+   "fieldtype": "Data",
+   "label": "LHC Periodo Inicio Fecha Fact"
+  },
+  {
+   "fieldname": "lhc_periodo_fin_fecha_fact",
+   "fieldtype": "Data",
+   "label": "LHC Periodo Fin Fecha Fact"
+  },
+  {
+   "default": "0",
+   "fieldname": "lhc_numero_contacto",
+   "fieldtype": "Data",
+   "label": "LHC Numero Contacto"
+  },
+  {
+   "default": "0",
+   "fieldname": "lhc_numero_orden_compra",
+   "fieldtype": "Data",
+   "label": "LHC Numero Orden Compra"
+  },
+  {
+   "fieldname": "lhc_consecutivo_interno",
+   "fieldtype": "Data",
+   "label": "LHC Consecutivo Interno"
+  },
+  {
+   "fieldname": "lhc_documento",
+   "fieldtype": "Data",
+   "label": "LHC Documento"
+  },
+  {
+   "fieldname": "patient_code",
+   "fieldtype": "Data",
+   "label": "patient_code"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-09-26 15:28:21.394203",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_Document",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
