@@ -37,9 +37,9 @@ def handler(upload_id):
 
         for line in lines_iter:
 
-            item_qp_type = frappe.get_list("Item", filters = {"item_code": line["codigo_procedimiento_facturacion"] }, fields = ["qp_type", "item_code"])
+            item_code = frappe.get_list("Item", filters = {"qp_item_code_2": line["codigo_procedimiento_facturacion"] }, fields = ["item_code"])
 
-            if not item_qp_type:
+            if not item_code:
 
                 if document.is_valid:
                     
@@ -47,7 +47,7 @@ def handler(upload_id):
                 
                 document.error += "Producto {} no existe".format(line["codigo_procedimiento_facturacion"])
 
-            item_code = item_qp_type[0]["item_code"] if item_qp_type else ""
+            item_code = item_code[0]["item_code"] if item_code else ""
 
             item_type = "Item"
 
@@ -212,7 +212,7 @@ def set_fecha_periodo(document):
 
 def setup_item(item,item_code, item_code_2, quantity, line, type_code, document, patient_code, paquete_o_sesion, document_type = "Invoice", modality_code = "HD"):
 
-    item_code = "C4110" if item_code_2 == "399501" and paquete_o_sesion == "PAQUETE" else item_code_2
+    #item_code = "C4110" if item_code_2 == "399501" and paquete_o_sesion == "PAQUETE" else item_code_2
 
     item.item_code  = item_code
     item.item_code2  = item_code_2
@@ -322,7 +322,7 @@ def setup_item_json(item, document):
 
 def get_nit_customer(lines_iter):
 
-    document_code = list(set(map(lambda x: x["nit"] , lines_iter)))
+    document_code = list(set(map(lambda x: "{}-{}".format(x["nit"],x["regimen"][0]) , lines_iter)))
     #document_code = list(set(map(lambda x: "{}-{}".format(x["nit"], x["nit"]) , lines_iter)))
 
     if len(document_code) > 1:
