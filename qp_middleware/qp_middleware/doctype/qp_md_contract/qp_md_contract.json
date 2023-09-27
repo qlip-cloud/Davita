@@ -1,0 +1,125 @@
+{
+ "actions": [],
+ "creation": "2023-09-27 13:46:42.634709",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "id_contrato",
+  "estado_contrato",
+  "estado_aprobacion_contrato",
+  "id_contrato_padre",
+  "id_cliente",
+  "num_contacto_cliente",
+  "tipo_regimen",
+  "fecha_inicio_contrato",
+  "fecha_fin_contrato",
+  "terminos_pago",
+  "descuento_financiero",
+  "id_tipo_contrato",
+  "tipo_cliente",
+  "punto_facturacion",
+  "com_desccondicionado"
+ ],
+ "fields": [
+  {
+   "fieldname": "id_contrato",
+   "fieldtype": "Data",
+   "label": "idContrato"
+  },
+  {
+   "fieldname": "estado_contrato",
+   "fieldtype": "Data",
+   "label": "estadoContrato"
+  },
+  {
+   "fieldname": "estado_aprobacion_contrato",
+   "fieldtype": "Data",
+   "label": "estadoAprobacionContrato"
+  },
+  {
+   "fieldname": "id_contrato_padre",
+   "fieldtype": "Data",
+   "label": "idContratoPadre"
+  },
+  {
+   "fieldname": "id_cliente",
+   "fieldtype": "Data",
+   "label": "idCliente"
+  },
+  {
+   "fieldname": "num_contacto_cliente",
+   "fieldtype": "Data",
+   "label": "numContactoCliente"
+  },
+  {
+   "fieldname": "tipo_regimen",
+   "fieldtype": "Data",
+   "label": "tipoRegimen"
+  },
+  {
+   "fieldname": "fecha_inicio_contrato",
+   "fieldtype": "Date",
+   "label": "fechaInicioContrato"
+  },
+  {
+   "fieldname": "fecha_fin_contrato",
+   "fieldtype": "Date",
+   "label": "fechaFinContrato"
+  },
+  {
+   "fieldname": "terminos_pago",
+   "fieldtype": "Data",
+   "label": "terminosPago"
+  },
+  {
+   "fieldname": "descuento_financiero",
+   "fieldtype": "Data",
+   "label": "descuentoFinanciero"
+  },
+  {
+   "fieldname": "id_tipo_contrato",
+   "fieldtype": "Data",
+   "label": "idTipoContrato"
+  },
+  {
+   "fieldname": "tipo_cliente",
+   "fieldtype": "Data",
+   "label": "tipoCliente"
+  },
+  {
+   "fieldname": "punto_facturacion",
+   "fieldtype": "Data",
+   "label": "puntoFacturacion"
+  },
+  {
+   "fieldname": "com_desccondicionado",
+   "fieldtype": "Data",
+   "label": "comDescCondicionado"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-09-27 14:06:53.500312",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_Contract",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
