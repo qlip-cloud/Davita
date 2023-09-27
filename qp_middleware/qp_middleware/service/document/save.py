@@ -25,6 +25,8 @@ def handler(upload_id):
     
     response = []
     
+    is_valid = True
+    
     for lines_iter in group_lines:
         
         document = setup_document(lines_iter)
@@ -68,8 +70,18 @@ def handler(upload_id):
                 document.items.append(item)
 
             line_no += 1000
+        
+        document.insert()  
 
-        if document.is_valid:
+        response.append(document)
+
+        if is_valid and not document.is_valid:
+
+            is_valid = False
+
+    if is_valid:
+
+        for document in response:
 
             setup_header_json(document)
 
@@ -83,12 +95,9 @@ def handler(upload_id):
 
                     setup_item_json(item, document)
 
-                    #valida q al terminar todo se mando y completa el documento
-
-        document.insert()  
-
-        response.append(document)
-
+                            #valida q al terminar todo se mando y completa el documento
+            document.save()  
+        
     frappe.db.commit()  
 
     return response
@@ -100,6 +109,9 @@ def setup_document(lines_iter):
     code_dimension, error_dimension, msg_error_dimension = get_code_dimension(lines_iter)
 
     code_patient, error_patient, msg_error_patient = get_nit_patient(lines_iter)
+
+    code_contrat_patient, error_contrat_patient, msg_error_contrat_patient = get_contract_patient(code_patient)
+
 
     code_cuota_moderadora, error_cuota_moderadora, msg_error_cuota_moderadora = get_cuota_moderadora(lines_iter)
 
@@ -114,6 +126,8 @@ def setup_document(lines_iter):
     document.headquarter_code = code_dimension
 
     document.posting_date = today()
+
+    document.lhc_contrato = code_contrat_patient
 
     document.lhc_cuota_moderadora = code_cuota_moderadora or 0
 
@@ -130,9 +144,9 @@ def setup_document(lines_iter):
 
     set_fecha_periodo(document)
 
-    error = error_customer or error_dimension or error_cuota_moderadora or error_numero_autorizacion or error_patient
+    error = error_customer or error_dimension or error_cuota_moderadora or error_numero_autorizacion or error_patient or error_contrat_patient
 
-    msg = msg_error_customer + msg_error_dimension + msg_error_numero_autorizacion + msg_error_cuota_moderadora + msg_error_patient
+    msg = msg_error_customer + msg_error_dimension + msg_error_numero_autorizacion + msg_error_cuota_moderadora + msg_error_patient + msg_error_contrat_patient
 
     document.is_valid = not error
 
@@ -140,6 +154,16 @@ def setup_document(lines_iter):
 
     return document
 
+def get_contract_patient(code_patient):
+    
+    
+    contract = frappe.get_list("qp_md_Contract", filters = {"id_cliente": code_patient, "estado_contrato": "Activo"}, pluck = "id_contrato")
+
+    if not contract:
+
+        return "", True, "Paciente {} No posee un contrato activo\n".format(code_patient)
+    
+    return contract[0], False, ""
 
 def get_nit_patient(lines_iter):
     

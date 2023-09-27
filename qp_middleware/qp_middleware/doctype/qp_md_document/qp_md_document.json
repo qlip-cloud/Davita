@@ -94,6 +94,8 @@
    "default": "0",
    "fieldname": "is_complete",
    "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "is_complete"
   },
   {
@@ -180,7 +182,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-26 15:28:21.394203",
+ "modified": "2023-09-27 13:33:58.665928",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Document",
