@@ -1,0 +1,48 @@
+{
+ "actions": [],
+ "creation": "2023-10-05 11:06:08.185946",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "wait_time",
+  "number_request"
+ ],
+ "fields": [
+  {
+   "default": "5",
+   "fieldname": "wait_time",
+   "fieldtype": "Int",
+   "label": "Tiempo de espera (seg)"
+  },
+  {
+   "default": "5",
+   "fieldname": "number_request",
+   "fieldtype": "Int",
+   "label": "Cantidad de peticiones"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2023-10-05 11:06:08.185946",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_Setup",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

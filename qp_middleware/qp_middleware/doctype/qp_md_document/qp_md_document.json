@@ -30,7 +30,10 @@
   "error",
   "request",
   "response",
-  "is_complete"
+  "is_complete",
+  "upload_id",
+  "update_request",
+  "update_response"
  ],
  "fields": [
   {
@@ -178,11 +181,26 @@
    "fieldname": "patient_code",
    "fieldtype": "Data",
    "label": "patient_code"
+  },
+  {
+   "fieldname": "upload_id",
+   "fieldtype": "Data",
+   "label": "upload_id"
+  },
+  {
+   "fieldname": "update_request",
+   "fieldtype": "Long Text",
+   "label": "update_request"
+  },
+  {
+   "fieldname": "update_response",
+   "fieldtype": "Long Text",
+   "label": "update_response"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-27 13:33:58.665928",
+ "modified": "2023-10-04 14:38:36.108664",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Document",

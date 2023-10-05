@@ -1,4 +1,5 @@
 import frappe
+import time
 from datetime import datetime
 import json
 from frappe.utils import today
@@ -7,11 +8,6 @@ import requests
 from dateutil.relativedelta import relativedelta
 
 from qp_authorization.use_case.oauth2.authorize import get_token
-
-URL_LINE = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/SalesInvoiceLine"
-
-URL_HEADER = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/SalesInvoice"
-
 
 @frappe.whitelist()
 def handler(upload_id):
@@ -27,9 +23,13 @@ def handler(upload_id):
     
     is_valid = True
     
+    document_success = 0
+
+    send_success = 0
+
     for lines_iter in group_lines:
         
-        document = setup_document(lines_iter)
+        document = setup_document(lines_iter, upload_id)
         
         line_no = 1000
 
@@ -64,7 +64,7 @@ def handler(upload_id):
 
                 item = frappe.new_doc("qp_md_DocumentItem")
 
-                setup_item(item, item_code, "28050501", line["cantidad_a_facturar"],
+                setup_item(item, "28050501", "28050501", line["cantidad_a_facturar"],
                            line_no, "G/L Account", document, document.patient_code, line["paquete_o_sesion"])
 
                 document.items.append(item)
@@ -74,35 +74,105 @@ def handler(upload_id):
         document.insert()  
 
         response.append(document)
+        
+        if document.is_valid:
+            
+            document_success += 1
 
-        if is_valid and not document.is_valid:
+        elif is_valid:
 
             is_valid = False
 
     if is_valid:
 
+        cache = frappe.cache()
+        
+        cache.set("request_count", 0)
+
+        setup = frappe.get_doc("qp_md_Setup")
+        
         for document in response:
 
-            setup_header_json(document)
+            send_control_invoice(document, send_success, setup)
 
-            if document.document_code:
-
-                document.is_complete = True
-
-                for item in document.items:
-
-                    item.document_code = document.document_code
-
-                    setup_item_json(item, document)
-
-                            #valida q al terminar todo se mando y completa el documento
-            document.save()  
-        
     frappe.db.commit()  
 
-    return response
+    return {
+        'invoice_total': len(response),
+        'invoice_success': document_success,
+        'invoice_error': len(response) - document_success,
+        'customer_count': 0,
+        'item_count': 0,
+        'send_success': send_success,
+        'send_error': len(response) - send_success
+    }
 
-def setup_document(lines_iter):
+
+
+def send_invoices(document, send_success):
+
+    set_cache_control()
+
+    setup_header_json(document)
+
+    if document.document_code:
+
+        update_header_json(document)
+
+        document.is_complete = True
+
+        for item in document.items:
+
+            item.document_code = document.document_code
+
+            setup_item_json(item, document)
+
+        send_success +=  1 if document.is_complete == True else 0
+
+    document.save()
+    
+    set_cache_control(False)
+
+def send_control_invoice(document, send_success, setup):
+
+    control = get_cache_control()
+    
+    #print("control inicio", control)
+    
+    if control < setup.number_request:
+        #print("control true", control)
+        """frappe.enqueue(
+            send_invoices, # python function or a module path as string
+            queue="default", # one of short, default, long
+            is_async=True, # if this is True, method is run in worker
+            now=False, # if this is True, method is run directly (not in a worker) 
+            job_name="send_invoices", # specify a job name
+            enqueue_after_commit=True, # enqueue the job after the database commit is done at the end of the request
+            at_front=True,
+            document =document, 
+            send_success = send_success
+        )"""
+        send_invoices(document, send_success)
+    else:
+        #print("control false", control)
+
+        time.sleep(setup.wait_time)
+
+        send_control_invoice(document, send_success, setup)
+
+def get_cache_control():
+    
+    return int(frappe.cache().get("request_count"))
+
+def set_cache_control(add = True):
+
+    control = get_cache_control()
+
+    control = control + 1  if add else control - 1
+    #print(control)
+    frappe.cache().set("request_count", control)
+
+def setup_document(lines_iter, upload_id):
 
     code_customer, error_customer, msg_error_customer = get_nit_customer(lines_iter)
         
@@ -141,6 +211,7 @@ def setup_document(lines_iter):
 
     document.patient_code = code_patient
 
+    document.upload_id = upload_id
 
     set_fecha_periodo(document)
 
@@ -207,6 +278,7 @@ def set_fecha_periodo(document):
     date_format = datetime.strptime(document.posting_date, '%Y-%m-%d')
 
     document.lhc_periodo_inicio_fecha_fact =  date_format + relativedelta(day=1)
+
     document.lhc_periodo_fin_fecha_fact = date_format + relativedelta(day=31)
     
 
@@ -238,23 +310,46 @@ def setup_item(item,item_code, item_code_2, quantity, line, type_code, document,
     #item.document_code = None
 
 def setup_header_json(document):
-    
-    token = get_token()
-    
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer {}'.format(token)
-    }
 
-    document.request = json.dumps({   
-                    "Document_Type": document.document_type,
-                    "Sell_to_Customer_No": document.customer_code,
-                    "Posting_Date": document.posting_date,
-                    #"VAT_Registration_No": document.vat_registration_no,
-                    "Shortcut_Dimension_1_Code": document.customer_code, 
-                    "Shortcut_Dimension_2_Code": document.headquarter_code,
+    URL_HEADER = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/api/v2.0/companies(798ec2fe-ddfe-ed11-8f6e-6045bd3980fd)/salesInvoices"
+    document.request = json.dumps({
+                    "externalDocumentNumber": "API_Ex con dimensiones",
+                    "invoiceDate": document.posting_date,
+                    "postingDate": document.posting_date,
+                    "customerNumber": document.customer_code,
+                    "shortcutDimension1Code": document.customer_code,
+                    "shortcutDimension2Code": document.headquarter_code,   
+                    "dimensionSetLines": [
+                        {            
+                            "code": "MODALIDADES",            
+                            "valueCode": "AG"           
+                        },
+                        {       
+                            "code": "PACIENTE",            
+                            "valueCode": document.patient_code         
+                        }
+                    ]
+            })
+    
+    response, response_json, error = send_petition(URL_HEADER, document.request)
+
+    document.response = response
+
+    if not error:
+        
+        document.document_code = response_json["number"]
+
+    elif(document.is_complete):
+        
+        document.is_complete = False
+
+def update_header_json(document):
+
+    url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company('DAVITA')/SalesInvoice('Invoice', '{}')".format(document.document_code)
+
+    document.update_request = json.dumps({   
                     #"LHCPuntodefacturacion": document.lhc_punto_de_facturacion,
-                    "LHCContrato": document.lhc_contrato or "", 
+                    "LHCContrato": document.lhc_contrato or "",
                     "LHCCuotaModeradora": int(document.lhc_cuota_moderadora),
                     "LHCCopago": int(document.lhc_copago),
                     "LHCCuotaRecuperacion": int(document.lhc_cuota_recuperacion),
@@ -266,26 +361,25 @@ def setup_header_json(document):
                     "LHCNumeroOrdenCompra": document.lhc_numero_orden_compra,
                     "LHCConsecutivoInterno": document.lhc_consecutivo_interno,
                     "LHCDocumento": document.lhc_documento
+                    
             })
-    response = requests.post(URL_HEADER, headers=headers, data=document.request)
+    
+    add_header = {
+        'If-Match': '*'
+    }
+    
+    response, response_json, error = send_petition(url, document.update_request, "PATCH", add_header)
 
-    document.response = response.text
+    document.update_response = response
 
-    response_json = json.loads(response.text)
-
-    if not "error" in response_json:
+    if error and document.is_complete:
         
-        document.document_code = response_json["No"]
+        document.is_complete = False
 
 def setup_item_json(item, document):
-    
-    token = get_token()
-    
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer {}'.format(token)
-    }
 
+    URL_LINE = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/SalesInvoiceLine"
+    
     request = {
         "Document_Type": "Invoice",
         "Document_No": item.document_code,
@@ -312,18 +406,42 @@ def setup_item_json(item, document):
         })
     
     item.request = json.dumps(request)
-    response = requests.post(URL_LINE, headers=headers, data=item.request)
 
-    item.response = response.text
 
-    if "error" in json.loads(item.response) and document.is_complete:
+    response, response_json, error = send_petition(URL_LINE, item.request)
+
+    item.response = response
+
+    if error and document.is_complete:
         
         document.is_complete = False
 
+
+def send_petition(url, payload, method = "POST", add_header = None):
+
+    token = get_token()
+    
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer {}'.format(token)
+    }
+
+    if add_header:
+
+        headers.update(add_header)
+    #print(datetime.now())
+    response = requests.request(method, url, headers=headers, data=payload)
+    #print(datetime.now())
+
+    response_json = json.loads(response.text)
+
+    return response.text, response_json, "error" in response_json
+
+
 def get_nit_customer(lines_iter):
 
-    document_code = list(set(map(lambda x: "{}-{}".format(x["nit"],x["regimen"][0]) , lines_iter)))
-    #document_code = list(set(map(lambda x: "{}-{}".format(x["nit"], x["nit"]) , lines_iter)))
+    #document_code = list(set(map(lambda x: "{}-{}".format(x["nit"],x["regimen"][0]) , lines_iter)))
+    document_code = list(set(map(lambda x: x["nit"] , lines_iter)))
 
     if len(document_code) > 1:
 

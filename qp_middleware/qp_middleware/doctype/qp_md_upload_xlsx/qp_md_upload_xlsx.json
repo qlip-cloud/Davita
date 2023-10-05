@@ -5,18 +5,60 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "file"
+  "file",
+  "invoice_total",
+  "invoice_success",
+  "invoice_error",
+  "customer_count",
+  "item_count",
+  "send_success",
+  "send_error"
  ],
  "fields": [
   {
    "fieldname": "file",
    "fieldtype": "Attach",
    "label": "Archivo"
+  },
+  {
+   "fieldname": "invoice_total",
+   "fieldtype": "Int",
+   "label": "Total de Facturas"
+  },
+  {
+   "fieldname": "invoice_success",
+   "fieldtype": "Int",
+   "label": "Facturas correctas"
+  },
+  {
+   "fieldname": "invoice_error",
+   "fieldtype": "Int",
+   "label": "Facturas con errores"
+  },
+  {
+   "fieldname": "customer_count",
+   "fieldtype": "Int",
+   "label": "Cantidad de Clientes"
+  },
+  {
+   "fieldname": "item_count",
+   "fieldtype": "Int",
+   "label": "Cantidad de Productos"
+  },
+  {
+   "fieldname": "send_success",
+   "fieldtype": "Int",
+   "label": "Enviadas Correctas"
+  },
+  {
+   "fieldname": "send_error",
+   "fieldtype": "Int",
+   "label": "Error en envios"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-10 11:43:43.559150",
+ "modified": "2023-10-04 13:41:36.602282",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_upload_xlsx",

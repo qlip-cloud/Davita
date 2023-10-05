@@ -24,7 +24,15 @@ def handler(upload_xlsx, method):
 
     contract_sync()
 
-    document_save(upload_xlsx.name)
+    result = document_save(upload_xlsx.name)
+
+    upload_xlsx.invoice_total = result["invoice_total"]
+    upload_xlsx.invoice_success = result["invoice_success"]
+    upload_xlsx.invoice_error = result["invoice_error"]
+    upload_xlsx.customer_count = result["customer_count"]
+    upload_xlsx.item_count = result["item_count"]
+    upload_xlsx.send_success = result["send_success"]
+    upload_xlsx.send_error = result["send_error"]
 
     frappe.db.commit()
 
