@@ -5,6 +5,7 @@ from qp_middleware.qp_middleware.service.patient.sync import handler as patient_
 from qp_middleware.qp_middleware.service.headquarter.sync import handler as headquarter_sync
 from qp_middleware.qp_middleware.service.contract.sync import handler as contract_sync
 from qp_middleware.qp_middleware.service.document.save import handler as document_save
+from qp_middleware.qp_middleware.service.document.sync import handler as document_sync
 
 from frappe.utils.xlsxutils import read_xlsx_file_from_attached_file
 
@@ -31,9 +32,12 @@ def handler(upload_xlsx, method):
     upload_xlsx.invoice_error = result["invoice_error"]
     upload_xlsx.customer_count = result["customer_count"]
     upload_xlsx.item_count = result["item_count"]
+    upload_xlsx.is_valid = result["is_valid"]
+
+    result = document_sync(upload_xlsx)
+    
     upload_xlsx.send_success = result["send_success"]
     upload_xlsx.send_error = result["send_error"]
-    upload_xlsx.is_valid = result["is_valid"]
 
     frappe.db.commit()
 
@@ -115,7 +119,8 @@ def save_row(rows, upload_id):
                 "vr_paquete_facturacion": row[69],
                 "vs": row[70],
                 "observaciones_1": row[71],
-                "upload_id": upload_id
+                "upload_id": upload_id,
+                "group_code": row[2]+'-'+row[14]
             })
 
             doc.insert()

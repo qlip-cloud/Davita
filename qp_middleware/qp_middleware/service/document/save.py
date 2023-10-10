@@ -14,9 +14,9 @@ def handler(upload_id):
     lines = frappe.get_list("qp_md_invoice_sync", filters = {"upload_id": upload_id}, fields = ["*"])
     #lines = frappe.get_list("qp_md_invoice_test", filters = {"upload_id": upload_id}, fields = ["*"])
     
-    documents_code = set(map(lambda x: x["id_unico_ingreso_fuente_no_cargo"], lines))
+    documents_code = set(map(lambda x: x["group_code"], lines))
 
-    group_lines = [[y for y in lines if y["id_unico_ingreso_fuente_no_cargo"]==x] for x in documents_code]
+    group_lines = [[y for y in lines if y["group_code"]==x] for x in documents_code]
     
     response = []
     

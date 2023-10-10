@@ -5,8 +5,9 @@ import json
 from datetime import datetime
 import requests
 import threading
-TOKEN = get_token()
-def handler(upload_xlsx, method):
+
+def handler(upload_xlsx):
+
 
     document_names = frappe.get_list("qp_md_Document", {"upload_id": upload_xlsx.name})
 
@@ -21,46 +22,75 @@ def handler(upload_xlsx, method):
         documents.append(document)
     
     setup = frappe.get_doc("qp_md_Setup")
+
+    token = get_token()
+
+    send_request(documents, setup, send_header, token)
+
+    for document in documents:
+
+        if document.is_complete:
+        
+            document.update_request = get_update_header_payload(document)
+
+            for item in document.items:
+                
+                item.document_code = document.document_code
+
+                item.request = get_item_payload(item)
+
+    token = get_token()
+
+    send_request(documents,setup, send_update_header, token)
+
+    token = get_token()
+
+    for document in documents:
+        
+        if document.is_complete:
+            
+            send_request(document.items, setup, send_item, token)
     
-    send_request(documents, setup, send_header)
+    is_complete = 0
 
     for document in documents:
 
-        document.update_request = get_update_header_payload(document)
+        list_complete = set(list(map(lambda x: x.is_complete, document.items)))
 
-        for item in document.items:
-            
-            item.document_code = document.document_code
-            item.request = get_item_payload(item)
+        if False in list_complete:
 
-    send_request(documents,setup, send_update_header)        
-    for document in documents:
+            document.is_complete = False
 
-        for item in document.items:
-            
-            send_request(document.items, setup, send_item)
+        if document.is_complete:
 
-    for document in documents:
+            is_complete +=1
 
         document.save()
 
     frappe.db.commit()
 
-def callback(document,threads, setup, target):
+    return {
+        "send_success": is_complete,
+        "send_error": len(documents) - is_complete
+    }
+
+def callback(document,threads, setup, target, token):
 
     if threading.active_count() <= setup.number_request:
         
-        t = threading.Thread(target=target, args=(document, ))
+        t = threading.Thread(target=target, args=(document, token))
+
         threads.append(t)
+
         t.start()
     
     else:
         
         time.sleep(setup.wait_time)
 
-        callback(document,threads, setup, target)
+        callback(document,threads, setup, target, token)
 
-def send_request(documents, setup, target):
+def send_request(documents, setup, target, token):
 
     setup = frappe.get_doc("qp_md_Setup")
 
@@ -68,33 +98,35 @@ def send_request(documents, setup, target):
 
     for document in documents:
         
-        callback(document,threads, setup, target)
+        callback(document,threads, setup, target, token)
     
     for t in threads:
         
         t.join()
 
-def send_update_header(document):
+def send_update_header(document, token):
 
-    url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company('DAVITA')/SalesInvoice('Invoice', '{}')".format(document.document_code)
+    if document.is_complete:
     
-    add_header = {
-        'If-Match': '*'
-    }
-    
-    response, response_json, error = send_petition(url, document.update_request, "PATCH", add_header)
-
-    document.update_response = response
-
-    if error and document.is_complete:
+        url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company('DAVITA')/SalesInvoice('Invoice', '{}')".format(document.document_code)
         
-        document.is_complete = False
+        add_header = {
+            'If-Match': '*'
+        }
+        
+        response, response_json, error = send_petition(token, url, document.update_request, "PATCH", add_header)
 
-def send_header(document):
+        document.update_response = response
+
+        if error and document.is_complete:
+            
+            document.is_complete = False
+
+def send_header(document, token):
 
     URL_HEADER = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/api/v2.0/companies(798ec2fe-ddfe-ed11-8f6e-6045bd3980fd)/salesInvoices"
     
-    response, response_json, error = send_petition(URL_HEADER, document.request)
+    response, response_json, error = send_petition(token, URL_HEADER, document.request)
 
     document.response = response
 
@@ -102,18 +134,22 @@ def send_header(document):
         
         document.document_code = response_json["number"]
 
+        document.is_complete = True
+
     elif(document.is_complete):
         
         document.is_complete = False
 
 
-def send_item(item):
+def send_item(item, token):
 
     URL_LINE = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/SalesInvoiceLine"
     
-    response, response_json, error = send_petition(URL_LINE, item.request)
+    response, response_json, error = send_petition(token, URL_LINE, item.request)
 
     item.response = response
+        
+    item.is_complete = False if error else True
 
 def get_header_payload(document):
 
@@ -177,17 +213,17 @@ def get_item_payload(item):
     if item.type_code == "G/L Account":
 
         request.update({    
-            "Unit_Price": item.unit_price,
-            "Line_Amount": item.line_amount
+            "Unit_Price": float(item.unit_price),
+            "Line_Amount": float(item.line_amount)
         })
     
     return json.dumps(request)
 
-def send_petition(url, payload, method = "POST", add_header = None):
-
+def send_petition(token, url, payload, method = "POST", add_header = None):
+    
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer {}'.format(TOKEN)
+        'Authorization': 'Bearer {}'.format(token)
     }
 
     if add_header:

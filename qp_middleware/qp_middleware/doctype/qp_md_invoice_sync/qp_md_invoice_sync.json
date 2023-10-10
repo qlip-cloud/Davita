@@ -77,7 +77,8 @@
   "vr_paquete_facturacion",
   "vs",
   "observaciones_1",
-  "upload_id"
+  "upload_id",
+  "group_code"
  ],
  "fields": [
   {
@@ -446,11 +447,16 @@
    "fieldname": "upload_id",
    "fieldtype": "Data",
    "label": "upload_id"
+  },
+  {
+   "fieldname": "group_code",
+   "fieldtype": "Data",
+   "label": "group_code"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-26 15:02:39.094521",
+ "modified": "2023-10-10 11:31:22.310502",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_invoice_sync",
