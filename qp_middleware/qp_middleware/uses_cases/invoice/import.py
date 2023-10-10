@@ -33,6 +33,7 @@ def handler(upload_xlsx, method):
     upload_xlsx.item_count = result["item_count"]
     upload_xlsx.send_success = result["send_success"]
     upload_xlsx.send_error = result["send_error"]
+    upload_xlsx.is_valid = result["is_valid"]
 
     frappe.db.commit()
 

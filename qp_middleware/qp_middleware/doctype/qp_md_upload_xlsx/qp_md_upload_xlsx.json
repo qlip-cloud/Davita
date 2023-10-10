@@ -12,7 +12,8 @@
   "customer_count",
   "item_count",
   "send_success",
-  "send_error"
+  "send_error",
+  "is_valid"
  ],
  "fields": [
   {
@@ -54,11 +55,17 @@
    "fieldname": "send_error",
    "fieldtype": "Int",
    "label": "Error en envios"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_valid",
+   "fieldtype": "Check",
+   "label": "is_valid"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-04 13:41:36.602282",
+ "modified": "2023-10-09 16:13:25.944226",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_upload_xlsx",
