@@ -5,6 +5,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "document_confirm",
   "document_code",
   "document_type",
   "customer_code",
@@ -25,6 +26,8 @@
   "lhc_numero_orden_compra",
   "lhc_consecutivo_interno",
   "lhc_documento",
+  "lhc_tipo_operacion_davita",
+  "lhc_tipo_factura_doc",
   "items",
   "is_valid",
   "error",
@@ -33,7 +36,10 @@
   "is_complete",
   "upload_id",
   "update_request",
-  "update_response"
+  "update_response",
+  "confirm_request",
+  "confirm_response",
+  "is_confirm"
  ],
  "fields": [
   {
@@ -198,11 +204,42 @@
    "fieldname": "update_response",
    "fieldtype": "Long Text",
    "label": "update_response"
+  },
+  {
+   "fieldname": "lhc_tipo_operacion_davita",
+   "fieldtype": "Data",
+   "label": "LHC Tipo Operacion Davita"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_confirm",
+   "fieldtype": "Check",
+   "label": "is_confirm"
+  },
+  {
+   "fieldname": "lhc_tipo_factura_doc",
+   "fieldtype": "Data",
+   "label": "LHC Tipo Factura Doc"
+  },
+  {
+   "fieldname": "confirm_request",
+   "fieldtype": "Long Text",
+   "label": "confirm_request"
+  },
+  {
+   "fieldname": "confirm_response",
+   "fieldtype": "Long Text",
+   "label": "confirm_response"
+  },
+  {
+   "fieldname": "document_confirm",
+   "fieldtype": "Data",
+   "label": "Document Confirm"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-10 11:42:53.547354",
+ "modified": "2023-10-11 16:39:53.264683",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Document",

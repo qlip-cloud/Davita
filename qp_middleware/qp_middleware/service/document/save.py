@@ -123,13 +123,17 @@ def setup_document(lines_iter, upload_id):
 
     document.lhc_contrato = code_contrat_patient
 
-    document.lhc_cuota_moderadora = code_cuota_moderadora or 0
+    document.lhc_cuota_moderadora = code_cuota_moderadora if code_cuota_moderadora and code_cuota_moderadora != '0' else 0
 
     document.lhc_numero_autorizacion = code_numero_autorizacion
 
     document.lhc_consecutivo_interno = lines_iter[0]["id_unico_ingreso_fuente_no_cargo"]
 
     document.lhc_documento = lines_iter[0]["id_unico_ingreso_fuente_no_cargo"]
+
+    document.lhc_tipo_operacion_davita = "SS-CUFE" if code_cuota_moderadora else "SS-SinAporte"
+
+    document.lhc_tipo_factura_doc = "Estándar"
 
     document.vat_registration_no = code_customer
 
