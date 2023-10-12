@@ -32,12 +32,14 @@ def handler(upload_xlsx):
         if document.is_complete:
         
             document.update_request = get_update_header_payload(document)
+            
+            document.items_request = get_items_payload(document)
 
-            for item in document.items:
+            #for item in document.items:
                 
-                item.document_code = document.document_code
+            #    item.document_code = document.document_code
 
-                item.request = get_item_payload(item)
+            #    item.request = get_items_payload(item)
 
     token = get_token()
 
@@ -45,21 +47,25 @@ def handler(upload_xlsx):
 
     token = get_token()
 
-    for document in documents:
+    send_request(documents,setup, send_items, token)
+    
+    
+    
+    #for document in documents:
         
-        if document.is_complete:
+    #    if document.is_complete:
             
-            send_request(document.items, setup, send_item, token)
+    #        send_request(document.items, setup, send_item, token)
     
     is_complete = 0
 
     for document in documents:
 
-        list_complete = set(list(map(lambda x: x.is_complete, document.items)))
+        #list_complete = set(list(map(lambda x: x.is_complete, document.items)))
 
-        if False in list_complete:
+        #if False in list_complete:
 
-            document.is_complete = False
+        #    document.is_complete = False
 
         if document.is_complete:
 
@@ -140,6 +146,19 @@ def send_header(document, token):
         
         document.is_complete = False
 
+def send_items(document, token):
+
+    if document.is_complete:
+
+        URL_LINE = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/$batch"
+        
+        response, response_json, error = send_petition(token, URL_LINE, document.items_request)
+
+        document.items_response = response
+
+        if error and document.is_complete:
+                
+            document.is_complete = False
 
 def send_item(item, token):
 
@@ -150,6 +169,8 @@ def send_item(item, token):
     item.response = response
         
     item.is_complete = False if error else True
+
+    
 
 def get_header_payload(document):
 
@@ -191,6 +212,57 @@ def get_update_header_payload(document):
         "LHCTipoOperacion": document.lhc_tipo_operacion_davita,
         "LHCTipoFacturaDoc": document.lhc_tipo_factura_doc
     })
+
+def get_items_payload(document):
+
+    requests = []
+    
+    for key, item in enumerate(sorted(document.items, key=lambda x: x.line)):
+        
+        item.document_code = document.document_code
+        
+        base = {
+            "method": "POST",
+            "id": str(key),
+            "url":"Company('DAVITA')/SalesInvoiceLine",
+            "headers":{
+                "content-Type":"application/json;EEE754Compatible=true",
+                "If-Match":"*"
+            }
+        }
+
+        item_body = {
+            "Document_Type": "Invoice",
+            "Document_No": item.document_code,
+            "Line_No": item.line,
+            "Type": item.type_code,
+            "FilteredTypeField": item.type_code,
+            "No": item.item_code,
+            "Quantity": int(item.quantity),            
+            "Shortcut_Dimension_1_Code": item.customer_code,
+            "Shortcut_Dimension_2_Code": item.headquarter_code,
+            "ShortcutDimCode3": "",
+            "ShortcutDimCode4": "",
+            "ShortcutDimCode5": item.patient_code,
+            "ShortcutDimCode6": item.modality_code,
+            "ShortcutDimCode7": "",
+            "ShortcutDimCode8": ""
+        }
+
+        if item.type_code == "G/L Account":
+
+            item_body.update({    
+                "Unit_Price": float(item.unit_price),
+                "Line_Amount": float(item.line_amount)
+            })
+        
+        base.update({"body": item_body})
+
+        requests.append(base)
+
+    return json.dumps({
+            "requests":requests
+        })
 
 def get_item_payload(item):
     

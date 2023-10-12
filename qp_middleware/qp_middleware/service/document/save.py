@@ -155,7 +155,6 @@ def setup_document(lines_iter, upload_id):
 
 def get_contract_patient(code_patient):
     
-    
     contract = frappe.get_list("qp_md_Contract", filters = {"id_cliente": code_patient, "estado_contrato": "Activo"}, pluck = "id_contrato")
 
     if not contract:

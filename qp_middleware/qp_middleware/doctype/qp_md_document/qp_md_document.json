@@ -37,6 +37,8 @@
   "upload_id",
   "update_request",
   "update_response",
+  "items_request",
+  "items_response",
   "confirm_request",
   "confirm_response",
   "is_confirm"
@@ -235,11 +237,21 @@
    "fieldname": "document_confirm",
    "fieldtype": "Data",
    "label": "Document Confirm"
+  },
+  {
+   "fieldname": "items_request",
+   "fieldtype": "Long Text",
+   "label": "items_request"
+  },
+  {
+   "fieldname": "items_response",
+   "fieldtype": "Long Text",
+   "label": "items_response"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-11 16:39:53.264683",
+ "modified": "2023-10-12 11:56:43.432015",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Document",
