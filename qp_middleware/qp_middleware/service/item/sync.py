@@ -31,7 +31,7 @@ def handler():
         
         item = frappe.new_doc('Item')
         item.item_code = iter['No']
-        item.qp_item_code_2 = iter['No_2']
+        item.qp_item_code_2 = iter.get('No_2', None)
         item.qp_type = iter['Type']
         item.item_name = iter['Description']
         #item.item_group = frappe._(iter['Type'])
