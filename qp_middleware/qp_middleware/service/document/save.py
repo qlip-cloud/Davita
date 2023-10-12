@@ -230,9 +230,9 @@ def setup_item(item,item_code, item_code_2, quantity, line, type_code, document,
     
     if type_code == "G/L Account":
         
-        item.unit_price =  cuota_moderadora
+        item.unit_price =  cuota_moderadora * -1
         
-        item.line_amount = cuota_moderadora
+        item.line_amount = cuota_moderadora * -1
 
         item.quantity = 1
 
