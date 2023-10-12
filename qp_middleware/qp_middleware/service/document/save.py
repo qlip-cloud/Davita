@@ -57,14 +57,14 @@ def handler(upload_id):
             
             document.items.append(item)
 
-            if line["cuota_moderadora"] == "0":
+            if line["cuota_moderadora"] > 0:
 
                 line_no += 1000
 
                 item = frappe.new_doc("qp_md_DocumentItem")
 
                 setup_item(item, "28050501", "28050501", line["cantidad_a_facturar"],
-                           line_no, "G/L Account", document, document.patient_code, line["paquete_o_sesion"])
+                           line_no, "G/L Account", document, document.patient_code, line["paquete_o_sesion"], cuota_moderadora = line["cuota_moderadora"])
 
                 document.items.append(item)
 
@@ -210,7 +210,8 @@ def set_fecha_periodo(document):
     document.lhc_periodo_fin_fecha_fact =datetime.strftime( date_format + relativedelta(day=31), '%Y-%m-%d')
     
 
-def setup_item(item,item_code, item_code_2, quantity, line, type_code, document, patient_code, paquete_o_sesion, document_type = "Invoice", modality_code = "HD"):
+def setup_item(item,item_code, item_code_2, quantity, line, type_code, document, patient_code, paquete_o_sesion
+               ,document_type = "Invoice", modality_code = "HD", cuota_moderadora = 0):
 
     #item_code = "C4110" if item_code_2 == "399501" and paquete_o_sesion == "PAQUETE" else item_code_2
 
@@ -229,9 +230,9 @@ def setup_item(item,item_code, item_code_2, quantity, line, type_code, document,
     
     if type_code == "G/L Account":
         
-        item.unit_price = -200000
+        item.unit_price =  cuota_moderadora
         
-        item.line_amount = -200000
+        item.line_amount = cuota_moderadora
 
         item.quantity = 1
 
