@@ -2,24 +2,15 @@ import frappe
 import json
 import requests
 
-from qp_authorization.use_case.oauth2.authorize import get_token
+from frappe.utils import now
+from qp_middleware.qp_middleware.service.util.sync import get_response, persist
 
-URL = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/ItemList"
-
-payload = ""
+#URL = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/ItemList"
 
 @frappe.whitelist()
 def handler():
-    
-    token = get_token()
-    
-    headers = {
-        'Authorization': 'Bearer {}'.format(token)
-    }
 
-    response = requests.get(URL, headers=headers, data=payload)
-
-    response_json = json.loads(response.text)
+    response_json = get_response("list_product")
 
     item_code = tuple([ item["No"] for item in response_json["value"]])
 
@@ -27,22 +18,22 @@ def handler():
 
     new_items = list(filter(lambda x: x["No"] not in result and x['Description'], response_json["value"]))
     
+    values = []  
+
     for iter in new_items:
         
-        item = frappe.new_doc('Item')
-        item.item_code = iter['No']
-        item.qp_item_code_2 = iter.get('No_2', None)
-        item.qp_type = iter['Type']
-        item.item_name = iter['Description']
-        #item.item_group = frappe._(iter['Type'])
-        item.item_group = "Servicios"
-        #item.stock_uom = iter['Base_Unit_of_Measure']
-        item.stock_uom = "Nos"
-        item.insert()
-    #HAY Q AGREGAR LA UNIDAD DE MEDIDA!!!!!!!
-    #HAY Q AGREGAR lOS GRUPOS DE PRODUSTOS!!!!!!!
+        values.append((iter['No'], iter['No'], iter.get('No_2', None) ,iter['Type'], iter['Description'], "Servicios", "Nos",  now(), 'Administrator'))
+
     if new_items:
 
-        frappe.db.commit()
+        table = "tabItem"
 
-    return new_items
+        fields = "(name, item_code, qp_item_code_2, qp_type, item_name, item_group, stock_uom, creation, owner)"
+        
+        persist(table, fields, values)
+
+    return {
+        "status": 200,
+        "total": len(response_json["value"]),
+        "total_sync": len(new_items)
+    }

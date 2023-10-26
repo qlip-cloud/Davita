@@ -2,24 +2,15 @@ import frappe
 import json
 import requests
 
-from qp_authorization.use_case.oauth2.authorize import get_token
+from frappe.utils import now
+from qp_middleware.qp_middleware.service.util.sync import get_response, persist
 
-URL = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/ListadoPacientesDavita"
-
-payload = ""
+#URL = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/ListadoPacientesDavita"
 
 @frappe.whitelist()
 def handler():
-    
-    token = get_token()
-    
-    headers = {
-        'Authorization': 'Bearer {}'.format(token)
-    }
 
-    response = requests.get(URL, headers=headers, data=payload)
-
-    response_json = json.loads(response.text)
+    response_json = get_response("list_patient")
 
     patient_nit = tuple([ patient["numeroIdentificacion"] for patient in response_json["value"]])
 
@@ -27,6 +18,31 @@ def handler():
 
     new_patients = list(filter(lambda x: x["numeroIdentificacion"] not in result, response_json["value"]))
     
+    values = []  
+
+    for iter in new_patients:
+        
+        values.append((iter['numeroIdentificacion'], iter['tipoIdentificacion'], iter['numeroIdentificacion'],iter['primerNombre'], iter['segundoNombre'], iter['primerApellido'],
+                       iter['segundoApellido'], iter['numeroTelefonico'], iter['correoElectronico'],iter['idPlan'], iter['tipoUsuario'], now(), 'Administrator'))
+
+    if new_patients:
+
+        table = "tabqp_md_Patient"
+
+        fields = "(name, tipo_identificacion, numero_identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, numero_telefonico \
+                    ,correo_electronico, id_plan, tipo_usuario, creation, owner)"
+        
+        persist(table, fields, values)
+
+    return {
+        "status": 200,
+        "total": len(response_json["value"]),
+        "total_sync": len(new_patients)
+    }
+
+
+
+
     for iter in new_patients:
         
         patient = frappe.new_doc('qp_md_Patient')

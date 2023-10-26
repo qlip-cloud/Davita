@@ -1,25 +1,17 @@
 import frappe
-import json
-import requests
+from frappe.utils import now
+from qp_middleware.qp_middleware.service.util.sync import get_response, persist
 
-from qp_authorization.use_case.oauth2.authorize import get_token
 
-URL = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/Customers"
 
-payload = ""
+#URL = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/Customers"
+
+#payload = ""
 
 @frappe.whitelist()
 def handler():
-    
-    token = get_token()
 
-    headers = {
-        'Authorization': 'Bearer {}'.format(token)
-    }
-
-    response = requests.get(URL, headers=headers, data=payload)
-
-    response_json = json.loads(response.text)
+    response_json = get_response("list_customers")
 
     customer_nit = tuple([ customer["No"] for customer in response_json["value"]])
 
@@ -27,15 +19,24 @@ def handler():
 
     new_customers = list(filter(lambda x: x["No"] not in result and x['Name'], response_json["value"]))
     
+    values = []  
+
     for iter in new_customers:
         
-        customer = frappe.new_doc('Customer')
-        customer.customer_name = iter['Name']
-        customer.tax_id = iter['No']
-        customer.insert()
+        values.append((iter['No'], iter['Name'], iter['No'], now(), 'Administrator', 'Todas las categorías de clientes', 'Todos los territorios'))
 
     if new_customers:
 
-        frappe.db.commit()
+        table = "tabCustomer"
 
-    return new_customers
+        fields = "(name, customer_name, tax_id, creation, owner, customer_group, territory)"
+        
+        persist(table, fields, values)
+        
+
+    return {
+        "status": 200,
+        "total": len(response_json["value"]),
+        "total_sync": len(new_customers)
+    }
+

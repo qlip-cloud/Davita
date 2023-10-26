@@ -1,41 +1,41 @@
 import frappe
-import json
-import requests
+from frappe.utils import now
 
-from qp_authorization.use_case.oauth2.authorize import get_token
+from qp_middleware.qp_middleware.service.util.sync import get_response, persist
 
-URL = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/DimensionValues?$filter=Dimension_Code eq 'SEDE'"
+#URL = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/DimensionValues?$filter=Dimension_Code eq 'SEDE'"
 
-payload = ""
+#payload = ""
 
 @frappe.whitelist()
 def handler():
     
-    token = get_token()
-    
-    headers = {
-        'Authorization': 'Bearer {}'.format(token)
-    }
+    filters = "Dimension_Code eq 'SEDE'"
 
-    response = requests.get(URL, headers=headers, data=payload)
+    response_json = get_response("list_headquarter", filters)
 
-    response_json = json.loads(response.text)
-
-    headquarter_code = tuple([ headquarter["Code"] for headquarter in response_json["value"]])
+    headquarter_code = tuple([headquarter["Code"] for headquarter in response_json["value"]])
 
     result = frappe.get_list(doctype = "qp_md_headquarter",  filters = {"code": ["in", headquarter_code]}, pluck = 'code')
 
     new_headquarters = list(filter(lambda x: x["Code"] not in result and x['Name'], response_json["value"]))
-    
+
+    values = []  
+
     for iter in new_headquarters:
         
-        headquarter = frappe.new_doc('qp_md_headquarter')
-        headquarter.code = iter['Code']
-        headquarter.title = iter['Name']
-        headquarter.insert()
-    
+        values.append((iter['Code'], iter['Code'], iter['Name'], now(), 'Administrator'))
+
     if new_headquarters:
 
-        frappe.db.commit()
+        table = "tabqp_md_headquarter"
 
-    return new_headquarters
+        fields = "(name, code, title, creation, owner)"
+        
+        persist(table, fields, values)
+
+    return {
+        "status": 200,
+        "total": len(response_json["value"]),
+        "total_sync": len(new_headquarters)
+    }

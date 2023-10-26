@@ -6,6 +6,7 @@
  "engine": "InnoDB",
  "field_order": [
   "file",
+  "invoice_date",
   "invoice_total",
   "invoice_success",
   "invoice_error",
@@ -22,50 +23,66 @@
    "label": "Archivo"
   },
   {
+   "depends_on": "eval:doc.name != null;",
    "fieldname": "invoice_total",
    "fieldtype": "Int",
-   "label": "Total de Facturas"
+   "label": "Total de Facturas",
+   "set_only_once": 1
   },
   {
    "fieldname": "invoice_success",
    "fieldtype": "Int",
-   "label": "Facturas correctas"
+   "label": "Facturas correctas",
+   "set_only_once": 1
   },
   {
    "fieldname": "invoice_error",
    "fieldtype": "Int",
-   "label": "Facturas con errores"
+   "label": "Facturas con errores",
+   "set_only_once": 1
   },
   {
    "fieldname": "customer_count",
    "fieldtype": "Int",
-   "label": "Cantidad de Clientes"
+   "label": "Cantidad de Clientes",
+   "set_only_once": 1
   },
   {
    "fieldname": "item_count",
    "fieldtype": "Int",
-   "label": "Cantidad de Productos"
+   "label": "Cantidad de Productos",
+   "set_only_once": 1
   },
   {
    "fieldname": "send_success",
    "fieldtype": "Int",
-   "label": "Enviadas Correctas"
+   "label": "Enviadas Correctas",
+   "set_only_once": 1
   },
   {
    "fieldname": "send_error",
    "fieldtype": "Int",
-   "label": "Error en envios"
+   "label": "Error en envios",
+   "set_only_once": 1
   },
   {
    "default": "0",
    "fieldname": "is_valid",
    "fieldtype": "Check",
-   "label": "is_valid"
+   "label": "is_valid",
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "invoice_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Fecha de Facturacion",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-09 16:13:25.944226",
+ "modified": "2023-10-23 17:22:09.509867",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_upload_xlsx",

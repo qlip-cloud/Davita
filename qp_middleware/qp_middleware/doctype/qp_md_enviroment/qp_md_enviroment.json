@@ -1,0 +1,80 @@
+{
+ "actions": [],
+ "autoname": "fileld:title",
+ "creation": "2023-10-23 16:46:00.833469",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "url",
+  "company",
+  "proyect",
+  "protocol",
+  "version",
+  "id",
+  "title"
+ ],
+ "fields": [
+  {
+   "fieldname": "url",
+   "fieldtype": "Data",
+   "label": "url"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "label": "company"
+  },
+  {
+   "fieldname": "proyect",
+   "fieldtype": "Data",
+   "label": "proyect"
+  },
+  {
+   "fieldname": "protocol",
+   "fieldtype": "Select",
+   "label": "Protocol",
+   "options": "ODataV4"
+  },
+  {
+   "fieldname": "version",
+   "fieldtype": "Select",
+   "label": "version",
+   "options": "v2.0"
+  },
+  {
+   "fieldname": "id",
+   "fieldtype": "Data",
+   "label": "id"
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "title"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-10-23 16:48:53.049533",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_Enviroment",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

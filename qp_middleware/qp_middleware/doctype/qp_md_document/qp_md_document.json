@@ -28,6 +28,12 @@
   "lhc_documento",
   "lhc_tipo_operacion_davita",
   "lhc_tipo_factura_doc",
+  "lhc_mipres",
+  "lhc_id_mipres",
+  "lhc_no_poliza",
+  "currency_code",
+  "responsibility_center",
+  "work_description",
   "items",
   "is_valid",
   "error",
@@ -77,6 +83,8 @@
   {
    "fieldname": "document_code",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Document Code"
   },
   {
@@ -247,11 +255,41 @@
    "fieldname": "items_response",
    "fieldtype": "Long Text",
    "label": "items_response"
+  },
+  {
+   "fieldname": "lhc_mipres",
+   "fieldtype": "Data",
+   "label": "LHC MIPRES"
+  },
+  {
+   "fieldname": "lhc_id_mipres",
+   "fieldtype": "Data",
+   "label": "LHC ID MIPRES"
+  },
+  {
+   "fieldname": "lhc_no_poliza",
+   "fieldtype": "Data",
+   "label": "LHC No Poliza"
+  },
+  {
+   "fieldname": "currency_code",
+   "fieldtype": "Data",
+   "label": "Currency Code"
+  },
+  {
+   "fieldname": "responsibility_center",
+   "fieldtype": "Data",
+   "label": "Responsibility Center"
+  },
+  {
+   "fieldname": "work_description",
+   "fieldtype": "Data",
+   "label": "Work Description"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-12 11:56:43.432015",
+ "modified": "2023-10-18 11:43:09.702093",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Document",

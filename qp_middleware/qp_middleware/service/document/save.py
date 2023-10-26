@@ -9,9 +9,10 @@ from dateutil.relativedelta import relativedelta
 
 
 @frappe.whitelist()
-def handler(upload_id):
-        
-    lines = frappe.get_list("qp_md_invoice_sync", filters = {"upload_id": upload_id}, fields = ["*"])
+def handler(upload_xlsx):
+    
+    lines = frappe.get_list("qp_md_invoice_sync", filters = {"upload_id": upload_xlsx.name}, fields = ["*"])
+
     #lines = frappe.get_list("qp_md_invoice_test", filters = {"upload_id": upload_id}, fields = ["*"])
     
     documents_code = set(map(lambda x: x["group_code"], lines))
@@ -28,15 +29,34 @@ def handler(upload_id):
 
     for lines_iter in group_lines:
         
-        document = setup_document(lines_iter, upload_id)
+        document = setup_document(lines_iter, upload_xlsx)
         
         line_no = 1000
 
         document.items = []
 
         for line in lines_iter:
+            
+            item_code_2 = line["codigo_procedimiento_facturacion"]
 
-            item_code = frappe.get_list("Item", filters = {"qp_item_code_2": line["codigo_procedimiento_facturacion"] }, fields = ["item_code"])
+            item_code = ""
+
+            if item_code_2 == "399501":
+
+                if line["tipo_servicio"] == "HD PAQUETE":
+
+                    item_code = "IG01002"
+                    item_code_2 = "C40111"
+                
+                elif line["tipo_servicio"] == "HD SESSION":
+
+                    item_code = "IG01001"
+
+            else:
+
+                item_code = frappe.get_list("Item", filters = {"qp_item_code_2": item_code_2 }, fields = ["item_code"])
+
+                item_code = item_code[0]["item_code"] if item_code else ""
 
             if not item_code:
 
@@ -44,16 +64,14 @@ def handler(upload_id):
                     
                     document.is_valid = False
                 
-                document.error += "Producto {} no existe".format(line["codigo_procedimiento_facturacion"])
-
-            item_code = item_code[0]["item_code"] if item_code else ""
+                document.error += "Producto {} no existe".format(item_code_2)
 
             item_type = "Item"
 
             item = frappe.new_doc("qp_md_DocumentItem")
 
-            setup_item(item,item_code, line["codigo_procedimiento_facturacion"], line["cantidad_a_facturar"], 
-                    line_no, item_type, document, document.patient_code, line["paquete_o_sesion"])
+            setup_item(item,item_code, item_code_2, line["cantidad_a_facturar"], 
+                    line_no, item_type, document, document.patient_code)
             
             document.items.append(item)
 
@@ -64,7 +82,7 @@ def handler(upload_id):
                 item = frappe.new_doc("qp_md_DocumentItem")
 
                 setup_item(item, "28050501", "28050501", line["cantidad_a_facturar"],
-                           line_no, "G/L Account", document, document.patient_code, line["paquete_o_sesion"], cuota_moderadora = line["cuota_moderadora"])
+                           line_no, "G/L Account", document, document.patient_code, cuota_moderadora = line["cuota_moderadora"])
 
                 document.items.append(item)
 
@@ -96,7 +114,7 @@ def handler(upload_id):
         'is_valid': is_valid
     }
 
-def setup_document(lines_iter, upload_id):
+def setup_document(lines_iter, upload_xlsx):
 
     code_customer, error_customer, msg_error_customer = get_nit_customer(lines_iter)
         
@@ -105,7 +123,6 @@ def setup_document(lines_iter, upload_id):
     code_patient, error_patient, msg_error_patient = get_nit_patient(lines_iter)
 
     code_contrat_patient, error_contrat_patient, msg_error_contrat_patient = get_contract_patient(code_patient)
-
 
     code_cuota_moderadora, error_cuota_moderadora, msg_error_cuota_moderadora = get_cuota_moderadora(lines_iter)
 
@@ -119,7 +136,7 @@ def setup_document(lines_iter, upload_id):
 
     document.headquarter_code = code_dimension
 
-    document.posting_date = today()
+    document.posting_date = upload_xlsx.invoice_date
 
     document.lhc_contrato = code_contrat_patient
 
@@ -135,11 +152,23 @@ def setup_document(lines_iter, upload_id):
 
     document.lhc_tipo_factura_doc = "Estándar"
 
+    document.lhc_mipres = ""
+
+    document.lhc_id_mipres = ""
+
+    document.lhc_no_poliza = ""
+
+    document.currency_code = ""
+    
+    document.responsibility_center = code_dimension
+
+    document.work_description = ""
+
     document.vat_registration_no = code_customer
 
     document.patient_code = code_patient
 
-    document.upload_id = upload_id
+    document.upload_id = upload_xlsx.name
 
     set_fecha_periodo(document)
 
@@ -209,10 +238,8 @@ def set_fecha_periodo(document):
     document.lhc_periodo_fin_fecha_fact =datetime.strftime( date_format + relativedelta(day=31), '%Y-%m-%d')
     
 
-def setup_item(item,item_code, item_code_2, quantity, line, type_code, document, patient_code, paquete_o_sesion
+def setup_item(item,item_code, item_code_2, quantity, line, type_code, document, patient_code
                ,document_type = "Invoice", modality_code = "HD", cuota_moderadora = 0):
-
-    #item_code = "C4110" if item_code_2 == "399501" and paquete_o_sesion == "PAQUETE" else item_code_2
 
     item.item_code  = item_code
     item.item_code2  = item_code_2
@@ -241,18 +268,23 @@ def setup_item(item,item_code, item_code_2, quantity, line, type_code, document,
 
 def get_nit_customer(lines_iter):
 
-    #document_code = list(set(map(lambda x: "{}-{}".format(x["nit"],x["regimen"][0]) , lines_iter)))
     document_code = list(set(map(lambda x: x["nit"] , lines_iter)))
 
     if len(document_code) > 1:
 
         return document_code[0], True, "Clientes diferentes para la misma factura: {}\n".format(document_code)
     
-    if not frappe.db.exists("Customer", {"tax_id": document_code[0] }):
+    line = list(filter(lambda x: x["nit"] == document_code[0], lines_iter))
+    
+    document_code_complete = "{}-{}".format(document_code[0],line[0]["regimen"][0])
+
+    tax_id = frappe.db.get_list("Customer", {"tax_id": ["in", (document_code[0], document_code_complete)]}, 'tax_id')
+
+    if not tax_id:
 
         return document_code[0], True, "Clientes {} No existe \n".format(document_code[0])
 
-    return document_code[0], False, ""
+    return tax_id[0]['tax_id'], False, ""
 
 def get_code_dimension(lines_iter):
 

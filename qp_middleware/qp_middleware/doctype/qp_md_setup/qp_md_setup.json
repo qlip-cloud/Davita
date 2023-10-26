@@ -6,7 +6,9 @@
  "engine": "InnoDB",
  "field_order": [
   "wait_time",
-  "number_request"
+  "number_request",
+  "invoices_group",
+  "enviroment"
  ],
  "fields": [
   {
@@ -20,12 +22,23 @@
    "fieldname": "number_request",
    "fieldtype": "Int",
    "label": "Cantidad de peticiones"
+  },
+  {
+   "fieldname": "enviroment",
+   "fieldtype": "Link",
+   "label": "Enviroment",
+   "options": "qp_md_Enviroment"
+  },
+  {
+   "fieldname": "invoices_group",
+   "fieldtype": "Int",
+   "label": "Grupo de Facturas"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-10-05 11:06:08.185946",
+ "modified": "2023-10-25 13:34:32.952310",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Setup",

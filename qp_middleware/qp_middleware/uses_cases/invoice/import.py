@@ -15,17 +15,21 @@ def handler(upload_xlsx, method):
 
     save_row(rows, upload_xlsx.name)
 
-    customer_sync()
+    setup = frappe.get_doc("qp_md_Setup")
 
-    product_sync()
+    enviroment = frappe.get_doc("qp_md_Enviroment", setup.enviroment)
 
-    patient_sync()
+    #customer_sync(enviroment)
 
-    headquarter_sync()
+    #product_sync(enviroment)
 
-    contract_sync()
+    #patient_sync(enviroment)
 
-    result = document_save(upload_xlsx.name)
+    #headquarter_sync(enviroment)
+
+    #contract_sync(enviroment)
+
+    result = document_save(upload_xlsx)
 
     upload_xlsx.invoice_total = result["invoice_total"]
     upload_xlsx.invoice_success = result["invoice_success"]
@@ -36,7 +40,7 @@ def handler(upload_xlsx, method):
 
     if upload_xlsx.is_valid:
     
-        result = document_sync(upload_xlsx)
+        result = document_sync(upload_xlsx, setup, enviroment)
         
         upload_xlsx.send_success = result["send_success"]
     

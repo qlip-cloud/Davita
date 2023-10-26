@@ -5,71 +5,87 @@ import json
 from datetime import datetime
 import requests
 import threading
+import xmltodict
+import math
 
-def handler(upload_xlsx):
-
+def handler(upload_xlsx, setup, enviroment):
 
     document_names = frappe.get_list("qp_md_Document", {"upload_id": upload_xlsx.name})
 
     documents = []
 
+    payloads = []
+
     for document_name in document_names:
 
         document = frappe.get_doc("qp_md_Document", document_name)
 
-        document.request = get_header_payload(document)
+        payload = get_payload(document)
+
+        document.request = json.dumps(payload)
 
         documents.append(document)
-    
-    setup = frappe.get_doc("qp_md_Setup")
+
+        payloads.append(payload)
 
     token = get_token()
 
-    send_request(documents, setup, send_header, token)
+    endpoint = frappe.get_doc("qp_md_Endpoint", "create_document")
 
-    for document in documents:
+    url = enviroment.get_url_ws_protocol(endpoint.url)
 
-        if document.is_complete:
+    #url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/WS/DAVITA/Codeunit/RegistrarFacturasVentaWS"
+
+    #send_request(documents, setup, send_document, token, url)
+    
+    range_total = math.ceil(len(payloads) / setup.invoices_group)
+
+    response_list = []
+
+    for n in range(range_total):
+
+        response, response_json, error = send_document(payloads[n * setup.invoices_group : (n+1) * setup.invoices_group], token, url)
         
-            document.update_request = get_update_header_payload(document)
+        try:
             
-            document.items_request = get_items_payload(document)
-
-            #for item in document.items:
-                
-            #    item.document_code = document.document_code
-
-            #    item.request = get_items_payload(item)
-
-    token = get_token()
-
-    send_request(documents,setup, send_update_header, token)
-
-    token = get_token()
-
-    send_request(documents,setup, send_items, token)
-    
-    
-    
-    #for document in documents:
+            return_value = response_json["Soap:Envelope"]["Soap:Body"]["RegistrarFacturasVentaWS_Result"]["return_value"]
+            
+            list_split = return_value.split(";")
         
-    #    if document.is_complete:
-            
-    #        send_request(document.items, setup, send_item, token)
-    
+            del list_split[-1]
+
+            list_split = list(map(lambda x: x.replace(" ", ""), list_split))
+
+            response_list += list_split
+        
+        except:
+
+            pass      
+        
+
     is_complete = 0
 
-    for document in documents:
+    print(response_list)
+    for key, document in enumerate(documents):
 
-        #list_complete = set(list(map(lambda x: x.is_complete, document.items)))
+        try:
 
-        #if False in list_complete:
+            document.document_code = int(response_list[key])
 
-        #    document.is_complete = False
-
-        if document.is_complete:
+            document.is_complete = True
 
             is_complete +=1
+
+        except:
+
+            document.response = response_list[key] if response_list and response_list[key] else response
+
+        #if response_list[key] != "Error" and response_list[key] != "":
+            
+        #document.is_complete = True
+
+        #document.document_code = response_list[key]
+
 
         document.save()
 
@@ -80,11 +96,12 @@ def handler(upload_xlsx):
         "send_error": len(documents) - is_complete
     }
 
-def callback(document,threads, setup, target, token):
+
+def callback(document,threads, setup, target, token, url):
 
     if threading.active_count() <= setup.number_request:
         
-        t = threading.Thread(target=target, args=(document, token))
+        t = threading.Thread(target=target, args=(document, token, url))
 
         threads.append(t)
 
@@ -94,49 +111,40 @@ def callback(document,threads, setup, target, token):
         
         time.sleep(setup.wait_time)
 
-        callback(document,threads, setup, target, token)
+        callback(document,threads, setup, target, token, url)
 
-def send_request(documents, setup, target, token):
+def send_request(documents, setup, target, token, url):
 
-    setup = frappe.get_doc("qp_md_Setup")
+    #setup = frappe.get_doc("qp_md_Setup")
 
     threads = list()
 
     for document in documents:
         
-        callback(document,threads, setup, target, token)
+        callback(document,threads, setup, target, token, url)
     
     for t in threads:
         
         t.join()
 
-def send_update_header(document, token):
+def send_document(payload, token, url):
 
-    if document.is_complete:
+    payload_xml = """<?xml version="1.0" encoding="utf-8"?><soap:Envelope  xmlns:nav="urn:microsoft-dynamics-schemas/codeunit/RegistrarFacturasVentaWS" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><nav:RegistrarFacturasVentaWS><nav:factura>{}</nav:factura></nav:RegistrarFacturasVentaWS></soap:Body></soap:Envelope>""".format(json.dumps(payload))
     
-        url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company('DAVITA')/SalesInvoice('Invoice', '{}')".format(document.document_code)
-        
-        add_header = {
-            'If-Match': '*'
-        }
-        
-        response, response_json, error = send_petition(token, url, document.update_request, "PATCH", add_header)
-
-        document.update_response = response
-
-        if error and document.is_complete:
-            
-            document.is_complete = False
-
-def send_header(document, token):
-
-    URL_HEADER = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/api/v2.0/companies(798ec2fe-ddfe-ed11-8f6e-6045bd3980fd)/salesInvoices"
+    payload_xml = payload_xml.replace("'","")
     
-    response, response_json, error = send_petition(token, URL_HEADER, document.request)
+    #URL_HEADER = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/api/v2.0/companies(798ec2fe-ddfe-ed11-8f6e-6045bd3980fd)/salesInvoices"
+    
+    add_header = {
+        "SOAPAction": "#POST"
+    }
 
-    document.response = response
+    response, response_json, error = send_petition(token, url, payload_xml, add_header = add_header, is_json= False)
+    
+    return response, response_json, error
+    #document.response = response
 
-    if not error:
+    """if not error:
         
         document.document_code = response_json["number"]
 
@@ -144,59 +152,18 @@ def send_header(document, token):
 
     elif(document.is_complete):
         
-        document.is_complete = False
+        document.is_complete = False"""
 
-def send_items(document, token):
+def get_payload(document):
 
-    if document.is_complete:
+    customer_nit = document.customer_code.split("-")
 
-        URL_LINE = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/$batch"
-        
-        response, response_json, error = send_petition(token, URL_LINE, document.items_request)
-
-        document.items_response = response
-
-        if error and document.is_complete:
-                
-            document.is_complete = False
-
-def send_item(item, token):
-
-    URL_LINE = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/SalesInvoiceLine"
-    
-    response, response_json, error = send_petition(token, URL_LINE, item.request)
-
-    item.response = response
-        
-    item.is_complete = False if error else True
-
-    
-
-def get_header_payload(document):
-
-    return json.dumps({
-        "externalDocumentNumber": "API_Ex con dimensiones",
+    return {
+        #"externalDocumentNumber": "API_Ex con dimensiones",
         "invoiceDate": datetime.strftime(document.posting_date, "%Y-%m-%d"),
         "postingDate": datetime.strftime(document.posting_date, "%Y-%m-%d"),
         "customerNumber": document.customer_code,
-        "shortcutDimension1Code": document.customer_code,
-        "shortcutDimension2Code": document.headquarter_code,   
-        "dimensionSetLines": [
-            {            
-                "code": "MODALIDADES",            
-                "valueCode": "AG"           
-            },
-            {       
-                "code": "PACIENTE",            
-                "valueCode": document.patient_code         
-            }
-        ]
-    })
-
-def get_update_header_payload(document):
-
-    return json.dumps({   
-        #"LHCPuntodefacturacion": document.lhc_punto_de_facturacion,
+        "LHCPuntodefacturacion": document.lhc_punto_de_facturacion,
         "LHCContrato": document.lhc_contrato or "",
         "LHCCuotaModeradora": int(document.lhc_cuota_moderadora),
         "LHCCopago": int(document.lhc_copago),
@@ -210,93 +177,73 @@ def get_update_header_payload(document):
         "LHCConsecutivoInterno": document.lhc_consecutivo_interno,
         "LHCDocumento": document.lhc_documento,
         "LHCTipoOperacion": document.lhc_tipo_operacion_davita,
-        "LHCTipoFacturaDoc": document.lhc_tipo_factura_doc
-    })
+        "LHCTipoFacturaDoc": document.lhc_tipo_factura_doc,
+        "LHCMIPRES": document.lhc_mipres,
+        "LHCIDMIPRES": document.lhc_id_mipres,
+        "LHCNoPoliza": document.lhc_no_poliza,
+        "CurrencyCode": document.currency_code,
+        "ResponsibilityCenter": document.responsibility_center,
+        "WorkDescription": document.work_description,
+        "dimensionSetLines": [
+             {            
+                "code": "TERCERO",            
+                "valueCode": customer_nit[0]    
+            },
+            {            
+                "code": "SEDE",            
+                "valueCode": document.headquarter_code          
+            },
+            {            
+                "code": "MODALIDAD",            
+                "valueCode": "OP101"           
+            },
+            {       
+                "code": "PACIENTE",            
+                "valueCode": document.patient_code         
+            },
+            {      
+                "code": "LIBRO",            
+                "valueCode": "NCIF"        
+            }
+        ],
+
+        "SalesInvoiceLine": get_items_payload(document)
+
+    }
+
+    
 
 def get_items_payload(document):
 
     requests = []
     
     for key, item in enumerate(sorted(document.items, key=lambda x: x.line)):
-        
-        item.document_code = document.document_code
-        
-        base = {
-            "method": "POST",
-            "id": str(key),
-            "url":"Company('DAVITA')/SalesInvoiceLine",
-            "headers":{
-                "content-Type":"application/json;EEE754Compatible=true",
-                "If-Match":"*"
-            }
-        }
-
-        item_body = {
+    
+        request = {
             "Document_Type": "Invoice",
-            "Document_No": item.document_code,
             "Line_No": item.line,
             "Type": item.type_code,
-            "FilteredTypeField": item.type_code,
             "No": item.item_code,
             "Quantity": int(item.quantity),            
-            "Shortcut_Dimension_1_Code": item.customer_code,
-            "Shortcut_Dimension_2_Code": item.headquarter_code,
-            "ShortcutDimCode3": "",
-            "ShortcutDimCode4": "",
-            "ShortcutDimCode5": item.patient_code,
-            "ShortcutDimCode6": item.modality_code,
-            "ShortcutDimCode7": "",
-            "ShortcutDimCode8": ""
+            "Unit_of_Measure_Code": "UND",
+            "Unit_Price": 0
         }
 
         if item.type_code == "G/L Account":
 
-            item_body.update({    
+            request.update({    
                 "Unit_Price": float(item.unit_price),
                 "Line_Amount": float(item.line_amount)
             })
+
+        requests.append(request)
         
-        base.update({"body": item_body})
+    return requests
 
-        requests.append(base)
-
-    return json.dumps({
-            "requests":requests
-        })
-
-def get_item_payload(item):
-    
-    request = {
-        "Document_Type": "Invoice",
-        "Document_No": item.document_code,
-        "Line_No": item.line,
-        "Type": item.type_code,
-        "FilteredTypeField": item.type_code,
-        "No": item.item_code,
-        "Quantity": int(item.quantity),            
-        "Shortcut_Dimension_1_Code": item.customer_code,
-        "Shortcut_Dimension_2_Code": item.headquarter_code,
-        "ShortcutDimCode3": "",
-        "ShortcutDimCode4": "",
-        "ShortcutDimCode5": item.patient_code,
-        "ShortcutDimCode6": item.modality_code,
-        "ShortcutDimCode7": "",
-        "ShortcutDimCode8": ""
-    }
-
-    if item.type_code == "G/L Account":
-
-        request.update({    
-            "Unit_Price": float(item.unit_price),
-            "Line_Amount": float(item.line_amount)
-        })
-    
-    return json.dumps(request)
-
-def send_petition(token, url, payload, method = "POST", add_header = None):
+def send_petition(token, url, payload, method = "POST", add_header = None, is_json = True):
     
     headers = {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json' if is_json else "application/xml",
         'Authorization': 'Bearer {}'.format(token)
     }
 
@@ -306,7 +253,7 @@ def send_petition(token, url, payload, method = "POST", add_header = None):
 
     response = requests.request(method, url, headers=headers, data=payload)
 
-    response_json = json.loads(response.text)
+    response_json = json.loads(response.text) if is_json else xmltodict.parse(response.text)
 
     return response.text, response_json, "error" in response_json
 
