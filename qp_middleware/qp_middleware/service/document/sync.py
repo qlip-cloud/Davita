@@ -184,6 +184,7 @@ def get_payload(document):
         "CurrencyCode": document.currency_code,
         "ResponsibilityCenter": document.responsibility_center,
         "WorkDescription": document.work_description,
+        "ExternalDocumentNo": document.name,
         "dimensionSetLines": [
              {            
                 "code": "TERCERO",            
