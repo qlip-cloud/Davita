@@ -162,6 +162,8 @@ def setup_document(lines_iter, upload_xlsx):
     
     document.responsibility_center = code_dimension
 
+    document.lhc_numero_orden_compra = ""
+
     document.work_description = ""
 
     document.vat_registration_no = code_customer
@@ -268,11 +270,13 @@ def setup_item(item,item_code, item_code_2, quantity, line, type_code, document,
 
 def get_nit_customer(lines_iter):
 
-    document_code = list(set(map(lambda x: x["nit"] , lines_iter)))
+    document_set = list(set(map(lambda x: x["nit"] , lines_iter)))
 
-    if len(document_code) > 1:
+    if len(document_set) > 1:
 
-        return document_code[0], True, "Clientes diferentes para la misma factura: {}\n".format(document_code)
+        return document_set[0], True, "Clientes diferentes para la misma factura: {}\n".format(document_set)
+    
+    document_code = document_set[0].split("_")
     
     line = list(filter(lambda x: x["nit"] == document_code[0], lines_iter))
     
