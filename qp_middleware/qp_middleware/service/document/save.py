@@ -122,7 +122,7 @@ def setup_document(lines_iter, upload_xlsx):
 
     code_patient, error_patient, msg_error_patient = get_nit_patient(lines_iter)
 
-    code_contrat_patient, error_contrat_patient, msg_error_contrat_patient = get_contract_patient(code_patient)
+    code_contrat_patient, error_contrat_patient, msg_error_contrat_patient = get_contract_customer(code_customer)
 
     code_cuota_moderadora, error_cuota_moderadora, msg_error_cuota_moderadora = get_cuota_moderadora(lines_iter)
 
@@ -182,13 +182,13 @@ def setup_document(lines_iter, upload_xlsx):
 
     return document
 
-def get_contract_patient(code_patient):
+def get_contract_customer(code_customer):
     
-    contract = frappe.get_list("qp_md_Contract", filters = {"id_cliente": code_patient, "estado_contrato": "Activo"}, pluck = "id_contrato")
+    contract = frappe.get_list("qp_md_Contract", filters = {"id_cliente": code_customer, "estado_contrato": "Activo"}, pluck = "id_contrato")
 
     if not contract:
 
-        return "", True, "Paciente {} No posee un contrato activo\n".format(code_patient)
+        return "", True, "Cliente {} No posee un contrato activo\n".format(code_customer)
     
     return contract[0], False, ""
 
