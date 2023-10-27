@@ -178,7 +178,6 @@
    "label": "LHC Numero Contacto"
   },
   {
-   "default": "0",
    "fieldname": "lhc_numero_orden_compra",
    "fieldtype": "Data",
    "label": "LHC Numero Orden Compra"
@@ -289,7 +288,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-18 11:43:09.702093",
+ "modified": "2023-10-27 15:21:27.938599",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Document",
