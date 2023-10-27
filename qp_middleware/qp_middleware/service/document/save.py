@@ -7,6 +7,13 @@ import requests
 
 from dateutil.relativedelta import relativedelta
 
+COD = ["JF-", "EJC", "PL1"]
+
+LIMIT = {
+    "JF-": 3,
+    "EJC": 3,
+    "PL1": 2
+}
 
 @frappe.whitelist()
 def handler(upload_xlsx):
@@ -139,6 +146,10 @@ def setup_document(lines_iter, upload_xlsx):
     document.posting_date = upload_xlsx.invoice_date
 
     document.lhc_contrato = code_contrat_patient
+    
+    document.invoice_value = lines_iter[0]["vr_a_facturar"]
+
+    document.cod_empresa = lines_iter[0]["cod_empresa"]
 
     document.lhc_cuota_moderadora = code_cuota_moderadora if code_cuota_moderadora and code_cuota_moderadora != '0' else 0
 
@@ -162,7 +173,7 @@ def setup_document(lines_iter, upload_xlsx):
     
     document.responsibility_center = code_dimension
 
-    document.lhc_numero_orden_compra = ""
+    document.lhc_numero_orden_compra = get_orden_compra(document.cod_empresa)
 
     document.work_description = ""
 
@@ -184,13 +195,32 @@ def setup_document(lines_iter, upload_xlsx):
 
     return document
 
+def get_orden_compra(cod_empresa):
+
+    if not cod_empresa:
+
+        return ""
+    
+    cod_base = cod_empresa[0:3]
+
+    if cod_base not in COD:
+        
+        return ""
+    
+    cod_part = cod_empresa[LIMIT[cod_base]:]
+
+    cod_split = cod_part.split("-")
+
+    return cod_split[0]
+
+
 def get_contract_customer(code_customer):
     
     contract = frappe.get_list("qp_md_Contract", filters = {"id_cliente": code_customer, "estado_contrato": "Activo"}, pluck = "id_contrato")
 
     if not contract:
 
-        return "", True, "Cliente {} No posee un contrato activo\n".format(code_customer)
+        return "", False, "Cliente {} No posee un contrato activo\n".format(code_customer)
     
     return contract[0], False, ""
 
@@ -264,6 +294,10 @@ def setup_item(item,item_code, item_code_2, quantity, line, type_code, document,
 
         item.quantity = 1
 
+    else:
+        
+        item.unit_price =  0 if document.lhc_contrato else document.invoice_value
+
     #item.document_code = None
 
 
@@ -278,7 +312,7 @@ def get_nit_customer(lines_iter):
     
     document_code = document_set[0].split("_")
     
-    line = list(filter(lambda x: x["nit"] == document_code[0], lines_iter))
+    line = list(filter(lambda x: x["nit"] == document_set[0], lines_iter))
     
     document_code_complete = "{}-{}".format(document_code[0],line[0]["regimen"][0])
 

@@ -45,6 +45,8 @@
   {
    "fieldname": "id_cliente",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "idCliente"
   },
   {
@@ -100,7 +102,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-27 14:06:53.500312",
+ "modified": "2023-10-27 17:52:08.325510",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Contract",

@@ -227,13 +227,12 @@ def get_items_payload(document):
             "No": item.item_code,
             "Quantity": int(item.quantity),            
             "Unit_of_Measure_Code": "UND",
-            "Unit_Price": 0
+            "Unit_Price": float(item.unit_price)
         }
 
         if item.type_code == "G/L Account":
 
             request.update({    
-                "Unit_Price": float(item.unit_price),
                 "Line_Amount": float(item.line_amount)
             })
 

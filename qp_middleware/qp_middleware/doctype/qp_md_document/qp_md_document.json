@@ -12,6 +12,8 @@
   "posting_date",
   "headquarter_code",
   "patient_code",
+  "invoice_value",
+  "cod_empresa",
   "lhc_punto_de_facturacion",
   "vat_registration_no",
   "lhc_contrato",
@@ -284,11 +286,21 @@
    "fieldname": "work_description",
    "fieldtype": "Data",
    "label": "Work Description"
+  },
+  {
+   "fieldname": "invoice_value",
+   "fieldtype": "Float",
+   "label": "invoice_value"
+  },
+  {
+   "fieldname": "cod_empresa",
+   "fieldtype": "Data",
+   "label": "cod_empresa"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-27 15:21:27.938599",
+ "modified": "2023-10-27 17:19:46.408902",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Document",
