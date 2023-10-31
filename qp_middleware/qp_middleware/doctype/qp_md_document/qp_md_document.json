@@ -49,7 +49,8 @@
   "items_response",
   "confirm_request",
   "confirm_response",
-  "is_confirm"
+  "is_confirm",
+  "group_code"
  ],
  "fields": [
   {
@@ -296,11 +297,16 @@
    "fieldname": "cod_empresa",
    "fieldtype": "Data",
    "label": "cod_empresa"
+  },
+  {
+   "fieldname": "group_code",
+   "fieldtype": "Data",
+   "label": "group_code"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-27 17:19:46.408902",
+ "modified": "2023-10-31 14:51:58.236134",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Document",

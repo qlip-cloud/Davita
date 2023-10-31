@@ -48,16 +48,31 @@ def handler(upload_xlsx):
 
             item_code = ""
 
+            quantity = 1
+
+            invoice_value = 0 if document.lhc_contrato else float(document.invoice_value)
+            
+            quantity = float(line["cantidad_corregida"])
+
+            unit_price = invoice_value / quantity
+
             if item_code_2 == "399501":
 
                 if line["tipo_servicio"] == "HD PAQUETE":
 
                     item_code = "IG01002"
-                    item_code_2 = "C40111"
-                
-                elif line["tipo_servicio"] == "HD SESSION":
 
-                    item_code = "IG01001"
+                    item_code_2 = "C40111"
+
+                    quantity = 1
+                    
+                    unit_price = 0
+
+                else:
+                    
+                    if line["tipo_servicio"] == "HD SESSION":
+
+                        item_code = "IG01001"
 
             else:
 
@@ -77,8 +92,8 @@ def handler(upload_xlsx):
 
             item = frappe.new_doc("qp_md_DocumentItem")
 
-            setup_item(item,item_code, item_code_2, line["cantidad_a_facturar"], 
-                    line_no, item_type, document, document.patient_code)
+            setup_item(item,item_code, item_code_2, quantity, line_no,
+                    unit_price, item_type, document, document.patient_code)
             
             document.items.append(item)
 
@@ -88,8 +103,12 @@ def handler(upload_xlsx):
 
                 item = frappe.new_doc("qp_md_DocumentItem")
 
-                setup_item(item, "28050501", "28050501", line["cantidad_a_facturar"],
-                           line_no, "G/L Account", document, document.patient_code, cuota_moderadora = line["cuota_moderadora"])
+                unit_price =  line["cuota_moderadora"] * -1
+        
+                quantity = 1
+
+                setup_item(item, "28050501", "28050501", quantity, line_no,
+                           unit_price, "G/L Account", document, document.patient_code)
 
                 document.items.append(item)
 
@@ -147,7 +166,7 @@ def setup_document(lines_iter, upload_xlsx):
 
     document.lhc_contrato = code_contrat_patient
     
-    document.invoice_value = lines_iter[0]["vr_a_facturar"]
+    document.invoice_value = lines_iter[0]["vr_a_facturar"] 
 
     document.cod_empresa = lines_iter[0]["cod_empresa"]
 
@@ -182,6 +201,8 @@ def setup_document(lines_iter, upload_xlsx):
     document.patient_code = code_patient
 
     document.upload_id = upload_xlsx.name
+    
+    document.group_code = lines_iter[0]["group_code"] 
 
     set_fecha_periodo(document)
 
@@ -270,13 +291,13 @@ def set_fecha_periodo(document):
     document.lhc_periodo_fin_fecha_fact =datetime.strftime( date_format + relativedelta(day=31), '%Y-%m-%d')
     
 
-def setup_item(item,item_code, item_code_2, quantity, line, type_code, document, patient_code
-               ,document_type = "Invoice", modality_code = "HD", cuota_moderadora = 0):
+def setup_item(item,item_code, item_code_2, quantity, line_no, unit_price, type_code, document, patient_code
+               ,document_type = "Invoice", modality_code = "HD"):
 
     item.item_code  = item_code
     item.item_code2  = item_code_2
     item.quantity = quantity
-    item.line = line
+    item.line = line_no
     item.type_code = type_code
     item.filtered_type_field = type_code
     item.customer_code = document.customer_code
@@ -285,21 +306,11 @@ def setup_item(item,item_code, item_code_2, quantity, line, type_code, document,
     item.document_type = document_type
     item.modality_code = modality_code
     item.parentfield = "items"
-    
+    item.unit_price =  unit_price
+
     if type_code == "G/L Account":
         
-        item.unit_price =  cuota_moderadora * -1
-        
-        item.line_amount = cuota_moderadora * -1
-
-        item.quantity = 1
-
-    else:
-        
-        item.unit_price =  0 if document.lhc_contrato else document.invoice_value
-
-    #item.document_code = None
-
+        item.line_amount = unit_price
 
 
 def get_nit_customer(lines_iter):

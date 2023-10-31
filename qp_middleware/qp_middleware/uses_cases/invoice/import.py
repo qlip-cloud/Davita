@@ -1,9 +1,4 @@
 import frappe
-from qp_middleware.qp_middleware.service.customer.sync import handler as customer_sync
-from qp_middleware.qp_middleware.service.item.sync import handler as product_sync
-from qp_middleware.qp_middleware.service.patient.sync import handler as patient_sync
-from qp_middleware.qp_middleware.service.headquarter.sync import handler as headquarter_sync
-from qp_middleware.qp_middleware.service.contract.sync import handler as contract_sync
 from qp_middleware.qp_middleware.service.document.save import handler as document_save
 from qp_middleware.qp_middleware.service.document.sync import handler as document_sync
 
@@ -18,16 +13,6 @@ def handler(upload_xlsx, method):
     setup = frappe.get_doc("qp_md_Setup")
 
     enviroment = frappe.get_doc("qp_md_Enviroment", setup.enviroment)
-
-    #customer_sync(enviroment)
-
-    #product_sync(enviroment)
-
-    #patient_sync(enviroment)
-
-    #headquarter_sync(enviroment)
-
-    #contract_sync(enviroment)
 
     result = document_save(upload_xlsx)
 
