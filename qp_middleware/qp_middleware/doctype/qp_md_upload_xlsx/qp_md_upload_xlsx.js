@@ -38,22 +38,22 @@ function download_doc(frm, upload_id){
 }
 
 function confirm_doc(frm, upload_id){
-	let method = 'qp_middleware.qp_middleware.service.document.sync.confirm'
+	let method = 'qp_middleware.qp_middleware.service.document.confirm.handler'
 	let args = {
 		'upload_id': upload_id
 	}
 
-	retur_callback = (response)=>{
+	let return_callback = (response)=>{
 		return `
-		<ul>
-			<li> Confirmacion</li>
-			<li> Total: ${response.total}</li>
-			<li> Confirmados: ${response.success}</li>
-			<li> No Confirmados: ${response.error}</li>
-		</ul>`
+			<ul>
+				<li> Confirmacion</li>
+				<li> Total: ${response.total}</li>
+				<li> Confirmados: ${response.success}</li>
+				<li> No Confirmados: ${response.error}</li>
+			</ul>`
 	}
 
-	callback = callback_master(retur_callback)
+	let callback = callback_master(return_callback)
 
 	ajax_request(method, args, callback)
 }

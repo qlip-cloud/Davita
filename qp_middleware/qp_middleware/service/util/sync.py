@@ -1,7 +1,11 @@
 import frappe
 import json
-from qp_authorization.use_case.oauth2.authorize import get_token
 import requests
+import requests
+import threading
+import xmltodict
+import time
+from qp_authorization.use_case.oauth2.authorize import get_token
 
 def get_list(enviroment, code, filters = None):
     
@@ -47,3 +51,50 @@ def persist(table, fields, values):
     frappe.db.sql(sql)
 
     frappe.db.commit()
+
+def send_petition(token, url, payload, method = "POST", add_header = None, is_json = True):
+    
+    headers = {
+        'Content-Type': 'application/json' if is_json else "application/xml",
+        'Authorization': 'Bearer {}'.format(token)
+    }
+
+    if add_header:
+
+        headers.update(add_header)
+
+    response = requests.request(method, url, headers=headers, data=payload)
+
+    response_json = json.loads(response.text) if is_json else xmltodict.parse(response.text)
+
+    return response.text, response_json, "error" in response_json
+
+def send_request(documents, setup, target, token, url):
+
+    #setup = frappe.get_doc("qp_md_Setup")
+
+    threads = list()
+
+    for document in documents:
+        
+        callback(document,threads, setup, target, token, url)
+    
+    for t in threads:
+        
+        t.join()
+
+def callback(document,threads, setup, target, token, url):
+
+    if threading.active_count() <= setup.number_request:
+        
+        t = threading.Thread(target=target, args=(document, token, url))
+
+        threads.append(t)
+
+        t.start()
+    
+    else:
+        
+        time.sleep(setup.wait_time)
+
+        callback(document,threads, setup, target, token, url)

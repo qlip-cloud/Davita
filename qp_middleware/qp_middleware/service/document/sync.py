@@ -1,12 +1,10 @@
-from qp_authorization.use_case.oauth2.authorize import get_token
 import frappe
-import time
 import json
-from datetime import datetime
-import requests
-import threading
-import xmltodict
 import math
+from datetime import datetime
+from qp_authorization.use_case.oauth2.authorize import get_token
+
+from qp_middleware.qp_middleware.service.util.sync import send_petition
 
 def handler(upload_xlsx, setup, enviroment):
 
@@ -65,7 +63,6 @@ def handler(upload_xlsx, setup, enviroment):
 
     is_complete = 0
 
-    print(response_list)
     for key, document in enumerate(documents):
 
         try:
@@ -95,37 +92,6 @@ def handler(upload_xlsx, setup, enviroment):
         "send_success": is_complete,
         "send_error": len(documents) - is_complete
     }
-
-
-def callback(document,threads, setup, target, token, url):
-
-    if threading.active_count() <= setup.number_request:
-        
-        t = threading.Thread(target=target, args=(document, token, url))
-
-        threads.append(t)
-
-        t.start()
-    
-    else:
-        
-        time.sleep(setup.wait_time)
-
-        callback(document,threads, setup, target, token, url)
-
-def send_request(documents, setup, target, token, url):
-
-    #setup = frappe.get_doc("qp_md_Setup")
-
-    threads = list()
-
-    for document in documents:
-        
-        callback(document,threads, setup, target, token, url)
-    
-    for t in threads:
-        
-        t.join()
 
 def send_document(payload, token, url):
 
@@ -212,8 +178,6 @@ def get_payload(document):
 
     }
 
-    
-
 def get_items_payload(document):
 
     requests = []
@@ -239,84 +203,3 @@ def get_items_payload(document):
         requests.append(request)
         
     return requests
-
-def send_petition(token, url, payload, method = "POST", add_header = None, is_json = True):
-    
-    headers = {
-        'Content-Type': 'application/json' if is_json else "application/xml",
-        'Authorization': 'Bearer {}'.format(token)
-    }
-
-    if add_header:
-
-        headers.update(add_header)
-
-    response = requests.request(method, url, headers=headers, data=payload)
-
-    response_json = json.loads(response.text) if is_json else xmltodict.parse(response.text)
-
-    return response.text, response_json, "error" in response_json
-
-@frappe.whitelist()
-def confirm(upload_id):
-
-    document_names = frappe.get_list("qp_md_Document", {"upload_id": upload_id, "is_complete": True, 'is_confirm': False})
-
-    documents = []
-
-    for document_name in document_names:
-
-        document = frappe.get_doc("qp_md_Document", document_name)
-
-        document.confirm_request = get_confirm_payload(document)
-
-        documents.append(document)
-    
-    setup = frappe.get_doc("qp_md_Setup")
-
-    token = get_token()
-
-    send_request(documents, setup, send_confirm, token)
-
-    success = 0
-
-    for document in documents:
-
-        if document.is_confirm:
-
-            success += 1    
-
-        document.save()
-    
-    frappe.db.commit()
-
-    return {
-        'status': 200,
-        "total": len(documents),
-        "success": success,
-        'error': len(documents) - success
-    }
-def get_confirm_payload(document):
-
-    return json.dumps({
-        "no": document.document_code
-    })
-
-def send_confirm(document, token):
-
-    url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/DavitaRegistroDocumentoWS_RegistrarFacturaVenta"
-    
-    add_header = {
-            'If-Match': '*',
-            'company': '798ec2fe-ddfe-ed11-8f6e-6045bd3980fd'
-    }
-        
-    response, response_json, error = send_petition(token, url, document.confirm_request, add_header = add_header)
-
-    document.confirm_response = response
-
-    if not error:
-        
-        document.document_confirm = response_json["value"]
-
-        document.is_confirm = True
