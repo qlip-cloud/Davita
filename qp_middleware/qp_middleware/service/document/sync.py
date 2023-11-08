@@ -67,14 +67,18 @@ def handler(upload_xlsx, setup, enviroment):
 
         try:
 
-            document.document_code = int(response_list[key])
+            int(response_list[key])
+
+            document.document_code = response_list[key]
 
             document.is_complete = True
 
             is_complete +=1
 
-        except:
+            document.response = response
 
+        except:
+            
             document.response = response_list[key] if response_list and response_list[key] else response
 
         #if response_list[key] != "Error" and response_list[key] != "":
