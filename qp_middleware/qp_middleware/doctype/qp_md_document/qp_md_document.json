@@ -50,7 +50,8 @@
   "confirm_request",
   "confirm_response",
   "is_confirm",
-  "group_code"
+  "group_code",
+  "confirm_dian"
  ],
  "fields": [
   {
@@ -305,11 +306,16 @@
    "fieldname": "group_code",
    "fieldtype": "Data",
    "label": "group_code"
+  },
+  {
+   "fieldname": "confirm_dian",
+   "fieldtype": "Long Text",
+   "label": "confirm_dian"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-08 18:05:25.888638",
+ "modified": "2023-11-09 10:37:49.014723",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Document",
