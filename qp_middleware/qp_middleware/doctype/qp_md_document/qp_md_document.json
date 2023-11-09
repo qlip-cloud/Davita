@@ -226,6 +226,9 @@
    "default": "0",
    "fieldname": "is_confirm",
    "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
    "label": "is_confirm"
   },
   {
@@ -306,7 +309,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-31 14:51:58.236134",
+ "modified": "2023-11-08 18:05:25.888638",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Document",

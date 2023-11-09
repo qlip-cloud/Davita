@@ -66,6 +66,11 @@ def send_confirm(document, token, url):
 
     if not error:
         
-        document.document_confirm = response_json["value"]
+        try:
+            int(response_json["value"])
+            
+            document.document_confirm = response_json["value"]
 
-        document.is_confirm = True
+            document.is_confirm = True
+        except:
+            pass

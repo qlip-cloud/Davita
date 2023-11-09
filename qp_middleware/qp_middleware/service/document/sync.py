@@ -139,7 +139,7 @@ def get_payload(document):
         "LHCCopago": int(document.lhc_copago),
         "LHCCuotaRecuperacion": int(document.lhc_cuota_recuperacion),
         "LHCPagosCompartidosPVS": int(document.lhc_pagos_compartidos_pvs),
-        "LHCNumeroAutorizacion": document.lhc_numero_autorizacion,
+        "LHCNumeroAutorizacion": document.lhc_numero_autorizacion if document.lhc_numero_autorizacion else "",
         "LHCPeriodoInicioFechaFact": document.lhc_periodo_inicio_fecha_fact,
         "LHCPeriodoFinFechaFact": document.lhc_periodo_fin_fecha_fact,
         "LHCNumeroContacto": document.lhc_numero_contacto,
