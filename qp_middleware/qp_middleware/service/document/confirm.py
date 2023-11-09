@@ -67,10 +67,17 @@ def send_confirm(document, token, url):
     if not error:
         
         try:
-            int(response_json["value"])
             
-            document.document_confirm = response_json["value"]
+            if response_json["value"] == "":
+
+                frappe.throw("error: retorno vacio")
+            
+            document_confirm = response_json["value"].split(";")
+
+            document.document_confirm = document_confirm[0]
 
             document.is_confirm = True
+
         except:
+
             pass
