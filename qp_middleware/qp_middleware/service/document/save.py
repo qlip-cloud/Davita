@@ -70,7 +70,7 @@ def handler(upload_xlsx):
 
                 else:
                     
-                    if line["tipo_servicio"] == "HD SESSION":
+                    if line["tipo_servicio"] in ("HD SESSION", "HD SESION"):
 
                         item_code = "IG01001"
 
