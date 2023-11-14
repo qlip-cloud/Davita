@@ -18,7 +18,7 @@ LIMIT = {
 @frappe.whitelist()
 def handler(upload_xlsx):
     
-    lines = frappe.get_list("qp_md_invoice_sync", filters = {"upload_id": upload_xlsx.name}, fields = ["*"])
+    lines = frappe.get_list("qp_md_invoice_sync", filters = {"upload_id": upload_xlsx.name, "is_repeat": False}, fields = ["*"])
 
     #lines = frappe.get_list("qp_md_invoice_test", filters = {"upload_id": upload_id}, fields = ["*"])
     

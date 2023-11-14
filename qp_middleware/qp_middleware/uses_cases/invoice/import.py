@@ -8,7 +8,7 @@ def handler(upload_xlsx, method):
 
     rows = read_xlsx_file_from_attached_file(file_url = upload_xlsx.file)
 
-    save_row(rows, upload_xlsx.name)
+    list_repeat = save_row(rows, upload_xlsx.name)
 
     setup = frappe.get_doc("qp_md_Setup")
 
@@ -17,6 +17,8 @@ def handler(upload_xlsx, method):
     result = document_save(upload_xlsx)
 
     upload_xlsx.invoice_total = result["invoice_total"]
+    upload_xlsx.total_repeat = len(list_repeat)
+    upload_xlsx.invoice_repeat = str(list_repeat)
     upload_xlsx.invoice_success = result["invoice_success"]
     upload_xlsx.invoice_error = result["invoice_error"]
     upload_xlsx.customer_count = result["customer_count"]
@@ -35,8 +37,16 @@ def handler(upload_xlsx, method):
 
 def save_row(rows, upload_id):
 
+    list_group_code = []
+
+    list_doc = []
+
     for row in rows:
+
         if row[0] and row[8] and row[14] and row[37] and row[51]:
+
+            group_code = row[2]+'-'+row[14]
+
             doc = frappe.get_doc({
                 'doctype': 'qp_md_invoice_sync',
                 "proveedor": row[0],
@@ -112,7 +122,27 @@ def save_row(rows, upload_id):
                 "vs": row[70],
                 "observaciones_1": row[71],
                 "upload_id": upload_id,
-                "group_code": row[2]+'-'+row[14]
+                "group_code": group_code
             })
 
-            doc.insert()
+            list_group_code.append(group_code)
+
+            list_doc.append(doc)
+
+            return search_repeat(list_doc, list_group_code)
+
+def search_repeat(list_doc, list_group_code):
+
+    list_repeat = frappe.db.get_list('qp_md_Document',filters = {"group_code": ["in", list_group_code]}, pluck='group_code')
+
+    for doc in list_doc:
+
+        if doc.group_code in list_repeat:
+
+            doc.is_repeat = True
+
+        doc.insert()
+
+    return list_repeat
+
+

@@ -78,7 +78,8 @@
   "vs",
   "observaciones_1",
   "upload_id",
-  "group_code"
+  "group_code",
+  "is_repeat"
  ],
  "fields": [
   {
@@ -452,11 +453,17 @@
    "fieldname": "group_code",
    "fieldtype": "Data",
    "label": "group_code"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_repeat",
+   "fieldtype": "Check",
+   "label": "is_repeat"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-11 10:30:31.620780",
+ "modified": "2023-11-14 11:22:58.795791",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_invoice_sync",

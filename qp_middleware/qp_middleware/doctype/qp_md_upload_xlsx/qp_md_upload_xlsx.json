@@ -9,6 +9,8 @@
   "invoice_date",
   "invoice_total",
   "invoice_success",
+  "total_repeat",
+  "invoice_repeat",
   "invoice_error",
   "customer_count",
   "item_count",
@@ -78,11 +80,21 @@
    "in_list_view": 1,
    "label": "Fecha de Facturacion",
    "reqd": 1
+  },
+  {
+   "fieldname": "total_repeat",
+   "fieldtype": "Int",
+   "label": "Total Facturas Repetidas"
+  },
+  {
+   "fieldname": "invoice_repeat",
+   "fieldtype": "Long Text",
+   "label": "Facturas Repetidas"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-23 17:22:09.509867",
+ "modified": "2023-11-14 11:35:51.624033",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_upload_xlsx",
