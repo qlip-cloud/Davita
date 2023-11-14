@@ -8,7 +8,7 @@ def handler(upload_xlsx, method):
 
     rows = read_xlsx_file_from_attached_file(file_url = upload_xlsx.file)
 
-    list_repeat = save_row(rows, upload_xlsx.name)
+    list_repeat,list_group_code = save_row(rows, upload_xlsx.name)
 
     setup = frappe.get_doc("qp_md_Setup")
 
@@ -16,9 +16,9 @@ def handler(upload_xlsx, method):
 
     result = document_save(upload_xlsx)
 
-    upload_xlsx.invoice_total = result["invoice_total"]
+    upload_xlsx.invoice_total = len(list_group_code)
     upload_xlsx.total_repeat = len(list_repeat)
-    upload_xlsx.invoice_repeat = str(list_repeat)
+    upload_xlsx.invoice_repeat = str(list_repeat).replace(",","\n")
     upload_xlsx.invoice_success = result["invoice_success"]
     upload_xlsx.invoice_error = result["invoice_error"]
     upload_xlsx.customer_count = result["customer_count"]
@@ -129,7 +129,11 @@ def save_row(rows, upload_id):
 
             list_doc.append(doc)
 
-            return search_repeat(list_doc, list_group_code)
+    if list_doc:
+        
+        return search_repeat(list_doc, set(list_group_code))
+
+    return []
 
 def search_repeat(list_doc, list_group_code):
 
@@ -143,6 +147,6 @@ def search_repeat(list_doc, list_group_code):
 
         doc.insert()
 
-    return list_repeat
+    return list_repeat,list_group_code
 
 

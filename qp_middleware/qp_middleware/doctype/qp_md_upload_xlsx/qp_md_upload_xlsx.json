@@ -22,7 +22,8 @@
   {
    "fieldname": "file",
    "fieldtype": "Attach",
-   "label": "Archivo"
+   "label": "Archivo",
+   "reqd": 1
   },
   {
    "depends_on": "eval:doc.name != null;",
@@ -94,7 +95,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-14 11:35:51.624033",
+ "modified": "2023-11-14 14:05:43.337039",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_upload_xlsx",
