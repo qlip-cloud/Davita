@@ -139,6 +139,8 @@ def search_repeat(list_doc, list_group_code):
 
     list_repeat = frappe.db.get_list('qp_md_Document',filters = {"group_code": ["in", list_group_code]}, pluck='group_code')
 
+    list_repeat = set(list_repeat)
+
     for doc in list_doc:
 
         if doc.group_code in list_repeat:
