@@ -14,6 +14,7 @@ frappe.ui.form.on('qp_md_upload_xlsx', {
 				frm.add_custom_button(__('Confirmar'), function(){
 					if (!frm.is_dirty()){
 						confirm_doc(frm, frm.doc.name)
+						frm.refresh()
 					}
 					else{
 						show_alert (__("Unable to sync, <br> There are unsaved changes"))
@@ -94,7 +95,7 @@ function callback_master(retur_callback, frm){
 
 			let indicator = 'green';
 			let title = __('Success');
-			retur_callback()
+			
 			if (response.status != 200) {
 
 				indicator = 'red';
@@ -108,7 +109,7 @@ function callback_master(retur_callback, frm){
 				indicator,
 				title
 			});
-			frm.refresh()
+			frm.reload_doc();
 		}
 	}
 }
