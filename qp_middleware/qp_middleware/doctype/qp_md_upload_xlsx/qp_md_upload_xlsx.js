@@ -68,16 +68,9 @@ function confirm_doc(frm, upload_id){
 	let return_callback = (response)=>{
 		frm.refresh()
 
-		return `
-			<ul>
-				<li> Confirmacion</li>
-				<li> Total: ${response.total}</li>
-				<li> Confirmados: ${response.success}</li>
-				<li> No Confirmados: ${response.error}</li>
-			</ul>`
 	}
 
-	let callback = callback_master(return_callback)
+	let callback = callback_master(return_callback, frm)
 
 	ajax_request(method, args, callback)
 }
@@ -93,7 +86,7 @@ function ajax_request(method, args, callback = null){
 	
 }
 
-function callback_master(retur_callback){
+function callback_master(retur_callback, frm){
 	return function(r) {
 		if (!r.exc) {
 
@@ -101,6 +94,7 @@ function callback_master(retur_callback){
 
 			let indicator = 'green';
 			let title = __('Success');
+			retur_callback()
 			if (response.status != 200) {
 
 				indicator = 'red';
@@ -114,6 +108,7 @@ function callback_master(retur_callback){
 				indicator,
 				title
 			});
+			frm.refresh()
 		}
 	}
 }
