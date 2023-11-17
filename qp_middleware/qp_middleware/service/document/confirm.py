@@ -7,6 +7,35 @@ import frappe
 @frappe.whitelist()
 def handler(upload_id):
 
+    upload = frappe.get_doc("qp_md_upload_xlsx",upload_id)
+
+    if upload.is_background:
+
+        return {
+            "status": 500,
+            "msg": "Ya existe una confirmacion en proceso"
+        }
+    
+    frappe.db.set_value('qp_md_upload_xlsx', upload_id, 'is_background', True)
+    
+    frappe.db.commit()
+    
+    frappe.enqueue(
+                confirm,
+                queue='long',                
+                is_async=True,
+                job_name="send confirm: "+ upload_id,
+                timeout=5400000,
+                upload_id = upload_id
+                )
+    
+    return {
+            "status": 200,
+            "msg": "Se ha iniciado el proceso en segundo plano"
+        }
+
+def confirm(upload_id):
+
     document_names = frappe.get_list("qp_md_Document", {"upload_id": upload_id, "is_complete": True, 'is_confirm': False})
 
     documents = []
@@ -22,6 +51,7 @@ def handler(upload_id):
     setup = frappe.get_doc("qp_md_Setup")
 
     token = get_token()
+
     url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/DavitaRegistrarFacturasVentasSW_RegistrarFacturaVenta"
 
     send_request(documents, setup, send_confirm, token, url)
@@ -35,15 +65,11 @@ def handler(upload_id):
             success += 1    
 
         document.save()
+
+    frappe.db.set_value('qp_md_upload_xlsx', upload_id, 'is_background', False)
     
     frappe.db.commit()
 
-    return {
-        'status': 200,
-        "total": len(documents),
-        "success": success,
-        'error': len(documents) - success
-    }
 def get_confirm_payload(document):
 
     return json.dumps({

@@ -3,18 +3,24 @@
 
 frappe.ui.form.on('qp_md_upload_xlsx', {
 	refresh: function(frm) {
+		if (frm.doc.is_background) {
+			frm.set_intro('Se esta ejecutando una tarea en segundo plano', 'yellow');
+			frm.doc.is_background
+		}
+
 		if (!(frm.is_new())){
 
-
-			frm.add_custom_button(__('Confirmar'), function(){
-				if (!frm.is_dirty()){
-					confirm_doc(frm, frm.doc.name)
-				}
-				else{
-					show_alert (__("Unable to sync, <br> There are unsaved changes"))
-				}
-				
-			});
+			if (!frm.doc.is_background) {
+				frm.add_custom_button(__('Confirmar'), function(){
+					if (!frm.is_dirty()){
+						confirm_doc(frm, frm.doc.name)
+					}
+					else{
+						show_alert (__("Unable to sync, <br> There are unsaved changes"))
+					}
+					
+				});
+			}
 			frm.add_custom_button(__('Descargar'), function(){
 				if (!frm.is_dirty()){
 					download_doc(frm, frm.doc.name)
@@ -38,6 +44,7 @@ function download_doc(frm, upload_id){
 }
 
 function confirm_doc(frm, upload_id){
+	
 	let method = 'qp_middleware.qp_middleware.service.document.confirm.handler'
 	let args = {
 		'upload_id': upload_id
@@ -55,10 +62,10 @@ function confirm_doc(frm, upload_id){
 
 	let callback = callback_master(return_callback)
 
-	ajax_request(method, args, callback)
+	ajax_request(method, args,frm, callback)
 }
 
-function ajax_request(method, args, callback = null){
+function ajax_request(method, args, frm, callback = null){
 	frappe.call({
 		method,
 		args,
@@ -66,6 +73,7 @@ function ajax_request(method, args, callback = null){
 		freeze:true
 
 	});
+	frm.refresh()
 }
 
 function callback_master(retur_callback){
@@ -74,16 +82,21 @@ function callback_master(retur_callback){
 
 			const response = r.message
 
-			if (response.status == 200) {
-			
-				const message = retur_callback(response)
+			let indicator = 'green';
+			let title = __('Success');
+			if (response.status != 200) {
 
-				frappe.msgprint({
-					message: message,
-					indicator: 'green',
-					title: __('Success')
-				});
+				indicator = 'red';
+				title= __('Error');
 			}
+
+			let message = response.msg;
+
+			frappe.msgprint({
+				message,
+				indicator,
+				title
+			});
 		}
 	}
 }
