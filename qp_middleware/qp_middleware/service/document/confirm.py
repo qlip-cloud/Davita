@@ -66,8 +66,12 @@ def confirm(upload_id):
 
         document.save()
 
-    frappe.db.set_value('qp_md_upload_xlsx', upload_id, 'is_background', False)
-    
+    frappe.db.set_value('qp_md_upload_xlsx', upload_id, {
+        'is_background': False,
+        "confirm_success": success,
+        "confirm_error": len(documents) - success
+    })
+     
     frappe.db.commit()
 
 def get_confirm_payload(document):

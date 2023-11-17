@@ -16,6 +16,8 @@
   "item_count",
   "send_success",
   "send_error",
+  "confirm_success",
+  "confirm_error",
   "is_valid",
   "is_background",
   "is_confirm"
@@ -108,11 +110,23 @@
    "fieldname": "is_confirm",
    "fieldtype": "Check",
    "label": "is confirm"
+  },
+  {
+   "fieldname": "confirm_success",
+   "fieldtype": "Int",
+   "label": "confirm_success",
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "confirm_error",
+   "fieldtype": "Int",
+   "label": "confirm_error",
+   "set_only_once": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-17 12:25:20.399237",
+ "modified": "2023-11-17 14:02:30.452975",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_upload_xlsx",

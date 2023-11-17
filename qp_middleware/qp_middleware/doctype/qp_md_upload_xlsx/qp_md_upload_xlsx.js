@@ -30,6 +30,21 @@ frappe.ui.form.on('qp_md_upload_xlsx', {
 				}
 				
 			});
+		}else{
+			frm.set_df_property('invoice_total', 'read_only', 1)
+			frm.set_df_property('invoice_success', 'read_only', 1)
+			frm.set_df_property('total_repeat', 'read_only', 1)
+			frm.set_df_property('invoice_repeat', 'read_only', 1)
+			frm.set_df_property('invoice_error', 'read_only', 1)
+			frm.set_df_property('customer_count', 'read_only', 1)
+			frm.set_df_property('item_count', 'read_only', 1)
+			frm.set_df_property('send_success', 'read_only', 1)
+			frm.set_df_property('send_error', 'read_only', 1)
+			frm.set_df_property('confirm_success', 'read_only', 1)
+			frm.set_df_property('confirm_error', 'read_only', 1)
+			frm.set_df_property('is_valid', 'read_only', 1)
+			frm.set_df_property('is_background', 'read_only', 1)
+			frm.set_df_property('is_confirm', 'read_only', 1)
 		}
 	}
 });
@@ -51,6 +66,8 @@ function confirm_doc(frm, upload_id){
 	}
 
 	let return_callback = (response)=>{
+		frm.refresh()
+
 		return `
 			<ul>
 				<li> Confirmacion</li>
@@ -62,10 +79,10 @@ function confirm_doc(frm, upload_id){
 
 	let callback = callback_master(return_callback)
 
-	ajax_request(method, args,frm, callback)
+	ajax_request(method, args, callback)
 }
 
-function ajax_request(method, args, frm, callback = null){
+function ajax_request(method, args, callback = null){
 	frappe.call({
 		method,
 		args,
@@ -73,7 +90,7 @@ function ajax_request(method, args, frm, callback = null){
 		freeze:true
 
 	});
-	frm.refresh()
+	
 }
 
 function callback_master(retur_callback){
