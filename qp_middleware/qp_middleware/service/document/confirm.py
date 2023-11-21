@@ -48,9 +48,6 @@ def confirm(upload_id):
 
         url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/DavitaRegistrarFacturasVentasSW_RegistrarFacturaVenta"
 
-        success = frappe.db.get_value('qp_md_upload_xlsx', upload_id, "confirm_success")
-
-        error = 0
 
         for document_name in document_names:
 
@@ -58,7 +55,7 @@ def confirm(upload_id):
 
             document.confirm_request = get_confirm_payload(document)
 
-            send_confirm(document, token, url, success,error)
+            send_confirm(document, token, url)
 
             #documents.append(document)
 
@@ -72,6 +69,10 @@ def confirm(upload_id):
 
 def update_upload_xlsx(upload_id):
 
+    success = 0
+    
+    error = 0
+
     sql = """
         SELECT 
             count(is_confirm) as total, 
@@ -79,6 +80,7 @@ def update_upload_xlsx(upload_id):
         from 
             tabqp_md_Document
         WHERE
+            is_complete = 1 and
             upload_id = '{}' 
         group by is_confirm
         order by is_confirm asc""".format(upload_id)
@@ -109,7 +111,7 @@ def get_confirm_payload(document):
         "no": document.document_code
     })
 
-def send_confirm(document, token, url, success, error):
+def send_confirm(document, token, url):
 
     #url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/DavitaRegistroDocumentoWS_RegistrarFacturaVenta"
 
@@ -141,15 +143,11 @@ def send_confirm(document, token, url, success, error):
 
             document.is_confirm = True
 
-            success += 1
+            
 
         except:
 
-            error +=1
-
-    else:
-
-        error +=1
+            pass
 
     document.save()
 
