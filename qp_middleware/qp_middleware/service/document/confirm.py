@@ -36,25 +36,31 @@ def handler(upload_id):
 
 def confirm(upload_id):
 
-    document_names = frappe.get_list("qp_md_Document", {"upload_id": upload_id, "is_complete": True, 'is_confirm': False})
+    try:
 
-    documents = []
+        document_names = frappe.get_list("qp_md_Document", {"upload_id": upload_id, "is_complete": True, 'is_confirm': False})
 
-    for document_name in document_names:
+        documents = []
 
-        document = frappe.get_doc("qp_md_Document", document_name)
+        for document_name in document_names:
 
-        document.confirm_request = get_confirm_payload(document)
+            document = frappe.get_doc("qp_md_Document", document_name)
 
-        documents.append(document)
-    
-    setup = frappe.get_doc("qp_md_Setup")
+            document.confirm_request = get_confirm_payload(document)
 
-    token = get_token()
+            documents.append(document)
 
-    url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/DavitaRegistrarFacturasVentasSW_RegistrarFacturaVenta"
+        setup = frappe.get_doc("qp_md_Setup")
 
-    send_request(documents, setup, send_confirm, token, url)
+        token = get_token()
+
+        url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/DavitaRegistrarFacturasVentasSW_RegistrarFacturaVenta"
+
+        send_request(documents, setup, send_confirm, token, url)
+
+    except:
+
+        pass
 
     success = 0
 
@@ -66,12 +72,16 @@ def confirm(upload_id):
 
         document.save()
 
-    frappe.db.set_value('qp_md_upload_xlsx', upload_id, {
-        'is_background': False,
-        "confirm_success": success,
-        "confirm_error": len(documents) - success
-    })
-     
+    upload_xlsx = frappe.db.get_doc('qp_md_upload_xlsx', upload_id)
+    
+    upload_xlsx.is_background = False
+    
+    upload_xlsx.confirm_success += success
+
+    upload_xlsx.confirm_error = len(documents) - upload_xlsx.confirm_success
+
+    upload_xlsx.save()
+
     frappe.db.commit()
 
 def get_confirm_payload(document):
@@ -97,6 +107,7 @@ def send_confirm(document, token, url):
     if not error:
         
         try:
+
             if response_json["value"] == "":
 
                 frappe.throw("error: retorno vacio")
