@@ -42,45 +42,38 @@ def confirm(upload_id):
 
         documents = []
 
+        #setup = frappe.get_doc("qp_md_Setup")
+
+        token = get_token()
+
+        url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/DavitaRegistrarFacturasVentasSW_RegistrarFacturaVenta"
+
+        success = frappe.db.get_value('qp_md_upload_xlsx', upload_id, "confirm_success")
+
+        error = 0
+
         for document_name in document_names:
 
             document = frappe.get_doc("qp_md_Document", document_name)
 
             document.confirm_request = get_confirm_payload(document)
 
-            documents.append(document)
+            send_confirm(document, token, url, success,error)
 
-        setup = frappe.get_doc("qp_md_Setup")
+            #documents.append(document)
 
-        token = get_token()
-
-        url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/DavitaRegistrarFacturasVentasSW_RegistrarFacturaVenta"
-
-        send_request(documents, setup, send_confirm, token, url)
+        #send_request(documents, setup, send_confirm, token, url)
 
     except:
 
         pass
 
-    success = 0
 
-    for document in documents:
-
-        if document.is_confirm:
-
-            success += 1    
-
-        document.save()
-
-    upload_xlsx = frappe.db.get_doc('qp_md_upload_xlsx', upload_id)
-    
-    upload_xlsx.is_background = False
-    
-    upload_xlsx.confirm_success += success
-
-    upload_xlsx.confirm_error = len(documents) - upload_xlsx.confirm_success
-
-    upload_xlsx.save()
+    frappe.db.set_value('qp_md_upload_xlsx', upload_id,{
+        "is_background": False,
+        "confirm_success": success,
+        "confirm_error": error
+    })
 
     frappe.db.commit()
 
@@ -90,7 +83,7 @@ def get_confirm_payload(document):
         "no": document.document_code
     })
 
-def send_confirm(document, token, url):
+def send_confirm(document, token, url, success, error):
 
     #url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/DavitaRegistroDocumentoWS_RegistrarFacturaVenta"
 
@@ -122,6 +115,18 @@ def send_confirm(document, token, url):
 
             document.is_confirm = True
 
+            success += 1
+
         except:
 
-            pass
+            error +=1
+
+    else:
+
+        error +=1
+
+    document.save()
+
+    frappe.db.commit()
+    
+    
