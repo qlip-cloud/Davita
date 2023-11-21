@@ -67,7 +67,33 @@ def confirm(upload_id):
     except:
 
         pass
+    
+    update_upload_xlsx(upload_id)
 
+def update_upload_xlsx(upload_id):
+
+    sql = """
+        SELECT 
+            count(is_confirm) as total, 
+            is_confirm 
+        from 
+            tabqp_md_Document
+        WHERE
+            upload_id = '{}' 
+        group by is_confirm
+        order by is_confirm asc""".format(upload_id)
+    
+    results = frappe.db.sql(sql, as_dict = 1)
+
+    for result in results:
+
+        if result["is_confirm"]:
+
+            success = result["total"]
+
+        else:
+
+            error = result["total"]
 
     frappe.db.set_value('qp_md_upload_xlsx', upload_id,{
         "is_background": False,
