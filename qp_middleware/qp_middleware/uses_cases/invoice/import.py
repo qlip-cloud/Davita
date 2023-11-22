@@ -6,15 +6,35 @@ from frappe.utils.xlsxutils import read_xlsx_file_from_attached_file
 
 def handler(upload_xlsx, method):
 
+    if upload_xlsx.is_background:
+
+        return {
+            "status": 500,
+            "msg": "Ya existe una confirmacion en proceso"
+        }
+    
+    upload_xlsx.is_background = True
+
+    upload_xlsx.save()
+
+    frappe.enqueue(
+                import_xlsx,
+                queue='long',                
+                is_async=True,
+                job_name="send invoice: "+ upload_xlsx.name,
+                timeout=5400000,
+                upload_xlsx = upload_xlsx
+                )
+
+def import_xlsx(upload_xlsx):
+    
     rows = read_xlsx_file_from_attached_file(file_url = upload_xlsx.file)
 
     list_repeat,list_group_code = save_row(rows, upload_xlsx.name)
 
-    setup = frappe.get_doc("qp_md_Setup")
-
-    enviroment = frappe.get_doc("qp_md_Enviroment", setup.enviroment)
 
     result = document_save(upload_xlsx)
+
 
     upload_xlsx.invoice_total = len(list_group_code)
     upload_xlsx.total_repeat = len(list_repeat)
@@ -25,15 +45,24 @@ def handler(upload_xlsx, method):
     upload_xlsx.item_count = result["item_count"]
     upload_xlsx.is_valid = result["is_valid"]
 
+
     if upload_xlsx.is_valid:
-    
+        
+        setup = frappe.get_doc("qp_md_Setup")
+
+        enviroment = frappe.get_doc("qp_md_Enviroment", setup.enviroment)
+        
         result = document_sync(upload_xlsx, setup, enviroment)
         
         upload_xlsx.send_success = result["send_success"]
     
         upload_xlsx.send_error = result["send_error"]
 
-    frappe.db.commit()
+    upload_xlsx.is_background = False
+
+    upload_xlsx.save()
+
+    print("termine")
 
 def save_row(rows, upload_id):
 
