@@ -91,7 +91,10 @@ app_license = "MIT"
 
 doc_events = {
  	"qp_md_upload_xlsx": {
- 		"before_save": "qp_middleware.qp_middleware.uses_cases.invoice.import.handler"         
+ 		"after_insert": "qp_middleware.qp_middleware.uses_cases.invoice.import.handler"         
+	},
+    "qp_md_PatientUpload": {
+ 		"before_save": "qp_middleware.qp_middleware.uses_cases.patient.import.handler"         
 	}
  }
 
