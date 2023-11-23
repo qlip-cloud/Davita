@@ -26,7 +26,6 @@ def handler(upload_xlsx, setup, enviroment):
 
         payloads.append(payload)
 
-    token = get_token()
 
     endpoint = frappe.get_doc("qp_md_Endpoint", "create_document")
 
@@ -41,8 +40,8 @@ def handler(upload_xlsx, setup, enviroment):
     response_list = []
 
     for n in range(range_total):
-
-        response, response_json, error = send_document(payloads[n * setup.invoices_group : (n+1) * setup.invoices_group], token, url)
+        
+        response, response_json, error = send_document(payloads[n * setup.invoices_group : (n+1) * setup.invoices_group], url)
         
         try:
             
@@ -97,7 +96,9 @@ def handler(upload_xlsx, setup, enviroment):
         "send_error": len(documents) - is_complete
     }
 
-def send_document(payload, token, url):
+def send_document(payload, url):
+
+    token = get_token()
 
     payload_xml = """<?xml version="1.0" encoding="utf-8"?><soap:Envelope  xmlns:nav="urn:microsoft-dynamics-schemas/codeunit/RegistrarFacturasVentaWS" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><nav:RegistrarFacturasVentaWS><nav:factura>{}</nav:factura></nav:RegistrarFacturasVentaWS></soap:Body></soap:Envelope>""".format(json.dumps(payload))
     

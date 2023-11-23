@@ -44,8 +44,6 @@ def confirm(upload_id):
 
         #setup = frappe.get_doc("qp_md_Setup")
 
-        token = get_token()
-
         url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/DavitaRegistrarFacturasVentasSW_RegistrarFacturaVenta"
 
 
@@ -55,7 +53,7 @@ def confirm(upload_id):
 
             document.confirm_request = get_confirm_payload(document)
 
-            send_confirm(document, token, url)
+            send_confirm(document, url)
 
             #documents.append(document)
 
@@ -111,10 +109,11 @@ def get_confirm_payload(document):
         "no": document.document_code
     })
 
-def send_confirm(document, token, url):
+def send_confirm(document, url):
 
     #url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/DavitaRegistroDocumentoWS_RegistrarFacturaVenta"
-
+    
+    token = get_token()
     
     add_header = {
             'If-Match': '*',
