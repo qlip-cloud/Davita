@@ -28,23 +28,19 @@ def handler(upload_xlsx, method):
 
 def import_xlsx(upload_xlsx):
     
-    rows = read_xlsx_file_from_attached_file(file_url = upload_xlsx.file)
-
-    list_repeat,list_group_code = save_row(rows, upload_xlsx.name)
-
+    list_repeat,list_group_code = import_excel(upload_xlsx)
 
     result = document_save(upload_xlsx)
 
+    set_stadistic(upload_xlsx, list_group_code, list_repeat, result)
+    
+    sync_invoices(upload_xlsx)
+    
+    upload_xlsx.is_background = False
 
-    upload_xlsx.invoice_total = len(list_group_code)
-    upload_xlsx.total_repeat = len(list_repeat)
-    upload_xlsx.invoice_repeat = str(list_repeat).replace(",","\n")
-    upload_xlsx.invoice_success = result["invoice_success"]
-    upload_xlsx.invoice_error = result["invoice_error"]
-    upload_xlsx.customer_count = result["customer_count"]
-    upload_xlsx.item_count = result["item_count"]
-    upload_xlsx.is_valid = result["is_valid"]
+    upload_xlsx.save()
 
+def sync_invoices(upload_xlsx):
 
     if upload_xlsx.is_valid:
         
@@ -58,11 +54,22 @@ def import_xlsx(upload_xlsx):
     
         upload_xlsx.send_error = result["send_error"]
 
-    upload_xlsx.is_background = False
+def set_stadistic(upload_xlsx, list_group_code, list_repeat, result):
 
-    upload_xlsx.save()
+    upload_xlsx.invoice_total = len(list_group_code)
+    upload_xlsx.total_repeat = len(list_repeat)
+    upload_xlsx.invoice_repeat = str(list_repeat).replace(",","\n")
+    upload_xlsx.invoice_success = result["invoice_success"]
+    upload_xlsx.invoice_error = result["invoice_error"]
+    upload_xlsx.customer_count = result["customer_count"]
+    upload_xlsx.item_count = result["item_count"]
+    upload_xlsx.is_valid = result["is_valid"]
 
-    print("termine")
+def import_excel(upload_xlsx):
+
+    rows = read_xlsx_file_from_attached_file(file_url = upload_xlsx.file)
+
+    return save_row(rows, upload_xlsx.name)
 
 def save_row(rows, upload_id):
 

@@ -192,7 +192,7 @@ def setup_document(lines_iter, upload_xlsx):
     
     document.responsibility_center = code_dimension
 
-    document.lhc_numero_orden_compra = get_orden_compra(document.cod_empresa)
+    document.lhc_numero_orden_compra = get_orden_compra(document.cod_empresa, lines_iter[0]["nit"])
 
     document.work_description = ""
 
@@ -216,8 +216,16 @@ def setup_document(lines_iter, upload_xlsx):
 
     return document
 
-def get_orden_compra(cod_empresa):
+def get_orden_compra(cod_empresa, nit):
 
+    if nit == "901543761_2":
+        
+        return "NO DIABETICO"
+
+    if nit == "901543761_1":
+
+        return "DIABETICO"
+        
     if not cod_empresa:
 
         return ""
