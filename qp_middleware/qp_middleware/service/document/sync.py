@@ -167,7 +167,7 @@ def get_payload(document):
             },
             {            
                 "code": "MODALIDAD",            
-                "valueCode": "OP101"           
+                "valueCode": document.code_modality           
             },
             {       
                 "code": "PACIENTE",            

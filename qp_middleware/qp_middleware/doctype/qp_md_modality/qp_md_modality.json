@@ -1,0 +1,63 @@
+{
+ "actions": [],
+ "creation": "2023-11-27 13:17:55.053464",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "code_dynamics",
+  "name_dynamics",
+  "code_servinte",
+  "name_servinte"
+ ],
+ "fields": [
+  {
+   "fieldname": "code_dynamics",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "C\u00f3digo Dynamics"
+  },
+  {
+   "fieldname": "name_dynamics",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Nombre Dynamics"
+  },
+  {
+   "fieldname": "code_servinte",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Centro de costo Servinte"
+  },
+  {
+   "fieldname": "name_servinte",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Nombre Servinte"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-11-27 13:22:23.277321",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_Modality",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

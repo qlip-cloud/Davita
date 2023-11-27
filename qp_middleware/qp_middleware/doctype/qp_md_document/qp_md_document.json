@@ -36,6 +36,7 @@
   "currency_code",
   "responsibility_center",
   "work_description",
+  "code_modality",
   "items",
   "is_valid",
   "error",
@@ -311,11 +312,16 @@
    "fieldname": "confirm_dian",
    "fieldtype": "Long Text",
    "label": "confirm_dian"
+  },
+  {
+   "fieldname": "code_modality",
+   "fieldtype": "Data",
+   "label": "code_modality"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-09 10:37:49.014723",
+ "modified": "2023-11-27 13:48:46.608502",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Document",

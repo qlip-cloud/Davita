@@ -146,6 +146,8 @@ def setup_document(lines_iter, upload_xlsx):
         
     code_dimension, error_dimension, msg_error_dimension = get_code_dimension(lines_iter)
 
+    code_modality, error_modality, msg_error_modality = get_code_modality(lines_iter)
+
     code_patient, error_patient, msg_error_patient = get_nit_patient(lines_iter)
 
     code_contrat_patient, error_contrat_patient, msg_error_contrat_patient = get_contract_customer(code_customer)
@@ -204,11 +206,13 @@ def setup_document(lines_iter, upload_xlsx):
     
     document.group_code = lines_iter[0]["group_code"] 
 
+    document.code_modality = code_modality
+
     set_fecha_periodo(document)
 
-    error = error_customer or error_dimension or error_cuota_moderadora or error_numero_autorizacion or error_patient or error_contrat_patient
+    error = error_customer or error_dimension or error_cuota_moderadora or error_numero_autorizacion or error_patient or error_contrat_patient or error_modality
 
-    msg = msg_error_customer + msg_error_dimension + msg_error_numero_autorizacion + msg_error_cuota_moderadora + msg_error_patient + msg_error_contrat_patient
+    msg = msg_error_customer + msg_error_dimension + msg_error_numero_autorizacion + msg_error_cuota_moderadora + msg_error_patient + msg_error_contrat_patient + msg_error_modality
 
     document.is_valid = not error
 
@@ -342,6 +346,23 @@ def get_nit_customer(lines_iter):
         return document_code[0], True, "Clientes {} No existe \n".format(document_code[0])
 
     return tax_id[0]['tax_id'], False, ""
+
+
+def get_code_modality(lines_iter):
+
+    codes_servinte = list(set(map(lambda x: x["codigo_centro_de_costo"], lines_iter)))
+
+    if len(codes_servinte) > 1:
+
+        return codes_servinte[0], True, "Modalidad {} diferentes para la misma factura\n".format(codes_servinte)
+    
+    codes_modalities = frappe.get_list("qp_md_Modality", filters = {"code_servinte": codes_servinte[0]}, fields = ["code_dynamics"])
+    
+    if not codes_modalities:
+
+        return lines_iter[0]["codigo_centro_de_costo"], True, "Modalidad {} No existe\n".format(lines_iter[0]["codigo_centro_de_costo"])
+
+    return codes_modalities[0].code_dynamics, False, ""
 
 def get_code_dimension(lines_iter):
 
