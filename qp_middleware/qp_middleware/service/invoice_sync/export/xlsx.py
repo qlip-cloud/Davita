@@ -17,6 +17,7 @@ def get_data(upload_id):
 
     sql = """
         SELECT
+            document.document_confirm,
             document.document_code,
             invoice_sync.proveedor,
             invoice_sync.numero,
@@ -104,13 +105,14 @@ def get_data(upload_id):
 
     response = frappe.db.sql(sql)
 
-    print(response)
+    #print(response)
 
     return response
 
 def get_header():
 
     return [   
+            "Codigo de Confirmacion",
             "Codigo documento",
             "",
             "",
