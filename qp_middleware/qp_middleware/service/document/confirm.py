@@ -23,8 +23,8 @@ def handler(upload_id):
     frappe.enqueue(
                 confirm,
                 queue='long',                
-                now=True,
-                #is_async=True,
+                #now=True,
+                is_async=True,
                 job_name="send confirm: "+ upload_id,
                 timeout=5400000,
                 upload_id = upload_id
