@@ -271,8 +271,9 @@ def get_nit_patient(lines_iter):
 
         return lines_iter[0]["no_identificacion"], True, "Paciente {} No existe\n".format(lines_iter[0]["no_identificacion"])
 
-    
-    return patient[0].numero_identificacion, False, ""
+    patient_nit = lines_iter[0]["tipo_documento"] + str(lines_iter[0]["no_identificacion"])
+
+    return patient_nit, False, ""
 
 def get_cuota_moderadora(lines_iter):
 
