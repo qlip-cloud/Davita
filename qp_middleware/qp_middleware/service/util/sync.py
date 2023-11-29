@@ -104,3 +104,13 @@ def callback(document,threads, setup, target, token, url):
         time.sleep(setup.wait_time)
 
         callback(document,threads, setup, target, token, url)
+
+def get_enviroment(endpoint_code):
+
+    setup = frappe.get_doc("qp_md_Setup")
+
+    enviroment = frappe.get_doc("qp_md_Enviroment", setup.enviroment)
+    
+    endpoint = frappe.get_doc("qp_md_Endpoint", endpoint_code)
+
+    return enviroment, endpoint

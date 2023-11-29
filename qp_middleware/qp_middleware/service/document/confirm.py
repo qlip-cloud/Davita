@@ -1,5 +1,5 @@
 from qp_authorization.use_case.oauth2.authorize import get_token
-from qp_middleware.qp_middleware.service.util.sync import send_petition, send_request
+from qp_middleware.qp_middleware.service.util.sync import send_petition, get_enviroment
 
 import json
 import frappe
@@ -23,7 +23,8 @@ def handler(upload_id):
     frappe.enqueue(
                 confirm,
                 queue='long',                
-                is_async=True,
+                now=True,
+                #is_async=True,
                 job_name="send confirm: "+ upload_id,
                 timeout=5400000,
                 upload_id = upload_id
@@ -37,15 +38,11 @@ def handler(upload_id):
 def confirm(upload_id):
 
     try:
+        enviroment, endpoint = get_enviroment("confirm_document")
+
+        url = enviroment.get_url_without_company(endpoint.url)
 
         document_names = frappe.get_list("qp_md_Document", {"upload_id": upload_id, "is_complete": True, 'is_confirm': False})
-
-        documents = []
-
-        #setup = frappe.get_doc("qp_md_Setup")
-
-        url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/DavitaRegistrarFacturasVentasSW_RegistrarFacturaVenta"
-
 
         for document_name in document_names:
 
@@ -54,10 +51,6 @@ def confirm(upload_id):
             document.confirm_request = get_confirm_payload(document)
 
             send_confirm(document, url)
-
-            #documents.append(document)
-
-        #send_request(documents, setup, send_confirm, token, url)
 
     except:
 
