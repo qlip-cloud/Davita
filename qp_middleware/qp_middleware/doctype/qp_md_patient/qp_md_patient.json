@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "autoname": "field:group_code",
  "creation": "2023-09-26 12:39:55.381173",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -14,7 +15,13 @@
   "numero_telefonico",
   "correo_electronico",
   "id_plan",
-  "tipo_usuario"
+  "tipo_usuario",
+  "group_code",
+  "is_sync",
+  "upload_id",
+  "origin",
+  "request",
+  "response"
  ],
  "fields": [
   {
@@ -68,11 +75,44 @@
    "fieldname": "tipo_usuario",
    "fieldtype": "Data",
    "label": "tipo Usuario"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_sync",
+   "fieldtype": "Check",
+   "label": "is_sync"
+  },
+  {
+   "fieldname": "group_code",
+   "fieldtype": "Data",
+   "label": "group",
+   "unique": 1
+  },
+  {
+   "fieldname": "upload_id",
+   "fieldtype": "Data",
+   "label": "upload_id"
+  },
+  {
+   "fieldname": "origin",
+   "fieldtype": "Select",
+   "label": "Origin",
+   "options": "Import\nExcel\nManual"
+  },
+  {
+   "fieldname": "request",
+   "fieldtype": "Long Text",
+   "label": "request"
+  },
+  {
+   "fieldname": "response",
+   "fieldtype": "Long Text",
+   "label": "response"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-08 16:03:12.609574",
+ "modified": "2023-11-28 10:48:09.027678",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Patient",

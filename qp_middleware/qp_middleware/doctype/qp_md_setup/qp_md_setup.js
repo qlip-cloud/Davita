@@ -26,10 +26,21 @@ frappe.ui.form.on('qp_md_Setup', {
 				}
 				
 			});
-			frm.add_custom_button(__('Pacientes'), function(){
+			frm.add_custom_button(__('Importar Pacientes'), function(){
 				if (!frm.is_dirty()){
 					//sync_customer(frm, frm.doc.name)
 					sync_patient()
+				}
+				else{
+					show_alert (__("Unable to sync, <br> There are unsaved changes"))
+				}
+				
+			});
+
+			frm.add_custom_button(__('Exportar Pacientes'), function(){
+				if (!frm.is_dirty()){
+					//sync_customer(frm, frm.doc.name)
+					sync_export_patient()
 				}
 				else{
 					show_alert (__("Unable to sync, <br> There are unsaved changes"))
@@ -85,12 +96,17 @@ function sync_patient(){
 	send_request(method)
 }
 
+function sync_export_patient(){
+
+	let method = 'qp_middleware.qp_middleware.uses_cases.patient.upload_sync.handler';
+	send_request(method)
+}
+
 function sync_item(){
 
 	let method = 'qp_middleware.qp_middleware.service.item.sync.handler';
 	send_request(method)
 }
-
 
 function send_request(method){
 
@@ -100,22 +116,26 @@ function send_request(method){
 			if (!r.exc) {
 
 				const response = r.message
-
+				let message = ""
 				if (response.status == 200) {
 				
-					const message = `
+					message = `
 						<ul>
 							<li> Confirmacion</li>
 							<li> Total Recibido: ${response.total}</li>
 							<li> Total Confirmados: ${response.total_sync}</li>
 						</ul>`
-
-					frappe.msgprint({
-						message: message,
-						indicator: 'green',
-						title: __('Success')
-					});
 				}
+				if (response.status == 202){
+					message = "Esta actividad se realizara en segundo plano"
+				}
+
+				frappe.msgprint({
+					message: message,
+					indicator: 'green',
+					title: __('Success')
+				});
+
 			}
 		},
 		freeze:true

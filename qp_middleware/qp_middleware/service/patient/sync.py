@@ -12,25 +12,31 @@ def handler():
 
     response_json = get_response("list_patient")
 
-    patient_nit = tuple([ patient["numeroIdentificacion"] for patient in response_json["value"]])
+    patient_nit = []
 
-    result = frappe.get_list(doctype = "qp_md_Patient",  filters = {"numero_identificacion": ["in", patient_nit]}, pluck = 'numero_identificacion')
+    for patient in response_json["value"]:
 
-    new_patients = list(filter(lambda x: x["numeroIdentificacion"] not in result, response_json["value"]))
+        patient["group_code"] = str(patient['tipoIdentificacion']+'-'+patient['numeroIdentificacion']).lower()
+
+        patient_nit.append(patient["group_code"])
+
+    result = frappe.get_list(doctype = "qp_md_Patient",  filters = {"group_code": ["in", patient_nit]}, pluck = 'group_code')
+
+    new_patients = list(filter(lambda x: x['group_code'] not in result, response_json["value"]))
     
     values = []  
 
     for iter in new_patients:
-        
-        values.append((iter['numeroIdentificacion'], iter['tipoIdentificacion'], iter['numeroIdentificacion'],iter['primerNombre'], iter['segundoNombre'], iter['primerApellido'],
-                       iter['segundoApellido'], iter['numeroTelefonico'], iter['correoElectronico'],iter['idPlan'], iter['tipoUsuario'], now(), 'Administrator'))
+
+        values.append((iter['group_code'], iter['tipoIdentificacion'], iter['numeroIdentificacion'],iter['primerNombre'], iter['segundoNombre'], iter['primerApellido'],
+                       iter['segundoApellido'], iter['numeroTelefonico'], iter['correoElectronico'],iter['idPlan'], iter['tipoUsuario'], "Import", True, iter['group_code'], now(), 'Administrator'))
 
     if new_patients:
 
         table = "tabqp_md_Patient"
 
         fields = "(name, tipo_identificacion, numero_identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, numero_telefonico \
-                    ,correo_electronico, id_plan, tipo_usuario, creation, owner)"
+                    ,correo_electronico, id_plan, tipo_usuario,origin, is_sync, group_code,creation, owner)"
         
         persist(table, fields, values)
 
@@ -39,28 +45,3 @@ def handler():
         "total": len(response_json["value"]),
         "total_sync": len(new_patients)
     }
-
-
-
-
-    for iter in new_patients:
-        
-        patient = frappe.new_doc('qp_md_Patient')
-        patient.tipo_identificacion = iter['tipoIdentificacion']
-        patient.numero_identificacion = iter['numeroIdentificacion']
-        patient.primer_nombre = iter['primerNombre']
-        patient.segundo_nombre = iter['segundoNombre']
-        patient.primer_apellido = iter['primerApellido']
-        patient.segundo_apellido = iter['segundoApellido']
-        patient.numero_telefonico = iter['numeroTelefonico']
-        patient.correo_electronico = iter['correoElectronico']
-        patient.id_plan = iter['idPlan']
-        patient.tipo_usuario = iter['tipoUsuario']
-
-        patient.insert()
-
-    if new_patients:
-
-        frappe.db.commit()
-
-    return new_patients

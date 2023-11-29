@@ -1,0 +1,67 @@
+{
+ "actions": [],
+ "creation": "2023-11-16 10:04:30.661675",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "file",
+  "total",
+  "total_created",
+  "total_repeat",
+  "total_error"
+ ],
+ "fields": [
+  {
+   "fieldname": "file",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "label": "Archivo",
+   "reqd": 1
+  },
+  {
+   "fieldname": "total",
+   "fieldtype": "Int",
+   "label": "Total de pacientes"
+  },
+  {
+   "fieldname": "total_created",
+   "fieldtype": "Int",
+   "label": "Total Creados"
+  },
+  {
+   "fieldname": "total_repeat",
+   "fieldtype": "Int",
+   "label": "Total Repetidos"
+  },
+  {
+   "fieldname": "total_error",
+   "fieldtype": "Int",
+   "label": "Total Errores"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-11-16 10:04:30.661675",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_PatientUpload",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
