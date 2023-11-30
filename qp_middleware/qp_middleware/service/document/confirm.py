@@ -103,8 +103,6 @@ def get_confirm_payload(document):
     })
 
 def send_confirm(document, url):
-
-    #url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/DavitaRegistroDocumentoWS_RegistrarFacturaVenta"
     
     token = get_token()
     
