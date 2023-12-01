@@ -81,7 +81,7 @@ def save_row(rows, upload_id):
 
         if row[0] and row[8] and row[14] and row[37] and row[51]:
 
-            group_code = row[2]+'-'+row[14]
+            group_code = str(row[2])+'-'+str(row[14])
 
             doc = frappe.get_doc({
                 'doctype': 'qp_md_invoice_sync',
