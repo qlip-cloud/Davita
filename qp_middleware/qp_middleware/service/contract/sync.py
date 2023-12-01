@@ -11,11 +11,11 @@ def handler():
     
     response_json = get_response("list_contrats")
 
-    contract_id = tuple([ contract["idContrato"] for contract in response_json["value"]])
+    id_cliente = tuple([ contract["idCliente"] for contract in response_json["value"]])
 
-    result = frappe.get_list(doctype = "qp_md_Contract",  filters = {"id_contrato": ["in", contract_id]}, pluck = 'id_contrato')
+    result = frappe.get_list(doctype = "qp_md_Contract",  filters = {"id_cliente": ["in", id_cliente]}, pluck = 'id_cliente')
 
-    new_contracts = list(filter(lambda x: x["idContrato"] not in result, response_json["value"]))
+    new_contracts = list(filter(lambda x: x["idCliente"] not in result, response_json["value"]))
     
     values = []  
 
