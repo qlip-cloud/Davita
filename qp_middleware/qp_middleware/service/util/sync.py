@@ -9,12 +9,22 @@ from qp_authorization.use_case.oauth2.authorize import get_token
 
 def get_list(enviroment, code, filters = None):
     
-    token = get_token()
-
     enpoint = frappe.get_doc("qp_md_Endpoint", code)
 
     url = enviroment.get_url_with_company_and_filters(enpoint.url, filters) if filters else enviroment.get_url_with_company(enpoint.url)
-    
+
+    response_values = {
+        "value" : []
+    }
+
+    callback_get_list(url, response_values)
+
+    return response_values
+
+def callback_get_list(url, response_values):
+
+    token = get_token()
+
     headers = {
         'Authorization': 'Bearer {}'.format(token)
     }
@@ -27,7 +37,11 @@ def get_list(enviroment, code, filters = None):
 
         frappe.throw(response_json["error"])
 
-    return response_json
+    response_values["value"] += response_json['value']
+
+    if "@odata.nextLink" in response_json and response_json["@odata.nextLink"]:
+
+        callback_get_list(response_json["@odata.nextLink"], response_values)
 
 def get_response(code, filters = None):
 

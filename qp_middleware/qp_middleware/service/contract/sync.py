@@ -21,7 +21,9 @@ def handler():
 
     for iter in new_contracts:
         
-        values.append((iter['idCliente'], iter['idContrato'], iter['estadoContrato'],iter['estadoAprobacionContrato'], iter['idContratoPadre'], iter['idCliente'],
+        name = str(iter['idCliente'])+":"+str(iter['idContrato'])
+
+        values.append((name, iter['idContrato'], iter['estadoContrato'],iter['estadoAprobacionContrato'], iter['idContratoPadre'], iter['idCliente'],
                        iter['numContactoCliente'], iter['tipoRegimen'], iter['fechaInicioContrato'],iter['fechaFinContrato'], iter['terminosPago'], iter['descuentoFinanciero'],
                        iter['idTipoContrato'], iter['tipoCliente'], iter['puntoFacturacion'],iter['comDescCondicionado'], now(), 'Administrator'))
 
