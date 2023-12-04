@@ -5,9 +5,10 @@ frappe.ui.form.on('qp_md_upload_xlsx', {
 	refresh: function(frm) {
 		if (frm.doc.is_background) {
 			frm.set_intro('Se esta ejecutando una tarea en segundo plano', 'yellow');
-			frm.doc.is_background
 		}
-
+		if (frm.doc.error) {
+			frm.set_intro('Error al procesar el excel', 'red');
+		}
 		if (!(frm.is_new())){
 
 			if (!frm.doc.is_background) {
