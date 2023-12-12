@@ -13,9 +13,13 @@
   "primer_apellido",
   "segundo_apellido",
   "numero_telefonico",
+  "celular",
   "correo_electronico",
+  "direccion",
   "id_plan",
   "tipo_usuario",
+  "nombre_usuario",
+  "feche_mov",
   "group_code",
   "is_sync",
   "upload_id",
@@ -77,16 +81,36 @@
    "label": "tipo Usuario"
   },
   {
-   "default": "0",
-   "fieldname": "is_sync",
-   "fieldtype": "Check",
-   "label": "is_sync"
+   "fieldname": "celular",
+   "fieldtype": "Data",
+   "label": "celular"
+  },
+  {
+   "fieldname": "direccion",
+   "fieldtype": "Long Text",
+   "label": "direccion"
+  },
+  {
+   "fieldname": "nombre_usuario",
+   "fieldtype": "Data",
+   "label": "Nombre Usuario"
+  },
+  {
+   "fieldname": "feche_mov",
+   "fieldtype": "Date",
+   "label": "Feche mov"
   },
   {
    "fieldname": "group_code",
    "fieldtype": "Data",
    "label": "group",
    "unique": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_sync",
+   "fieldtype": "Check",
+   "label": "is_sync"
   },
   {
    "fieldname": "upload_id",
@@ -112,7 +136,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-28 10:48:09.027678",
+ "modified": "2023-12-12 13:11:36.868089",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Patient",

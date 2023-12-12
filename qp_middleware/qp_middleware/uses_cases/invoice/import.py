@@ -28,14 +28,22 @@ def handler(upload_xlsx, method):
 
 def import_xlsx(upload_xlsx):
     
-    list_repeat,list_group_code = import_excel(upload_xlsx)
+    try:
 
-    result = document_save(upload_xlsx)
+        list_repeat,list_group_code = import_excel(upload_xlsx)
 
-    set_stadistic(upload_xlsx, list_group_code, list_repeat, result)
-    
-    sync_invoices(upload_xlsx)
-    
+        result = document_save(upload_xlsx)
+
+        set_stadistic(upload_xlsx, list_group_code, list_repeat, result)
+        
+        sync_invoices(upload_xlsx)
+
+    except Exception as error:
+
+        frappe.log_error(message=frappe.get_traceback(), title="Error importando xlsx: "+ upload_xlsx.name)
+
+        upload_xlsx.error = True
+
     upload_xlsx.is_background = False
 
     upload_xlsx.save()
@@ -81,7 +89,7 @@ def save_row(rows, upload_id):
 
         if row[0] and row[8] and row[14] and row[37] and row[51]:
 
-            group_code = row[2]+'-'+row[14]
+            group_code = str(row[2])+'-'+str(row[14])
 
             doc = frappe.get_doc({
                 'doctype': 'qp_md_invoice_sync',
@@ -169,7 +177,7 @@ def save_row(rows, upload_id):
         
         return search_repeat(list_doc, set(list_group_code))
 
-    return []
+    frappe.throw("No hay lineas validas en el excel")
 
 def search_repeat(list_doc, list_group_code):
 

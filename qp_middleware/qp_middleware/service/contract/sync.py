@@ -11,17 +11,19 @@ def handler():
     
     response_json = get_response("list_contrats")
 
-    contract_id = tuple([ contract["idContrato"] for contract in response_json["value"]])
+    id_cliente = tuple([ contract["idCliente"] for contract in response_json["value"]])
 
-    result = frappe.get_list(doctype = "qp_md_Contract",  filters = {"id_contrato": ["in", contract_id]}, pluck = 'id_contrato')
+    result = frappe.get_list(doctype = "qp_md_Contract",  filters = {"id_cliente": ["in", id_cliente]}, pluck = 'id_cliente')
 
-    new_contracts = list(filter(lambda x: x["idContrato"] not in result, response_json["value"]))
+    new_contracts = list(filter(lambda x: x["idCliente"] not in result, response_json["value"]))
     
     values = []  
 
     for iter in new_contracts:
         
-        values.append((iter['idContrato'], iter['idContrato'], iter['estadoContrato'],iter['estadoAprobacionContrato'], iter['idContratoPadre'], iter['idCliente'],
+        name = str(iter['idCliente'])+":"+str(iter['idContrato'])
+
+        values.append((name, iter['idContrato'], iter['estadoContrato'],iter['estadoAprobacionContrato'], iter['idContratoPadre'], iter['idCliente'],
                        iter['numContactoCliente'], iter['tipoRegimen'], iter['fechaInicioContrato'],iter['fechaFinContrato'], iter['terminosPago'], iter['descuentoFinanciero'],
                        iter['idTipoContrato'], iter['tipoCliente'], iter['puntoFacturacion'],iter['comDescCondicionado'], now(), 'Administrator'))
 
