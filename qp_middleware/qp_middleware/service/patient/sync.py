@@ -12,36 +12,60 @@ def handler():
 
     response_json = get_response("list_patient")
 
-    patient_nit = []
+    values = []
 
-    for patient in response_json["value"]:
+    tipos_identificaciones = frappe.get_list("qp_md_TipoIdentificacion", fields = ["description", "code"])
 
-        patient["group_code"] = str(patient['tipoIdentificacion']+'-'+patient['numeroIdentificacion']).lower()
+    format_tipos_Identificaciones = {}
 
-        patient_nit.append(patient["group_code"])
+    for tipo_identificaciones  in tipos_identificaciones:
 
-    result = frappe.get_list(doctype = "qp_md_Patient",  filters = {"group_code": ["in", patient_nit]}, pluck = 'group_code')
-
-    new_patients = list(filter(lambda x: x['group_code'] not in result, response_json["value"]))
+        format_tipos_Identificaciones.update({tipo_identificaciones.get("description"): tipo_identificaciones.get("code")})
     
-    values = []  
+    list_group_code = frappe.db.get_list('qp_md_Patient', pluck='group_code')
 
-    for iter in new_patients:
 
-        values.append((iter['group_code'], iter['tipoIdentificacion'], iter['numeroIdentificacion'],iter['primerNombre'], iter['segundoNombre'], iter['primerApellido'],
-                       iter['segundoApellido'], iter['numeroTelefonico'], iter['correoElectronico'],iter['idPlan'], iter['tipoUsuario'], "Import", True, iter['group_code'], now(), 'Administrator'))
+    error_group = []
 
-    if new_patients:
+    for iter in response_json["value"]:
+
+        tipo_identificacion = format_tipos_Identificaciones.get(iter['tipoIdentificacion'])
+        
+        if tipo_identificacion:
+            
+
+            dimension = str(tipo_identificacion + str(iter.get("numeroIdentificacion"))).upper()
+                
+            group_code = str(dimension + '_' + iter['tipoUsuario'][0]).upper()
+            
+            if not group_code in list_group_code:
+
+                values.append((group_code, tipo_identificacion, iter['tipoIdentificacion'], iter['numeroIdentificacion'],iter['primerNombre'], iter['segundoNombre'], iter['primerApellido'],
+                        iter['segundoApellido'], iter['numeroTelefonico'], iter['correoElectronico'],iter['idPlan'], iter['tipoUsuario'][0], iter['tipoUsuario'], "Import", True, group_code, dimension, now(), now(), 'Administrator', 'Administrator'))
+        
+        else:
+
+            error_group.append(iter['tipoIdentificacion'])
+
+
+    if values:
 
         table = "tabqp_md_Patient"
 
-        fields = "(name, tipo_identificacion, numero_identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, numero_telefonico \
-                    ,correo_electronico, id_plan, tipo_usuario,origin, is_sync, group_code,creation, owner)"
+        fields = "(name, tipo_identificacion, nombre_identificacion, numero_identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, numero_telefonico \
+                    ,correo_electronico, id_plan, tipo_usuario, nombre_usuario,origin, is_sync, group_code, dimension, creation, modified, modified_by, owner)"
         
         persist(table, fields, values)
+
+    if error_group:
+
+        error_group = list(set(error_group))
+
+        error = "Estos tipos de identificacion no esta configurado: {}".format(str(error_group).replace("[", "").replace("]", ""))
 
     return {
         "status": 200,
         "total": len(response_json["value"]),
-        "total_sync": len(new_patients)
+        "total_sync": len(values),
+        "error": error if error_group else ""
     }

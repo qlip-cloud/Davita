@@ -1,0 +1,142 @@
+{
+ "actions": [],
+ "creation": "2023-12-14 08:51:14.862639",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "total",
+  "sbsectotal",
+  "patient_created",
+  "patient_repeated",
+  "patient_error",
+  "sbcol_column",
+  "dimension_created",
+  "dimension_repeated",
+  "dimension_error",
+  "ssdimension",
+  "start_date",
+  "scfecha",
+  "end_date",
+  "ssfecha",
+  "is_background"
+ ],
+ "fields": [
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "fecha inicio",
+   "read_only": 1
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "fecha fin",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "patient_created",
+   "fieldtype": "Int",
+   "label": "Pacientes Creados",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "patient_repeated",
+   "fieldtype": "Int",
+   "label": "Pacientes repetidos",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "patient_error",
+   "fieldtype": "Int",
+   "label": "Pacientes con errores",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "dimension_error",
+   "fieldtype": "Int",
+   "label": "Dimensiones con errores",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "dimension_repeated",
+   "fieldtype": "Int",
+   "label": "Dimensiones repetidas",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Total",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sbcol_column",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_background",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "is_background",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sbsectotal",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "ssdimension",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "scfecha",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "ssfecha",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "dimension_created",
+   "fieldtype": "Int",
+   "label": "Dimensiones Creadas",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-12-14 09:48:44.434676",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_PatientSyncLog",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

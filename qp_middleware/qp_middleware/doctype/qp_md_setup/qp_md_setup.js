@@ -124,10 +124,11 @@ function send_request(method){
 							<li> Confirmacion</li>
 							<li> Total Recibido: ${response.total}</li>
 							<li> Total Confirmados: ${response.total_sync}</li>
+							<li> Errores: ${"error" in response  ? response.error : 0}</li>
 						</ul>`
 				}
 				if (response.status == 202){
-					message = "Esta actividad se realizara en segundo plano"
+					message = response.msg
 				}
 
 				frappe.msgprint({

@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "tipo_identificacion",
+  "nombre_identificacion",
   "numero_identificacion",
   "primer_nombre",
   "segundo_nombre",
@@ -19,13 +20,17 @@
   "id_plan",
   "tipo_usuario",
   "nombre_usuario",
-  "feche_mov",
+  "fecha_mov",
   "group_code",
+  "dimension",
   "is_sync",
   "upload_id",
   "origin",
+  "created_sync",
   "request",
-  "response"
+  "response",
+  "request_dimension",
+  "response_dimension"
  ],
  "fields": [
   {
@@ -96,11 +101,6 @@
    "label": "Nombre Usuario"
   },
   {
-   "fieldname": "feche_mov",
-   "fieldtype": "Date",
-   "label": "Feche mov"
-  },
-  {
    "fieldname": "group_code",
    "fieldtype": "Data",
    "label": "group",
@@ -132,11 +132,42 @@
    "fieldname": "response",
    "fieldtype": "Long Text",
    "label": "response"
+  },
+  {
+   "fieldname": "fecha_mov",
+   "fieldtype": "Date",
+   "label": "Fecha mov"
+  },
+  {
+   "fieldname": "dimension",
+   "fieldtype": "Data",
+   "label": "dimension"
+  },
+  {
+   "fieldname": "nombre_identificacion",
+   "fieldtype": "Data",
+   "label": "Nombre Identificacion"
+  },
+  {
+   "fieldname": "request_dimension",
+   "fieldtype": "Long Text",
+   "label": "request_dimension"
+  },
+  {
+   "fieldname": "response_dimension",
+   "fieldtype": "Long Text",
+   "label": "response_dimension"
+  },
+  {
+   "default": "0",
+   "fieldname": "created_sync",
+   "fieldtype": "Check",
+   "label": "created_sync"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-12 13:11:36.868089",
+ "modified": "2023-12-13 17:58:51.971525",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Patient",
