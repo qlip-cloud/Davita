@@ -39,6 +39,8 @@ def handler():
     
 def sync(sync_log, patients):
 
+    patient_url, dimension_url=  get_urls()
+
     for patient_iter in patients:
 
         try:
@@ -47,9 +49,9 @@ def sync(sync_log, patients):
             
             patient = frappe.get_doc("qp_md_Patient", patient_iter.name)
 
-            sync_patient(patient, token, sync_log)
+            sync_patient(patient, token, sync_log, patient_url)
 
-            sync_dimension(patient, token, sync_log)
+            sync_dimension(patient, token, sync_log, dimension_url)
 
         except:
              
@@ -67,9 +69,23 @@ def sync(sync_log, patients):
 
     frappe.db.commit()
 
-def sync_dimension(patient, token, sync_log):
+def get_urls():
 
-    url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/DavitaListadoDimensiones"
+    setup = frappe.get_doc("qp_md_Setup")
+
+    enviroment = frappe.get_doc("qp_md_Enviroment", setup.enviroment)
+
+    enpoint = frappe.get_doc("qp_md_Endpoint", "patient_create")
+
+    patient_url = enviroment.get_url_with_company(enpoint.url)
+
+    enpoint = frappe.get_doc("qp_md_Endpoint", "dimension_create")
+
+    dimension_url = enviroment.get_url_with_company(enpoint.url)
+
+    return patient_url, dimension_url
+
+def sync_dimension(patient, token, sync_log, url):
 
     response, response_json, error = send_petition(token, url, patient.request_dimension)
 
@@ -91,11 +107,9 @@ def sync_dimension(patient, token, sync_log):
         
         sync_log.dimension_created += 1
     
-def sync_patient(patient, token, sync_log):
+def sync_patient(patient, token, sync_log, url):
 
     if not patient.created_sync:
-
-        url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/DavitaCrearPaciente"
             
         response, response_json, error = send_petition(token, url, patient.request)
 
