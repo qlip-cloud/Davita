@@ -50,19 +50,21 @@ def save_row(rows, upload_id):
 
     total = 0
 
-    tipos_identificaciones = frappe.get_list("qp_md_TipoIdentificacion", fields = ["description", "code"])
-
     format_tipos_Identificaciones = {}
 
-    for tipo_identificaciones  in tipos_identificaciones:
+    format_tipos_usuarios = {}
 
-        format_tipos_Identificaciones.update({tipo_identificaciones.get("code"): tipo_identificaciones.get("description")})
+    get_format_tipos_Identificaciones(format_tipos_Identificaciones)
+
+    get_format_tipos_usuarios(format_tipos_usuarios)
 
     for row in rows:
 
         if row_valid and row[0]:
 
             nombre_identificacion = format_tipos_Identificaciones.get(row[0]) or ""
+
+            codigo_usuario = format_tipos_usuarios.get(row[10]) or ""
         
             if nombre_identificacion:
 
@@ -88,10 +90,10 @@ def save_row(rows, upload_id):
                             row[7] or "",
                             row[8] or "",
                             row[9] or "",
-                            row[10] or "",
+                            codigo_usuario,
                             str(row[11])  or "",
                             upload_id, group_code, dimension, "Excel", 
-                            set_request(row, nombre_identificacion) ,
+                            set_request(row, nombre_identificacion, codigo_usuario) ,
                             set_request_dimension(row, dimension),
                             now(),now(), "Administrator", "Administrator" 
                         )
@@ -107,7 +109,25 @@ def save_row(rows, upload_id):
 
     return [],total,0
 
-def set_request(row, nombre_identificacion):
+
+def get_format_tipos_Identificaciones(format_tipos_Identificaciones):
+
+    tipos_identificaciones = frappe.get_list("qp_md_TipoIdentificacion", fields = ["description", "code"])
+
+
+    for tipo_identificaciones  in tipos_identificaciones:
+
+        format_tipos_Identificaciones.update({tipo_identificaciones.get("code"): tipo_identificaciones.get("description")})
+
+def get_format_tipos_usuarios(format_tipos_usuarios):
+
+    tipos_usuarios = frappe.get_list("qp_md_TipoUsuario", fields = ["description", "code"])
+
+    for tipo_usuario  in tipos_usuarios:
+
+        format_tipos_usuarios.update({tipo_usuario.get("description"): tipo_usuario.get("code")})
+
+def set_request(row, nombre_identificacion, codigo_usuario):
 
     return json.dumps({
             "tipoIdentificacion": nombre_identificacion,
@@ -119,7 +139,7 @@ def set_request(row, nombre_identificacion):
             "numeroTelefonico": str(row[6] or ""),
             "correoElectronico": "",
             "idPlan": "",
-            "tipoUsuario": row[10] or ""
+            "tipoUsuario": codigo_usuario
         })
 
 def set_request_dimension(row, dimension):
