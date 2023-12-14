@@ -7,14 +7,12 @@ from frappe.utils import now
 def handler():
 
     
-    patients = frappe.get_list("qp_md_Patient", {"is_sync": False})
+    patients = frappe.get_list("qp_md_Patient", {"is_sync": False,"origin": ["!=","Import"]})
     
     sync_log = frappe.new_doc("qp_md_PatientSyncLog")
     
     sync_log.total = len(patients)
-    
-    sync_log.start_date = now()
-    
+        
     sync_log.is_background = True
 
     sync_log.insert()
@@ -39,28 +37,38 @@ def handler():
     
 def sync(sync_log, patients):
 
-    patient_url, dimension_url=  get_urls()
+    sync_log.start_date = now()
 
-    for patient_iter in patients:
+    try:
 
-        try:
+        patient_url, dimension_url=  get_urls()
+
+        for patient_iter in patients:
+
+            try:
+                
+                token = get_token()
+                
+                patient = frappe.get_doc("qp_md_Patient", patient_iter.name)
+
+                sync_patient(patient, token, sync_log, patient_url)
+
+                sync_dimension(patient, token, sync_log, dimension_url)
+
+            except:
+                
+                pass
             
-            token = get_token()
-            
-            patient = frappe.get_doc("qp_md_Patient", patient_iter.name)
+            sync_log.save()
 
-            sync_patient(patient, token, sync_log, patient_url)
+            patient.save()
 
-            sync_dimension(patient, token, sync_log, dimension_url)
-
-        except:
-             
-             pass
-
-        patient.save()
-
-        frappe.db.commit()
+            frappe.db.commit()
     
+    except:
+
+        sync_log.error = frappe.get_traceback()
+
     sync_log.is_background = False
         
     sync_log.end_date = now()

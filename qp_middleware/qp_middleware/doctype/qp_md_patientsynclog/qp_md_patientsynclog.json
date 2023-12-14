@@ -19,7 +19,9 @@
   "scfecha",
   "end_date",
   "ssfecha",
-  "is_background"
+  "is_background",
+  "ssbackground",
+  "error"
  ],
  "fields": [
   {
@@ -113,11 +115,20 @@
    "fieldtype": "Int",
    "label": "Dimensiones Creadas",
    "read_only": 1
+  },
+  {
+   "fieldname": "ssbackground",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "error",
+   "fieldtype": "Long Text",
+   "label": "error"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-14 09:48:44.434676",
+ "modified": "2023-12-14 13:31:08.256698",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_PatientSyncLog",
