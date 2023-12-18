@@ -1,0 +1,93 @@
+{
+ "actions": [],
+ "creation": "2023-12-15 13:42:16.428110",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "file",
+  "total",
+  "total_created",
+  "total_error",
+  "total_repeat",
+  "send_success",
+  "send_error",
+  "is_background"
+ ],
+ "fields": [
+  {
+   "fieldname": "total",
+   "fieldtype": "Int",
+   "label": "total",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_background",
+   "fieldtype": "Check",
+   "label": "is_background",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_created",
+   "fieldtype": "Int",
+   "label": "Consumos creados",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_error",
+   "fieldtype": "Int",
+   "label": "Consumos con errores",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_repeat",
+   "fieldtype": "Int",
+   "label": "Consumos repetidos",
+   "read_only": 1
+  },
+  {
+   "fieldname": "send_success",
+   "fieldtype": "Int",
+   "label": "Enviadas correctas",
+   "read_only": 1
+  },
+  {
+   "fieldname": "send_error",
+   "fieldtype": "Int",
+   "label": "Enviadas con errores",
+   "read_only": 1
+  },
+  {
+   "fieldname": "file",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "label": "Archivo",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-12-15 14:46:51.321073",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_ConsumoUpload",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

@@ -95,6 +95,9 @@ doc_events = {
 	},
     "qp_md_PatientUpload": {
  		"before_save": "qp_middleware.qp_middleware.uses_cases.patient.import.handler"         
+	},
+    "qp_md_ConsumoUpload": {
+ 		"before_save": "qp_middleware.qp_middleware.uses_cases.consumo.import.handler"         
 	}
  }
 

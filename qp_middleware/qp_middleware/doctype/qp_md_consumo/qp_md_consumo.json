@@ -1,0 +1,212 @@
+{
+ "actions": [],
+ "creation": "2023-12-15 13:37:15.188325",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "est_adm",
+  "headquarter_dynamic",
+  "id_unico",
+  "ingreso",
+  "tipo_identificacion",
+  "identificacion",
+  "dimension_code",
+  "is_dimension_sync",
+  "nombre",
+  "responsable_eps",
+  "fecha_ordenamiento",
+  "codigo_medicamento",
+  "item_dynamic",
+  "descripcion_medicamento",
+  "justificacion_observaciones",
+  "posologia",
+  "cantidad_solicitada",
+  "codigo_unidad",
+  "descripcion_unidad",
+  "codigo_estado",
+  "descripcion_estado",
+  "codigo_ubicacion",
+  "descripcion_ubicacion",
+  "is_sync",
+  "request",
+  "response",
+  "upload_id",
+  "error",
+  "is_valid"
+ ],
+ "fields": [
+  {
+   "fieldname": "est_adm",
+   "fieldtype": "Data",
+   "label": "EST_ADM"
+  },
+  {
+   "fieldname": "id_unico",
+   "fieldtype": "Data",
+   "label": "ID_UNICO"
+  },
+  {
+   "fieldname": "ingreso",
+   "fieldtype": "Data",
+   "label": "INGRESO"
+  },
+  {
+   "fieldname": "tipo_identificacion",
+   "fieldtype": "Data",
+   "label": "TIPO_IDENTIFICACION"
+  },
+  {
+   "fieldname": "identificacion",
+   "fieldtype": "Data",
+   "label": "IDENTIFICACION"
+  },
+  {
+   "fieldname": "nombre",
+   "fieldtype": "Data",
+   "label": "NOMBRE"
+  },
+  {
+   "fieldname": "responsable_eps",
+   "fieldtype": "Data",
+   "label": "RESPONSABLE_EPS"
+  },
+  {
+   "fieldname": "fecha_ordenamiento",
+   "fieldtype": "Datetime",
+   "label": "FECHA_ORDENAMIENTO"
+  },
+  {
+   "fieldname": "codigo_medicamento",
+   "fieldtype": "Data",
+   "label": "CODIGO_MEDICAMENTO"
+  },
+  {
+   "fieldname": "descripcion_medicamento",
+   "fieldtype": "Long Text",
+   "label": "DESCRIPCION_MEDICAMENTO"
+  },
+  {
+   "fieldname": "justificacion_observaciones",
+   "fieldtype": "Long Text",
+   "label": "JUSTIFICACION_OBSERVACIONES"
+  },
+  {
+   "fieldname": "posologia",
+   "fieldtype": "Data",
+   "label": "POSOLOGIA"
+  },
+  {
+   "fieldname": "cantidad_solicitada",
+   "fieldtype": "Data",
+   "label": "CANTIDAD_SOLICITADA"
+  },
+  {
+   "fieldname": "codigo_unidad",
+   "fieldtype": "Data",
+   "label": "CODIGO_UNIDAD"
+  },
+  {
+   "fieldname": "descripcion_unidad",
+   "fieldtype": "Data",
+   "label": "DESCRIPCION_UNIDAD"
+  },
+  {
+   "fieldname": "codigo_estado",
+   "fieldtype": "Data",
+   "label": "CODIGO_ESTADO"
+  },
+  {
+   "fieldname": "descripcion_estado",
+   "fieldtype": "Data",
+   "label": "DESCRIPCION_ESTADO"
+  },
+  {
+   "fieldname": "codigo_ubicacion",
+   "fieldtype": "Data",
+   "label": "CODIGO_UBICACION"
+  },
+  {
+   "fieldname": "descripcion_ubicacion",
+   "fieldtype": "Data",
+   "label": "DESCRIPCION_UBICACION"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_sync",
+   "fieldtype": "Check",
+   "label": "is_sync"
+  },
+  {
+   "fieldname": "request",
+   "fieldtype": "Long Text",
+   "label": "request"
+  },
+  {
+   "fieldname": "response",
+   "fieldtype": "Long Text",
+   "label": "response"
+  },
+  {
+   "fieldname": "upload_id",
+   "fieldtype": "Data",
+   "label": "upload_id"
+  },
+  {
+   "fieldname": "headquarter_dynamic",
+   "fieldtype": "Data",
+   "label": "headquarter_dynamic"
+  },
+  {
+   "fieldname": "dimension_code",
+   "fieldtype": "Data",
+   "label": "dimension_code"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_dimension_sync",
+   "fieldtype": "Check",
+   "label": "is_dimension_sync"
+  },
+  {
+   "fieldname": "item_dynamic",
+   "fieldtype": "Data",
+   "label": "item_dynamic"
+  },
+  {
+   "fieldname": "error",
+   "fieldtype": "Long Text",
+   "label": "error"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_valid",
+   "fieldtype": "Check",
+   "label": "is_valid"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-12-18 11:18:05.281873",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_Consumo",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
