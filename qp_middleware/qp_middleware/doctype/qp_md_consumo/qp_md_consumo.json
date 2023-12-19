@@ -32,7 +32,8 @@
   "response",
   "upload_id",
   "error",
-  "is_valid"
+  "is_valid",
+  "is_error_sync"
  ],
  "fields": [
   {
@@ -176,11 +177,17 @@
    "fieldname": "is_valid",
    "fieldtype": "Check",
    "label": "is_valid"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_error_sync",
+   "fieldtype": "Check",
+   "label": "is_error_sync"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-19 10:53:13.743093",
+ "modified": "2023-12-19 16:30:18.181523",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Consumo",
