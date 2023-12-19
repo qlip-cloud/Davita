@@ -1,11 +1,10 @@
 import json
 import frappe
+from frappe.utils import now
 from qp_authorization.use_case.oauth2.authorize import get_token
 from qp_middleware.qp_middleware.service.util.sync import send_petition
 from qp_middleware.qp_middleware.uses_cases.dimension_patient.sync import handler as sync_dimension
-
 import math
-
 
 @frappe.whitelist()
 def handler(upload_id):
@@ -18,14 +17,17 @@ def handler(upload_id):
             "status": 500,
             "msg": "Ya existe una confirmacion en proceso"
         }
-    upload.is_background = True
-    
-    upload.save()
+    frappe.db.set_value('qp_md_ConsumoUpload', upload_id, 
+                        {
+                            'is_background': True, 
+                            'start_date': now() 
+                        })
     
     frappe.enqueue(
                 sync,
                 queue='long',                
-                is_sync=True,
+                is_async=True,
+                #now=True,
                 job_name="send sync consumo: "+ upload_id,
                 timeout=5400000,
                 upload_id = upload_id
@@ -47,11 +49,13 @@ def sync(upload_id):
 
 
     except Exception as error:
-        pass
+        
+        set_consumoUploadStadistic(upload_id, True)
+
 
     frappe.db.commit()
 
-def set_consumoUploadStadistic(upload_id):
+def set_consumoUploadStadistic(upload_id, error = False):
 
     sql = """
             select sum(is_sync) as count_sync, sum(is_error_sync)  as count_error from tabqp_md_Consumo where upload_id = '{}'
@@ -64,6 +68,8 @@ def set_consumoUploadStadistic(upload_id):
                             'is_background': False,
                             'send_success': result[0].get("count_sync"),
                             'send_error': result[0].get("count_error"),
+                            "is_error_sync": error,
+                            "end_date": now()
                          })
 
 
@@ -104,70 +110,7 @@ def get_urls():
 
     return enviroment.get_url_ws_protocol(enpoint.url)
 
-"""
-def send_consumos(consumos, enviroment, endpoint, setup):
 
-    url = enviroment.get_url_ws_protocol(endpoint.url)
-
-    range_total = math.ceil(len(consumos) / setup.invoices_group)
-
-    response_list = []
-
-    for n in range(range_total):
-        
-        response, response_json, error = send_document(consumos[n * setup.invoices_group : (n+1) * setup.invoices_group], url)
-        
-        try:
-            
-            return_value = response_json["Soap:Envelope"]["Soap:Body"]["RegistrarFacturasVentaWS_Result"]["return_value"]
-            
-            list_split = return_value.split(";")
-        
-            del list_split[-1]
-
-            list_split = list(map(lambda x: x.replace(" ", ""), list_split))
-
-            response_list += list_split
-        
-        except:
-
-            pass      
-
-    is_complete = 0
-
-    for key, document in enumerate(consumos):
-
-        try:
-
-            int(response_list[key])
-
-            document.document_code = response_list[key]
-
-            document.is_complete = True
-
-            is_complete +=1
-
-            document.response = response
-
-        except:
-            
-            document.response = response_list[key] if response_list and response_list[key] else response
-
-        #if response_list[key] != "Error" and response_list[key] != "":
-            
-        #document.is_complete = True
-
-        #document.document_code = response_list[key]
-
-
-        document.save()
-
-    frappe.db.commit()
-
-    return {
-        "send_success": is_complete,
-        "send_error": len(documents) - is_complete
-    }"""
 
 def send_document(payloads, url):
 

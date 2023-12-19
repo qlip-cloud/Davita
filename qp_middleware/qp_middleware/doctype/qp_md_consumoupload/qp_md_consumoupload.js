@@ -3,13 +3,14 @@
 
 frappe.ui.form.on('qp_md_ConsumoUpload', {
 	refresh: function(frm) {
-
+		if (frm.doc.is_background){
+			frm.set_intro('Se esta ejecutando una tarea en segundo plano', 'yellow');
+		}
 		if (frm.doc.is_error_sync) {
 			frm.set_intro('Error al procesar el excel', 'red');
 		}
-		if (true){
-
-			if (true) {
+		if (!(frm.is_new())){
+			if (!frm.doc.start_date) {
 				frm.add_custom_button(__('Sincronizar'), function(){
 					if (!frm.is_dirty()){
 						consumo_sync(frm, frm.doc.name)
@@ -21,19 +22,8 @@ frappe.ui.form.on('qp_md_ConsumoUpload', {
 					
 				});
 			}
-			else{
-				frm.set_intro('Se esta ejecutando una tarea en segundo plano', 'yellow');
+			
 
-			}
-			/*frm.add_custom_button(__('Descargar'), function(){
-				if (!frm.is_dirty()){
-					download_doc(frm, frm.doc.name)
-				}
-				else{
-					show_alert (__("Unable to sync, <br> There are unsaved changes"))
-				}
-				
-			});*/
 		}
 	}
 });

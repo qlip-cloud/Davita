@@ -57,11 +57,13 @@ def save_row(rows, upload_id):
 
             code_headquarter, error_headquarter = get_code_headquarter(row[0], list_headquarter)
 
-            code_item, error_item = get_code_dynamic(row[8])
+            #code_item, error_item = get_code_dynamic(row[8])
 
-            is_valid = True if code_headquarter and code_item else False
+            #is_valid = True if code_headquarter and code_item else False
+            is_valid = True if code_headquarter else False
 
-            error = error_headquarter + error_item
+            #error = error_headquarter + error_item
+            error = error_headquarter
 
             dimension_code = get_dimension(row[3],str(row[4]))
 
@@ -92,10 +94,10 @@ def save_row(rows, upload_id):
                     row[17] or "",
                     row[18] or "",
                     upload_id,
-                    set_request(code_headquarter, code_item, dimension_code, posting_date, quantity),
+                    set_request(code_headquarter, row[8], dimension_code, posting_date, quantity),
                     code_headquarter,
                     dimension_code,
-                    code_item,
+                    row[8],
                     error,
                     is_valid,
                     now(),now(), "Administrator", "Administrator" 

@@ -7,12 +7,21 @@
  "field_order": [
   "file",
   "total",
+  "sstotal",
   "total_created",
   "total_error",
   "total_repeat",
+  "scconsumorepetido",
   "send_success",
   "send_error",
-  "is_background"
+  "sssend_error",
+  "is_background",
+  "scisbackground",
+  "is_error_sync",
+  "sserror",
+  "start_date",
+  "scstartdate",
+  "end_date"
  ],
  "fields": [
   {
@@ -64,11 +73,54 @@
    "in_list_view": 1,
    "label": "Archivo",
    "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_error_sync",
+   "fieldtype": "Check",
+   "label": "is_error_sync",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sstotal",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "scconsumorepetido",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sssend_error",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "scisbackground",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sserror",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Datetime",
+   "label": "Fecha inicio",
+   "read_only": 1
+  },
+  {
+   "fieldname": "scstartdate",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Datetime",
+   "label": "Fecha Fin",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-15 14:46:51.321073",
+ "modified": "2023-12-19 15:58:41.622375",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_ConsumoUpload",
