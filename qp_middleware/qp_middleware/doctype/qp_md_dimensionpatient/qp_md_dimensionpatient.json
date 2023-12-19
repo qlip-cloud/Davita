@@ -1,0 +1,70 @@
+{
+ "actions": [],
+ "autoname": "field:code",
+ "creation": "2023-12-19 09:46:40.422316",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "code",
+  "request",
+  "response",
+  "is_sync",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "request",
+   "fieldtype": "Long Text",
+   "label": "request"
+  },
+  {
+   "fieldname": "response",
+   "fieldtype": "Long Text",
+   "label": "response"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_sync",
+   "fieldtype": "Check",
+   "label": "is_sync"
+  },
+  {
+   "fieldname": "code",
+   "fieldtype": "Data",
+   "label": "code",
+   "unique": 1
+  },
+  {
+   "default": "Created",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "status",
+   "options": "Created\nRepeated\nError"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-12-19 11:17:36.994653",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_DimensionPatient",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

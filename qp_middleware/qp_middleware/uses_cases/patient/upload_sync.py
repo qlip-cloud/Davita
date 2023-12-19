@@ -2,6 +2,7 @@ import frappe
 from qp_middleware.qp_middleware.service.util.sync import send_petition
 from qp_authorization.use_case.oauth2.authorize import get_token
 from frappe.utils import now
+from qp_middleware.qp_middleware.uses_cases.dimension_patient.sync import handler as sync_dimension
 
 @frappe.whitelist()
 def handler():
@@ -41,7 +42,7 @@ def sync(sync_log, patients):
 
     try:
 
-        patient_url, dimension_url=  get_urls()
+        patient_url=  get_urls()
 
         for patient_iter in patients:
 
@@ -53,7 +54,7 @@ def sync(sync_log, patients):
 
                 sync_patient(patient, token, sync_log, patient_url)
 
-                sync_dimension(patient, token, sync_log, dimension_url)
+                __sync_dimension(patient, sync_log)
 
             except:
                 
@@ -87,31 +88,25 @@ def get_urls():
 
     patient_url = enviroment.get_url_with_company(enpoint.url)
 
-    enpoint = frappe.get_doc("qp_md_Endpoint", "dimension_create")
+    return patient_url
 
-    dimension_url = enviroment.get_url_with_company(enpoint.url)
+def __sync_dimension(patient, sync_log):
 
-    return patient_url, dimension_url
+    dimension = sync_dimension(patient.dimension)
 
-def sync_dimension(patient, token, sync_log, url):
+    patient.dimension_code = dimension.name
 
-    response, response_json, error = send_petition(token, url, patient.request_dimension)
-
-    patient.response_dimension = response
-
-    if error:
-        
-        if response_json.get("error").get("code") != 'Internal_EntityWithSameKeyExists':
-
+    if dimension.status == "Error":
+            
             sync_log.dimension_error += 1
         
             patient.is_sync = False
 
-            raise Exception("Error creando dimension")
-        
+    if  dimension.status == "Repeated": 
+
         sync_log.dimension_repeated += 1
 
-    else:
+    if  dimension.status == "Created": 
         
         sync_log.dimension_created += 1
     

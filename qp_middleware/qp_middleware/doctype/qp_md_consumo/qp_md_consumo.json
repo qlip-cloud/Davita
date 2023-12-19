@@ -12,7 +12,6 @@
   "tipo_identificacion",
   "identificacion",
   "dimension_code",
-  "is_dimension_sync",
   "nombre",
   "responsable_eps",
   "fecha_ordenamiento",
@@ -163,12 +162,6 @@
    "label": "dimension_code"
   },
   {
-   "default": "0",
-   "fieldname": "is_dimension_sync",
-   "fieldtype": "Check",
-   "label": "is_dimension_sync"
-  },
-  {
    "fieldname": "item_dynamic",
    "fieldtype": "Data",
    "label": "item_dynamic"
@@ -187,7 +180,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-18 11:18:05.281873",
+ "modified": "2023-12-19 10:53:13.743093",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Consumo",

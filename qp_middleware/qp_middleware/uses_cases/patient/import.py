@@ -33,7 +33,7 @@ def insert_data(tuple_list):
         table = "tabqp_md_Patient"
 
         fields = """(name, nombre_identificacion, tipo_identificacion,numero_identificacion,primer_apellido,segundo_apellido,primer_nombre,segundo_nombre,
-        numero_telefonico,celular,direccion,tipo_usuario,nombre_usuario,fecha_mov,upload_id,group_code,dimension,origin, request, request_dimension,creation, 
+        numero_telefonico,celular,direccion,tipo_usuario,nombre_usuario,fecha_mov,upload_id,group_code,dimension,origin, request,creation, 
         modified, modified_by, owner)"""
 
         persist(table, fields, tuple_list)
@@ -94,7 +94,6 @@ def save_row(rows, upload_id):
                             str(row[11])  or "",
                             upload_id, group_code, dimension, "Excel", 
                             set_request(row, nombre_identificacion, codigo_usuario) ,
-                            set_request_dimension(row, dimension),
                             now(),now(), "Administrator", "Administrator" 
                         )
                     )
@@ -113,7 +112,6 @@ def save_row(rows, upload_id):
 def get_format_tipos_Identificaciones(format_tipos_Identificaciones):
 
     tipos_identificaciones = frappe.get_list("qp_md_TipoIdentificacion", fields = ["description", "code"])
-
 
     for tipo_identificaciones  in tipos_identificaciones:
 
@@ -140,18 +138,4 @@ def set_request(row, nombre_identificacion, codigo_usuario):
             "correoElectronico": "",
             "idPlan": "",
             "tipoUsuario": codigo_usuario
-        })
-
-def set_request_dimension(row, dimension):
-
-    name = row[4] or ""
-    second_name = row[5] or ""
-    lastname = row[2] or ""
-    second_lastname = row[3] or ""
-    return json.dumps({
-            "Dimension_Code": "PACIENTE",
-            "Code": dimension,
-            "Name": name + " " + second_name + " " +lastname + " " +second_lastname,
-            "Dimension_Value_Type": "Standard",
-            "Blocked": False
         })
