@@ -56,6 +56,8 @@ def handler(upload_xlsx):
 
             unit_price = invoice_value / quantity
 
+            item_type = "Item"
+
             if item_code_2 == "399501":
 
                 if line["tipo_servicio"] == "HD PAQUETE":
@@ -88,14 +90,23 @@ def handler(upload_xlsx):
                 
                 document.error += "Producto {} no existe".format(item_code_2)
 
-            item_type = "Item"
-
             item = frappe.new_doc("qp_md_DocumentItem")
 
             setup_item(item,item_code, item_code_2, quantity, line_no,
                     unit_price, item_type, document, document.patient_code)
             
             document.items.append(item)
+
+            if line["empty_2"] and int(line["empty_2"]) > 0:
+
+                line_no += 1000
+
+                item = frappe.new_doc("qp_md_DocumentItem")
+
+                setup_item(item, "IG01001", "IG01001", int(line["empty_2"]), line_no,
+                           0, item_type, document, document.patient_code)
+                
+                document.items.append(item)
 
             if line["cuota_moderadora"] > 0:
 
