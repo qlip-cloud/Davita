@@ -83,19 +83,24 @@ def send_consumos(consumos):
 
         if dimension.is_sync:
             
-            response, response_json, error = send_document([consumo.get("request")], consumo_url)
+            response, response_json, return_value, error = send_document([consumo.get("request")], consumo_url)
+
+            error_response =  True if error or (return_value not in ("Registro exitosamente: -;", "Registro con exito;"))else False
 
             frappe.db.set_value('qp_md_Consumo', consumo.get("name"), {
                     'response': response,
-                    'is_sync': False if error else True,
-                    'is_error_sync': True if error else False
+                    'return_value': return_value,
+                    'is_sync': not error_response,
+                    'is_error_sync': error_response
             })
 
         else: 
             frappe.db.set_value('qp_md_Consumo', consumo.get("name"), {
                     'error': dimension.response,
                     'is_sync': False,
-                    'is_error_sync': True
+                    'is_error_sync': True,
+                    'return_value': return_value
+
             })
 
         frappe.db.commit()
@@ -138,6 +143,6 @@ def send_document(payloads, url):
 
         except Exception as error:
                 
-            return response, response_json, True
+            return response, response_json, "",True
 
-    return response, response_json, False
+    return response, response_json, response_value, False
