@@ -52,7 +52,7 @@ def handler(upload_xlsx):
 
             invoice_value = 0 if document.lhc_contrato else float(document.invoice_value)
             
-            quantity = float(line["cantidad_corregida"])
+            quantity = float(line["cantidad_a_facturar"])
 
             unit_price = invoice_value / quantity
 
