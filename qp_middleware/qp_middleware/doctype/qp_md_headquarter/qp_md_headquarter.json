@@ -7,7 +7,9 @@
  "engine": "InnoDB",
  "field_order": [
   "code",
-  "title"
+  "title",
+  "code_servinte",
+  "code_location"
  ],
  "fields": [
   {
@@ -24,11 +26,21 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "title"
+  },
+  {
+   "fieldname": "code_servinte",
+   "fieldtype": "Data",
+   "label": "code_servinte"
+  },
+  {
+   "fieldname": "code_location",
+   "fieldtype": "Data",
+   "label": "code_location"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-21 14:18:42.687976",
+ "modified": "2023-12-18 10:07:55.002555",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_headquarter",

@@ -1,0 +1,145 @@
+{
+ "actions": [],
+ "creation": "2023-12-15 13:42:16.428110",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "file",
+  "total",
+  "sstotal",
+  "total_created",
+  "total_error",
+  "total_repeat",
+  "scconsumorepetido",
+  "send_success",
+  "send_error",
+  "sssend_error",
+  "is_background",
+  "scisbackground",
+  "is_error_sync",
+  "sserror",
+  "start_date",
+  "scstartdate",
+  "end_date"
+ ],
+ "fields": [
+  {
+   "fieldname": "total",
+   "fieldtype": "Int",
+   "label": "total",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_background",
+   "fieldtype": "Check",
+   "label": "is_background",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_created",
+   "fieldtype": "Int",
+   "label": "Consumos creados",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_error",
+   "fieldtype": "Int",
+   "label": "Consumos con errores",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_repeat",
+   "fieldtype": "Int",
+   "label": "Consumos repetidos",
+   "read_only": 1
+  },
+  {
+   "fieldname": "send_success",
+   "fieldtype": "Int",
+   "label": "Enviadas correctas",
+   "read_only": 1
+  },
+  {
+   "fieldname": "send_error",
+   "fieldtype": "Int",
+   "label": "Enviadas con errores",
+   "read_only": 1
+  },
+  {
+   "fieldname": "file",
+   "fieldtype": "Attach",
+   "in_list_view": 1,
+   "label": "Archivo",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_error_sync",
+   "fieldtype": "Check",
+   "label": "is_error_sync",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sstotal",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "scconsumorepetido",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sssend_error",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "scisbackground",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sserror",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Datetime",
+   "label": "Fecha inicio",
+   "read_only": 1
+  },
+  {
+   "fieldname": "scstartdate",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Datetime",
+   "label": "Fecha Fin",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-12-19 15:58:41.622375",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_ConsumoUpload",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

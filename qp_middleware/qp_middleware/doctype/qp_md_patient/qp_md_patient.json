@@ -29,8 +29,7 @@
   "created_sync",
   "request",
   "response",
-  "request_dimension",
-  "response_dimension"
+  "dimension_code"
  ],
  "fields": [
   {
@@ -149,25 +148,21 @@
    "label": "Nombre Identificacion"
   },
   {
-   "fieldname": "request_dimension",
-   "fieldtype": "Long Text",
-   "label": "request_dimension"
-  },
-  {
-   "fieldname": "response_dimension",
-   "fieldtype": "Long Text",
-   "label": "response_dimension"
-  },
-  {
    "default": "0",
    "fieldname": "created_sync",
    "fieldtype": "Check",
    "label": "created_sync"
+  },
+  {
+   "fieldname": "dimension_code",
+   "fieldtype": "Link",
+   "label": "dimension_code",
+   "options": "qp_md_DimensionPatient"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-13 17:58:51.971525",
+ "modified": "2023-12-19 11:33:51.085199",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Patient",

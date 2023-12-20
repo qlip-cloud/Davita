@@ -3,10 +3,6 @@ from frappe.utils import now
 
 from qp_middleware.qp_middleware.service.util.sync import get_response, persist
 
-#URL = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/DimensionValues?$filter=Dimension_Code eq 'SEDE'"
-
-#payload = ""
-
 @frappe.whitelist()
 def handler():
     
