@@ -33,14 +33,15 @@ def handler():
         
         if tipo_identificacion:
             
+            if iter['tipoUsuario']:
 
-            dimension = str(tipo_identificacion + str(iter.get("numeroIdentificacion"))).upper()
+                dimension = str(tipo_identificacion + str(iter.get("numeroIdentificacion"))).upper()
                 
-            group_code = str(dimension + '_' + iter['tipoUsuario'][0]).upper()
+                group_code = str(dimension + '_' + iter['tipoUsuario'][0]).upper()
             
-            if not group_code in list_group_code:
+                if not group_code in list_group_code:
 
-                values.append((group_code, tipo_identificacion, iter['tipoIdentificacion'], iter['numeroIdentificacion'],iter['primerNombre'], iter['segundoNombre'], iter['primerApellido'],
+                    values.append((group_code, tipo_identificacion, iter['tipoIdentificacion'], iter['numeroIdentificacion'],iter['primerNombre'], iter['segundoNombre'], iter['primerApellido'],
                         iter['segundoApellido'], iter['numeroTelefonico'], iter['correoElectronico'],iter['idPlan'], iter['tipoUsuario'][0], iter['tipoUsuario'], "Import", True, group_code, dimension, now(), now(), 'Administrator', 'Administrator'))
         
         else:
