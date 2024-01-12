@@ -48,12 +48,15 @@ def save_row(rows, upload_id):
 
     total = 0
 
-
+    lot_no = 0
+    
     for row in rows:
 
         if row_valid and row[0]:            
         
             total += 1
+
+            lot_no += 1000
 
             code_headquarter, error_headquarter = get_code_headquarter(row[0], list_headquarter)
 
@@ -94,7 +97,7 @@ def save_row(rows, upload_id):
                     row[17] or "",
                     row[18] or "",
                     upload_id,
-                    set_request(code_headquarter, row[8], dimension_code, posting_date, quantity),
+                    set_request(code_headquarter, row[8], dimension_code, posting_date, quantity, lot_no),
                     code_headquarter,
                     dimension_code,
                     row[8],
@@ -114,9 +117,9 @@ def save_row(rows, upload_id):
 
     return [],total,0
 
-def set_request(code_headquarter, code_item, dimension_code, posting_date, quantity):
+def set_request(code_headquarter, code_item, dimension_code, posting_date, quantity, lot_no):
 
-    return json.dumps( {
+    json_f = json.dumps( {
             "JournalTemplateName": "INVENTARIO",
             "JournalBatchName": "INVCNS-{}".format(code_headquarter), 
             "PostingDate": posting_date,
@@ -124,17 +127,17 @@ def set_request(code_headquarter, code_item, dimension_code, posting_date, quant
             "ItemNo": code_item, 
             "LocationCode": code_headquarter,
             "BinCode": "SF{}".format(code_headquarter),
-            "Quantity": quantity,
+            "Quantity": int(quantity),
             "ShortcutDimension1Code": "1000046632",
             "ShortcutDimension2Code": "NCIF",
             "ShortcutDimension3Code": code_headquarter,
             "ShortcutDimension4Code": dimension_code,
             "ShortcutDimension5Code": "",
-            "lotNo": "",
+            "lotNo": str(lot_no),
             "GeneralBusinessPostingGroup": "NACIONAL"
         })
 
-
+    return json_f
 def get_code_headquarter(code_servinte, list_headquarter):
 
     code_dynamic =  [ headquarter["code"] for headquarter in list_headquarter if int(code_servinte) == int(headquarter["code_servinte"])]
