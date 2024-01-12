@@ -133,7 +133,7 @@ def set_request(code_headquarter, code_item, dimension_code, posting_date, quant
             "ShortcutDimension3Code": code_headquarter,
             "ShortcutDimension4Code": dimension_code,
             "ShortcutDimension5Code": "",
-            "lotNo": str(lot_no),
+            "lotNo": "",
             "GeneralBusinessPostingGroup": "NACIONAL"
         })
 
