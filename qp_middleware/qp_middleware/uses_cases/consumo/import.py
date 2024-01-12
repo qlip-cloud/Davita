@@ -47,16 +47,12 @@ def save_row(rows, upload_id):
     tuple_list = []
 
     total = 0
-
-    lot_no = 0
     
     for row in rows:
 
         if row_valid and row[0]:            
         
             total += 1
-
-            lot_no += 1000
 
             code_headquarter, error_headquarter = get_code_headquarter(row[0], list_headquarter)
 
@@ -97,7 +93,7 @@ def save_row(rows, upload_id):
                     row[17] or "",
                     row[18] or "",
                     upload_id,
-                    set_request(code_headquarter, row[8], dimension_code, posting_date, quantity, lot_no),
+                    set_request(code_headquarter, row[8], dimension_code, posting_date, quantity),
                     code_headquarter,
                     dimension_code,
                     row[8],
@@ -117,7 +113,7 @@ def save_row(rows, upload_id):
 
     return [],total,0
 
-def set_request(code_headquarter, code_item, dimension_code, posting_date, quantity, lot_no):
+def set_request(code_headquarter, code_item, dimension_code, posting_date, quantity):
 
     json_f = json.dumps( {
             "JournalTemplateName": "INVENTARIO",
