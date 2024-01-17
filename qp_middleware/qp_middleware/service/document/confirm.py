@@ -108,11 +108,7 @@ def send_confirm(document, url, company_code):
     
     add_header = {
             'If-Match': '*',
-<<<<<<< HEAD
-            'company': 'cf290457-54a4-ee11-a56a-000d3ac10756'
-=======
             'company': company_code
->>>>>>> develop
     }
         
     response, response_json, error = send_petition(token, url, document.confirm_request, add_header = add_header)
