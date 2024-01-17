@@ -134,6 +134,7 @@ def set_request(code_headquarter, code_item, dimension_code, posting_date, quant
         })
 
     return json_f
+
 def get_code_headquarter(code_servinte, list_headquarter):
 
     code_dynamic =  [ headquarter["code"] for headquarter in list_headquarter if int(code_servinte) == int(headquarter["code_servinte"])]
