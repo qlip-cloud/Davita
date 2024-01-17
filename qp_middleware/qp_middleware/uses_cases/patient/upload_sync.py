@@ -7,7 +7,6 @@ from qp_middleware.qp_middleware.uses_cases.dimension_patient.sync import handle
 @frappe.whitelist()
 def handler():
 
-    
     patients = frappe.get_list("qp_md_Patient", {"is_sync": False,"origin": ["!=","Import"]})
     
     sync_log = frappe.new_doc("qp_md_PatientSyncLog")
@@ -22,6 +21,7 @@ def handler():
         sync,
         queue='long',                
         is_async=True,
+        #now=True,
         job_name="send patient",
         timeout=5400000,
         sync_log=sync_log,
@@ -92,7 +92,7 @@ def get_urls():
 
 def __sync_dimension(patient, sync_log):
 
-    dimension = sync_dimension(patient.dimension)
+    dimension = sync_dimension(patient.dimension, patient.primer_nombre,patient.segundo_nombre, patient.primer_apellido, patient.segundo_apellido)
 
     patient.dimension_code = dimension.name
 
