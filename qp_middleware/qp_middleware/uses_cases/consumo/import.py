@@ -47,8 +47,7 @@ def save_row(rows, upload_id):
     tuple_list = []
 
     total = 0
-
-
+    
     for row in rows:
 
         if row_valid and row[0]:            
@@ -116,7 +115,7 @@ def save_row(rows, upload_id):
 
 def set_request(code_headquarter, code_item, dimension_code, posting_date, quantity):
 
-    return json.dumps( {
+    json_f = json.dumps( {
             "JournalTemplateName": "INVENTARIO",
             "JournalBatchName": "INVCNS-{}".format(code_headquarter), 
             "PostingDate": posting_date,
@@ -124,7 +123,7 @@ def set_request(code_headquarter, code_item, dimension_code, posting_date, quant
             "ItemNo": code_item, 
             "LocationCode": code_headquarter,
             "BinCode": "SF{}".format(code_headquarter),
-            "Quantity": quantity,
+            "Quantity": int(quantity),
             "ShortcutDimension1Code": "1000046632",
             "ShortcutDimension2Code": "NCIF",
             "ShortcutDimension3Code": code_headquarter,
@@ -134,6 +133,7 @@ def set_request(code_headquarter, code_item, dimension_code, posting_date, quant
             "GeneralBusinessPostingGroup": "NACIONAL"
         })
 
+    return json_f
 
 def get_code_headquarter(code_servinte, list_headquarter):
 

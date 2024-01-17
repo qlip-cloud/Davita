@@ -1,6 +1,5 @@
 {
  "actions": [],
- "autoname": "field:code",
  "creation": "2023-12-14 14:59:13.341114",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -15,8 +14,7 @@
   {
    "fieldname": "code",
    "fieldtype": "Data",
-   "label": "code",
-   "unique": 1
+   "label": "code"
   },
   {
    "fieldname": "description",
@@ -36,7 +34,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-14 14:59:51.096180",
+ "modified": "2024-01-17 17:46:30.500375",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_TipoUsuario",
