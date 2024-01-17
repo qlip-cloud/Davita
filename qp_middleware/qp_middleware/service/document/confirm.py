@@ -50,7 +50,7 @@ def confirm(upload_id):
 
             document.confirm_request = get_confirm_payload(document)
 
-            send_confirm(document, url)
+            send_confirm(document, url, enviroment.company_code)
 
     except:
 
@@ -102,13 +102,13 @@ def get_confirm_payload(document):
         "no": document.document_code
     })
 
-def send_confirm(document, url):
+def send_confirm(document, url, company_code):
     
     token = get_token()
     
     add_header = {
             'If-Match': '*',
-            'company': '798ec2fe-ddfe-ed11-8f6e-6045bd3980fd'
+            'company': company_code
     }
         
     response, response_json, error = send_petition(token, url, document.confirm_request, add_header = add_header)
