@@ -10,7 +10,8 @@
   "request",
   "response",
   "is_sync",
-  "status"
+  "status",
+  "nombre"
  ],
  "fields": [
   {
@@ -41,11 +42,16 @@
    "fieldtype": "Select",
    "label": "status",
    "options": "Created\nRepeated\nError"
+  },
+  {
+   "fieldname": "nombre",
+   "fieldtype": "Long Text",
+   "label": "nombre"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-19 11:17:36.994653",
+ "modified": "2024-01-18 12:41:59.281823",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_DimensionPatient",

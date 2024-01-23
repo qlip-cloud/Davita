@@ -124,7 +124,7 @@ def set_request(code_headquarter, code_item, dimension_code, posting_date, quant
             "LocationCode": code_headquarter,
             "BinCode": "SF{}".format(code_headquarter),
             "Quantity": int(quantity),
-            "ShortcutDimension1Code": "1000046632",
+            "ShortcutDimension1Code": "900532504",
             "ShortcutDimension2Code": "NCIF",
             "ShortcutDimension3Code": code_headquarter,
             "ShortcutDimension4Code": dimension_code,

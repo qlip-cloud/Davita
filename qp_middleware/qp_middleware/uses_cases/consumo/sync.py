@@ -41,7 +41,7 @@ def handler(upload_id):
 def sync(upload_id):
 
     try:                      
-        consumos = frappe.get_list("qp_md_Consumo", filters = {"upload_id": upload_id, "is_valid": True}, fields = ["name", "request", "dimension_code"])
+        consumos = frappe.get_list("qp_md_Consumo", filters = {"upload_id": upload_id, "is_valid": True}, fields = ["name", "request", "dimension_code", 'nombre'])
 
         send_consumos(consumos)
 
@@ -79,8 +79,10 @@ def send_consumos(consumos):
 
     for consumo in consumos:
 
-        dimension = sync_dimension(consumo.dimension_code)
-
+        dimension = sync_dimension(consumo.dimension_code, consumo.nombre)
+        
+        return_value = ""
+        
         if dimension.is_sync:
             
             response, response_json, return_value, error = send_document([consumo.get("request")], consumo_url)
