@@ -15,7 +15,12 @@ def handler(dimension_code, name = "", second_name = "", lastname = "", second_l
             
             dimension.code = dimension_code
 
-            dimension.request = set_request_dimension(dimension_code, name, second_name, lastname, second_lastname)
+            dimension.nombre = "{}{}{}{}".format(name, 
+                                                 " " + second_name if second_name else "",
+                                                 " " + lastname if lastname else "",
+                                                 " " + second_lastname if second_lastname else "")
+
+            dimension.request = set_request_dimension(dimension)
 
             sync(dimension)
 
@@ -76,12 +81,12 @@ def sync(dimension):
     dimension.is_sync = True
     
 
-def set_request_dimension(dimension_code, name, second_name, lastname, second_lastname):
+def set_request_dimension(dimension):
 
     return json.dumps({
             "Dimension_Code": "PACIENTE",
-            "Code": dimension_code,
-            "Name": name + " " + second_name + " " +lastname + " " +second_lastname,
+            "Code": dimension.code,
+            "Name": dimension.nombre,
             "Dimension_Value_Type": "Standard",
             "Blocked": False
         })
