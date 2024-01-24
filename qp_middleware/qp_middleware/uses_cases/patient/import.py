@@ -122,8 +122,7 @@ def save_row(rows, upload_id):
         
         return tuple_list, total, len(tuple_list), repeat
 
-    return [],total,0, 0
-
+    return [],total,0, repeat
 
 def get_format_tipos_Identificaciones(format_tipos_Identificaciones):
 
