@@ -2,27 +2,25 @@ import frappe
 import json
 from qp_middleware.qp_middleware.service.document.save import handler as document_save
 from qp_middleware.qp_middleware.service.document.sync import handler as document_sync
-from frappe.utils import now
+from frappe.utils import now, getdate
 from frappe.utils.xlsxutils import read_xlsx_file_from_attached_file
 from qp_middleware.qp_middleware.service.util.sync import get_response, persist
+from datetime import date
+from datetime import datetime
 
 def handler(upload_patient, method):
 
     rows = read_xlsx_file_from_attached_file(file_url = upload_patient.file)
 
-    tuple_list,total, total_created = save_row(rows, upload_patient.name)
+    tuple_list,total, total_created, total_repeat = save_row(rows, upload_patient.name)
 
     insert_data(tuple_list)
-
-    #setup = frappe.get_doc("qp_md_Setup")
-
-    #enviroment = frappe.get_doc("qp_md_Enviroment", setup.enviroment)
 
     upload_patient.total = total
 
     upload_patient.total_created = total_created
 
-    upload_patient.total_repeat = total - total_created
+    upload_patient.total_repeat = total_repeat
 
     frappe.db.commit()
 
@@ -58,6 +56,10 @@ def save_row(rows, upload_id):
 
     get_format_tipos_usuarios(format_tipos_usuarios)
 
+    new_group_code = []
+    
+    repeat = 0
+
     for row in rows:
 
         if row_valid and row[0]:
@@ -65,8 +67,17 @@ def save_row(rows, upload_id):
             nombre_identificacion = format_tipos_Identificaciones.get(row[0]) or ""
 
             codigo_usuario = format_tipos_usuarios.get(row[10]) or ""
+
+            fecha_mov = ""
+
+            try:
+                 
+                fecha_mov = getdate(row[11]) if not isinstance(row[11], datetime) else row[11]
+
+            except:
+                pass
         
-            if nombre_identificacion:
+            if nombre_identificacion and fecha_mov:
 
                 total += 1
 
@@ -74,7 +85,7 @@ def save_row(rows, upload_id):
                 
                 group_code = str(dimension + '_' + row[9]).upper()
 
-                if not group_code in list_group_code:
+                if (not group_code in list_group_code) and (not group_code in new_group_code):
                 
                     tuple_list.append(
                         (
@@ -91,12 +102,17 @@ def save_row(rows, upload_id):
                             row[8] or "",
                             row[9] or "",
                             codigo_usuario,
-                            str(row[11])  or "",
+                            str(fecha_mov),
                             upload_id, group_code, dimension, "Excel", 
                             set_request(row, nombre_identificacion, codigo_usuario) ,
                             now(),now(), "Administrator", "Administrator" 
                         )
                     )
+
+                    new_group_code.append(group_code)
+
+                else:
+                    repeat += 1
 
         if row[0] == "TIPO_IDENT":
 
@@ -104,9 +120,9 @@ def save_row(rows, upload_id):
 
     if tuple_list:
         
-        return tuple_list, total, len(tuple_list)
+        return tuple_list, total, len(tuple_list), repeat
 
-    return [],total,0
+    return [],total,0, 0
 
 
 def get_format_tipos_Identificaciones(format_tipos_Identificaciones):
