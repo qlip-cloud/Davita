@@ -7,6 +7,7 @@ from frappe.utils.xlsxutils import read_xlsx_file_from_attached_file
 from qp_middleware.qp_middleware.service.util.sync import get_response, persist
 from uuid import uuid1
 from frappe.utils import getdate
+from datetime import datetime
 def handler(upload_consumo, method):
 
     rows = read_xlsx_file_from_attached_file(file_url = upload_consumo.file)
@@ -35,7 +36,7 @@ def insert_data(tuple_list):
         descripcion_ubicacion,upload_id, request, headquarter_dynamic, dimension_code, item_dynamic,
         error, is_valid,
         creation, modified, modified_by, owner)"""
-
+        
         persist(table, fields, tuple_list)
 
 def save_row(rows, upload_id):
@@ -50,8 +51,8 @@ def save_row(rows, upload_id):
     
     for row in rows:
 
-        if row_valid and row[0]:            
-        
+        if row_valid and row[0]:       
+
             total += 1
 
             code_headquarter, error_headquarter = get_code_headquarter(row[0], list_headquarter)
@@ -61,12 +62,22 @@ def save_row(rows, upload_id):
             #is_valid = True if code_headquarter and code_item else False
             is_valid = True if code_headquarter else False
 
-            #error = error_headquarter + error_item
             error = error_headquarter
 
             dimension_code = get_dimension(row[3],str(row[4]))
 
             posting_date = getdate(row[7]).strftime('%Y-%m-%d')
+
+            
+            #if row[4] == 22917094  and row[8] == "M000080":
+
+            #    print("break")
+
+            justify = row[10]
+            
+            if isinstance(justify, datetime):
+
+                justify = justify.strftime('%Y-%m-%d')
             
             quantity = row[12] or ""
             
@@ -83,7 +94,7 @@ def save_row(rows, upload_id):
                     posting_date,
                     row[8] or "",
                     row[9] or "",
-                    row[10] or "",
+                    justify or "",
                     row[11] or "",
                     quantity,
                     row[13] or "",
