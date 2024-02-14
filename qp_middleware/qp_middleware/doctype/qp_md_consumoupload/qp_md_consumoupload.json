@@ -18,6 +18,8 @@
   "is_background",
   "scisbackground",
   "is_error_sync",
+  "sc1",
+  "is_error_connection",
   "sserror",
   "start_date",
   "scstartdate",
@@ -116,11 +118,22 @@
    "fieldtype": "Datetime",
    "label": "Fecha Fin",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_error_connection",
+   "fieldtype": "Check",
+   "label": "is_error_connection",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sc1",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-19 15:58:41.622375",
+ "modified": "2024-02-14 08:06:25.063772",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_ConsumoUpload",
