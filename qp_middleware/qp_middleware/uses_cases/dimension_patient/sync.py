@@ -28,7 +28,7 @@ def handler(dimension_code, name = "", second_name = "", lastname = "", second_l
 
         except Exception as error:
 
-            pass
+            dimension.response = str(error)
 
     else:
 
@@ -44,9 +44,10 @@ def handler(dimension_code, name = "", second_name = "", lastname = "", second_l
                 
                 frappe.db.commit()
 
-            except:
+            except Exception as error:
                  
-                pass
+                dimension.response = str(error)
+
     
     
     return dimension

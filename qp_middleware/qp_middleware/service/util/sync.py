@@ -5,6 +5,7 @@ import requests
 import threading
 import xmltodict
 import time
+import traceback
 from qp_authorization.use_case.oauth2.authorize import get_token
 
 def get_list(enviroment, code, filters = None):

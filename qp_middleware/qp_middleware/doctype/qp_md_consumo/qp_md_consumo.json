@@ -34,7 +34,8 @@
   "error",
   "is_valid",
   "is_error_sync",
-  "return_value"
+  "return_value",
+  "is_error_connection"
  ],
  "fields": [
   {
@@ -189,11 +190,17 @@
    "fieldname": "return_value",
    "fieldtype": "Long Text",
    "label": "return_value"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_error_connection",
+   "fieldtype": "Check",
+   "label": "is error connection"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-20 11:48:23.742230",
+ "modified": "2024-02-14 07:16:43.048815",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Consumo",
