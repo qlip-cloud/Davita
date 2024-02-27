@@ -10,7 +10,7 @@ frappe.ui.form.on('qp_md_ConsumoUpload', {
 			frm.set_intro('Error al procesar el excel', 'red');
 		}
 		if (!(frm.is_new())){
-			if (!frm.doc.start_date || frm.doc.is_error_connection) {
+			if (!frm.doc.start_date || frm.doc.is_error_connection || frm.doc.is_error_sync) {
 				frm.add_custom_button(__('Sincronizar'), function(){
 					if (!frm.is_dirty()){
 						consumo_sync(frm, frm.doc.name)
@@ -22,8 +22,6 @@ frappe.ui.form.on('qp_md_ConsumoUpload', {
 					
 				});
 			}
-			
-
 		}
 	}
 });
