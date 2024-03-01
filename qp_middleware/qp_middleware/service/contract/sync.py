@@ -11,36 +11,35 @@ def handler():
     
     response_json = get_response("list_contrats")
 
-    id_cliente = tuple([ contract["idCliente"] for contract in response_json["value"]])
-
-    result = frappe.get_list(doctype = "qp_md_Contract",  filters = {"id_cliente": ["in", id_cliente]}, pluck = 'id_cliente')
-
-    new_contracts = list(filter(lambda x: x["idCliente"] not in result, response_json["value"]))
+    sql = """
+        truncate table tabqp_md_Contract
+    """
+    frappe.db.sql(sql)
     
     values = []  
 
-    for iter in new_contracts:
+    for iter in response_json["value"]:
         
         name = str(iter['idCliente'])+":"+str(iter['idContrato'])
 
         values.append((name, iter['idContrato'], iter['estadoContrato'],iter['estadoAprobacionContrato'], iter['idContratoPadre'], iter['idCliente'],
                        iter['numContactoCliente'], iter['tipoRegimen'], iter['fechaInicioContrato'],iter['fechaFinContrato'], iter['terminosPago'], iter['descuentoFinanciero'],
-                       iter['idTipoContrato'], iter['tipoCliente'], iter['puntoFacturacion'],iter['comDescCondicionado'], now(), 'Administrator'))
+                       iter['idTipoContrato'], iter['tipoCliente'], iter['puntoFacturacion'],iter['comDescCondicionado'], now(), now(), 'Administrator'))
 
-    if new_contracts:
+    if response_json["value"]:
 
         table = "tabqp_md_Contract"
 
         fields = "(name, id_contrato, estado_contrato, estado_aprobacion_contrato, id_contrato_padre, id_cliente, num_contacto_cliente, tipo_regimen \
                     ,fecha_inicio_contrato, fecha_fin_contrato, terminos_pago, descuento_financiero, id_tipo_contrato, tipo_cliente, punto_facturacion \
-                    ,com_desccondicionado, creation, owner)"
+                    ,com_desccondicionado, creation,modified, owner)"
         
         persist(table, fields, values)
 
     return {
         "status": 200,
         "total": len(response_json["value"]),
-        "total_sync": len(new_contracts)
+        "total_sync": len(response_json["value"])
     }
 
     
