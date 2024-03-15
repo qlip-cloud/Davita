@@ -165,10 +165,6 @@ def get_payload(document):
                 "code": "SEDE",            
                 "valueCode": document.headquarter_code          
             },
-            {            
-                "code": "MODALIDAD",            
-                "valueCode": document.code_modality           
-            },
             {       
                 "code": "PACIENTE",            
                 "valueCode": document.patient_code         
@@ -196,7 +192,9 @@ def get_items_payload(document):
             "No": item.item_code,
             "Quantity": int(item.quantity),            
             "Unit_of_Measure_Code": "UND",
-            "Unit_Price": float(item.unit_price)
+            "Unit_Price": float(item.unit_price),
+            "CantidadPBI": 0,
+            "Modalidad": item.modality_code
         }
 
         if item.type_code == "G/L Account":
