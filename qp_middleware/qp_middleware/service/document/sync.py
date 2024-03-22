@@ -193,7 +193,7 @@ def get_items_payload(document):
             "Quantity": int(item.quantity),            
             "Unit_of_Measure_Code": "UND",
             "Unit_Price": float(item.unit_price),
-            "CantidadPBI": '',
+            "CantidadPBI": 0,
             "Modalidad": item.modality_code
         }
 

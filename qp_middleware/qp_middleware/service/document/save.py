@@ -58,7 +58,7 @@ def handler(upload_xlsx):
 
             item_type = "Item"
 
-            code_modality, error_modality, msg_error_modality = get_code_modality(lines_iter)
+            code_modality, error_modality, msg_error_modality = get_code_modality(line["codigo_centro_de_costo"])
             
             if error_modality:
                 
@@ -364,19 +364,19 @@ def get_nit_customer(lines_iter):
     return tax_id[0]['tax_id'], False, ""
 
 
-def get_code_modality(lines_iter):
+def get_code_modality(codes_servinte):
 
-    codes_servinte = list(set(map(lambda x: x["codigo_centro_de_costo"], lines_iter)))
+    #codes_servinte = list(set(map(lambda x: x["codigo_centro_de_costo"], lines_iter)))
 
     #if len(codes_servinte) > 1:
 
         #return codes_servinte[0], True, "Modalidad {} diferentes para la misma factura\n".format(codes_servinte)
     
-    codes_modalities = frappe.get_list("qp_md_Modality", filters = {"code_servinte": codes_servinte[0]}, fields = ["code_dynamics"])
+    codes_modalities = frappe.get_list("qp_md_Modality", filters = {"code_servinte": codes_servinte}, fields = ["code_dynamics"])
     
     if not codes_modalities:
 
-        return lines_iter[0]["codigo_centro_de_costo"], True, "Modalidad {} No existe\n".format(lines_iter[0]["codigo_centro_de_costo"])
+        return codes_servinte, True, "Modalidad {} No existe\n".format(codes_servinte)
 
     return codes_modalities[0].code_dynamics, False, ""
 
