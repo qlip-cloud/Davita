@@ -366,19 +366,13 @@ def get_nit_customer(lines_iter):
 
 def get_code_modality(codes_servinte):
 
-    #codes_servinte = list(set(map(lambda x: x["codigo_centro_de_costo"], lines_iter)))
-
-    #if len(codes_servinte) > 1:
-
-        #return codes_servinte[0], True, "Modalidad {} diferentes para la misma factura\n".format(codes_servinte)
+    code_dynamics = frappe.db.get_value("qp_md_Modality", {"code_servinte": codes_servinte}, ["code_dynamics"])
     
-    codes_modalities = frappe.get_list("qp_md_Modality", filters = {"code_servinte": codes_servinte}, fields = ["code_dynamics"])
-    
-    if not codes_modalities:
+    if not code_dynamics:
 
         return codes_servinte, True, "Modalidad {} No existe\n".format(codes_servinte)
 
-    return codes_modalities[0].code_dynamics, False, ""
+    return code_dynamics, False, ""
 
 def get_code_dimension(lines_iter):
 
