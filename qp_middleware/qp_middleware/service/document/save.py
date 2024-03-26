@@ -58,6 +58,14 @@ def handler(upload_xlsx):
 
             item_type = "Item"
 
+            code_modality, error_modality, msg_error_modality = get_code_modality(line["codigo_centro_de_costo"])
+            
+            if error_modality:
+                
+                document.is_valid = not error_modality
+
+                document.error += msg_error_modality
+
             if item_code_2 == "399501":
 
                 if line["tipo_servicio"] == "HD PAQUETE":
@@ -93,7 +101,7 @@ def handler(upload_xlsx):
             item = frappe.new_doc("qp_md_DocumentItem")
 
             setup_item(item,item_code, item_code_2, quantity, line_no,
-                    unit_price, item_type, document, document.patient_code)
+                    unit_price, item_type, document, document.patient_code, modality_code=code_modality)
             
             document.items.append(item)
 
@@ -104,7 +112,7 @@ def handler(upload_xlsx):
                 item = frappe.new_doc("qp_md_DocumentItem")
 
                 setup_item(item, "IG01001", "IG01001", int(line["empty_2"]), line_no,
-                           0, item_type, document, document.patient_code)
+                           0, item_type, document, document.patient_code, modality_code=code_modality)
                 
                 document.items.append(item)
 
@@ -119,7 +127,7 @@ def handler(upload_xlsx):
                 quantity = 1
 
                 setup_item(item, "28050501", "28050501", quantity, line_no,
-                           unit_price, "G/L Account", document, document.patient_code)
+                           unit_price, "G/L Account", document, document.patient_code, modality_code=code_modality)
 
                 document.items.append(item)
 
@@ -156,8 +164,6 @@ def setup_document(lines_iter, upload_xlsx):
     code_customer, error_customer, msg_error_customer = get_nit_customer(lines_iter)
         
     code_dimension, error_dimension, msg_error_dimension = get_code_dimension(lines_iter)
-
-    code_modality, error_modality, msg_error_modality = get_code_modality(lines_iter)
 
     code_patient, error_patient, msg_error_patient = get_nit_patient(lines_iter)
 
@@ -217,13 +223,11 @@ def setup_document(lines_iter, upload_xlsx):
     
     document.group_code = lines_iter[0]["group_code"] 
 
-    document.code_modality = code_modality
-
     set_fecha_periodo(document)
 
-    error = error_customer or error_dimension or error_cuota_moderadora or error_numero_autorizacion or error_patient or error_contrat_patient or error_modality
+    error = error_customer or error_dimension or error_cuota_moderadora or error_numero_autorizacion or error_patient or error_contrat_patient
 
-    msg = msg_error_customer + msg_error_dimension + msg_error_numero_autorizacion + msg_error_cuota_moderadora + msg_error_patient + msg_error_contrat_patient + msg_error_modality
+    msg = msg_error_customer + msg_error_dimension + msg_error_numero_autorizacion + msg_error_cuota_moderadora + msg_error_patient + msg_error_contrat_patient
 
     document.is_valid = not error
 
@@ -316,7 +320,7 @@ def set_fecha_periodo(document):
     
 
 def setup_item(item,item_code, item_code_2, quantity, line_no, unit_price, type_code, document, patient_code
-               ,document_type = "Invoice", modality_code = "HD"):
+               ,document_type = "Invoice", modality_code = ""):
 
     item.item_code  = item_code
     item.item_code2  = item_code_2
@@ -360,21 +364,15 @@ def get_nit_customer(lines_iter):
     return tax_id[0]['tax_id'], False, ""
 
 
-def get_code_modality(lines_iter):
+def get_code_modality(codes_servinte):
 
-    codes_servinte = list(set(map(lambda x: x["codigo_centro_de_costo"], lines_iter)))
-
-    if len(codes_servinte) > 1:
-
-        return codes_servinte[0], True, "Modalidad {} diferentes para la misma factura\n".format(codes_servinte)
+    code_dynamics = frappe.db.get_value("qp_md_Modality", {"code_servinte": codes_servinte}, ["code_dynamics"])
     
-    codes_modalities = frappe.get_list("qp_md_Modality", filters = {"code_servinte": codes_servinte[0]}, fields = ["code_dynamics"])
-    
-    if not codes_modalities:
+    if not code_dynamics:
 
-        return lines_iter[0]["codigo_centro_de_costo"], True, "Modalidad {} No existe\n".format(lines_iter[0]["codigo_centro_de_costo"])
+        return codes_servinte, True, "Modalidad {} No existe\n".format(codes_servinte)
 
-    return codes_modalities[0].code_dynamics, False, ""
+    return code_dynamics, False, ""
 
 def get_code_dimension(lines_iter):
 
