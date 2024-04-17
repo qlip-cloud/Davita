@@ -12,7 +12,7 @@ def handler(upload_patient, method):
 
     rows = read_xlsx_file_from_attached_file(file_url = upload_patient.file)
 
-    tuple_list,total, total_created, total_repeat = save_row(rows, upload_patient.name)
+    tuple_list,total, total_created, total_repeat, errors, total_error = save_row(rows, upload_patient.name)
 
     insert_data(tuple_list)
 
@@ -21,6 +21,10 @@ def handler(upload_patient, method):
     upload_patient.total_created = total_created
 
     upload_patient.total_repeat = total_repeat
+    
+    upload_patient.errors = errors
+
+    upload_patient.total_error = total_error
 
     frappe.db.commit()
 
@@ -60,6 +64,10 @@ def save_row(rows, upload_id):
     
     repeat = 0
 
+    error = ''
+
+    count_error = 0
+
     for row in rows:
 
         if row_valid and row[0]:
@@ -68,9 +76,26 @@ def save_row(rows, upload_id):
 
             codigo_usuario = format_tipos_usuarios.get(row[10]) or ""
 
-            code_responsable = format_cod_responsable.get(row[11]) or ""
+            code_responsable = format_cod_responsable.get(row[11]) or False
             
-            tipo_atencion = format_tipos_atencion.get(row[12]) or ""
+            if not code_responsable:
+
+                error += f'Cod Responsabilidad {row[11]} del Paciente {row[1]} No configurado\n'
+                
+                count_error += 1
+
+            tipo_atencion = format_tipos_atencion.get(row[12]) or False
+
+            if not tipo_atencion:
+
+                count_error += 1
+
+                error += f'Tipo de Atencion {row[12]} del Paciente {row[1]} No configurado\n'
+            
+                
+            if not code_responsable or not tipo_atencion:
+
+                continue
 
             fecha_mov = ""
 
@@ -82,7 +107,7 @@ def save_row(rows, upload_id):
 
                 pass
         
-            if nombre_identificacion and fecha_mov:
+            if nombre_identificacion and fecha_mov and code_responsable and tipo_atencion:
 
                 total += 1
 
@@ -127,9 +152,9 @@ def save_row(rows, upload_id):
 
     if tuple_list:
         
-        return tuple_list, total, len(tuple_list), repeat
+        return tuple_list, total, len(tuple_list), repeat, error, count_error
 
-    return [],total,0, repeat
+    return [],total,0, repeat, error, count_error
 
 def get_format_tipos_Identificaciones(format_tipos_Identificaciones):
 
