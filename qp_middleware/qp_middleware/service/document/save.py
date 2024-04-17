@@ -223,7 +223,9 @@ def setup_document(lines_iter, upload_xlsx):
     
     document.group_code = lines_iter[0]["group_code"] 
 
-    set_fecha_periodo(document)
+    document.lhc_periodo_inicio_fecha_fact =  upload_xlsx.invoice_start
+
+    document.lhc_periodo_fin_fecha_fact = upload_xlsx.invoice_end
 
     error = error_customer or error_dimension or error_cuota_moderadora or error_numero_autorizacion or error_patient or error_contrat_patient
 
