@@ -31,7 +31,7 @@ def insert_data(tuple_list):
         table = "tabqp_md_Patient"
 
         fields = """(name, nombre_identificacion, tipo_identificacion,numero_identificacion,primer_apellido,segundo_apellido,primer_nombre,segundo_nombre,
-        numero_telefonico,celular,direccion,tipo_usuario,nombre_usuario,fecha_mov,upload_id,group_code,dimension,origin, request,creation, 
+        numero_telefonico,celular,direccion,tipo_usuario,nombre_usuario,cod_responsable, tipo_atencion, fecha_mov,upload_id,group_code,dimension,origin, request,creation, 
         modified, modified_by, owner)"""
 
         persist(table, fields, tuple_list)
@@ -48,13 +48,13 @@ def save_row(rows, upload_id):
 
     total = 0
 
-    format_tipos_Identificaciones = {}
+    format_tipos_Identificaciones = get_format("qp_md_TipoIdentificacion", "code", "description")
 
-    format_tipos_usuarios = {}
+    format_tipos_usuarios = get_format("qp_md_TipoUsuario", "description", "code")
 
-    get_format_tipos_Identificaciones(format_tipos_Identificaciones)
+    format_tipos_atencion = get_format("qp_md_TipoAtencion", 'code', "title")
 
-    get_format_tipos_usuarios(format_tipos_usuarios)
+    format_cod_responsable = get_format("qp_md_Responsable", 'code', "title")
 
     new_group_code = []
     
@@ -68,13 +68,18 @@ def save_row(rows, upload_id):
 
             codigo_usuario = format_tipos_usuarios.get(row[10]) or ""
 
+            code_responsable = format_cod_responsable.get(row[11]) or ""
+            
+            tipo_atencion = format_tipos_atencion.get(row[12]) or ""
+
             fecha_mov = ""
 
             try:
                  
-                fecha_mov = getdate(row[11]) if not isinstance(row[11], datetime) else row[11]
+                fecha_mov = getdate(row[13]) if not isinstance(row[13], datetime) else row[13]
 
             except:
+
                 pass
         
             if nombre_identificacion and fecha_mov:
@@ -102,6 +107,8 @@ def save_row(rows, upload_id):
                             row[8] or "",
                             row[9] or "",
                             codigo_usuario,
+                            code_responsable,
+                            tipo_atencion,
                             str(fecha_mov),
                             upload_id, group_code, dimension, "Excel", 
                             set_request(row, nombre_identificacion, codigo_usuario) ,
@@ -140,6 +147,18 @@ def get_format_tipos_usuarios(format_tipos_usuarios):
 
         format_tipos_usuarios.update({tipo_usuario.get("description"): tipo_usuario.get("code")})
 
+def get_format(doctype, key, value):
+
+    results = frappe.get_list(doctype, fields = [key, value])
+
+    dic_result = {}
+
+    for result  in results:
+
+        dic_result.update({result.get(key): result.get(value)})
+
+    return dic_result
+
 def set_request(row, nombre_identificacion, codigo_usuario):
 
     return json.dumps({
@@ -152,5 +171,7 @@ def set_request(row, nombre_identificacion, codigo_usuario):
             "numeroTelefonico": str(row[6] or ""),
             "correoElectronico": "",
             "idPlan": "",
-            "tipoUsuario": codigo_usuario
+            "tipoUsuario": codigo_usuario,
+            "Eps": row[11],
+            "Modalidad": row[12]
         })
