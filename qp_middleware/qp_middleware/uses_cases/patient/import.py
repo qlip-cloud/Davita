@@ -107,7 +107,7 @@ def save_row(rows, upload_id):
 
                 pass
         
-            if nombre_identificacion and fecha_mov and code_responsable and tipo_atencion:
+            if nombre_identificacion and fecha_mov:
 
                 total += 1
 
@@ -136,7 +136,7 @@ def save_row(rows, upload_id):
                             tipo_atencion,
                             str(fecha_mov),
                             upload_id, group_code, dimension, "Excel", 
-                            set_request(row, nombre_identificacion, codigo_usuario) ,
+                            set_request(row, nombre_identificacion, codigo_usuario, tipo_atencion, code_responsable) ,
                             now(),now(), "Administrator", "Administrator" 
                         )
                     )
@@ -184,7 +184,7 @@ def get_format(doctype, key, value):
 
     return dic_result
 
-def set_request(row, nombre_identificacion, codigo_usuario):
+def set_request(row, nombre_identificacion, codigo_usuario, tipo_atencion, code_responsable):
 
     return json.dumps({
             "tipoIdentificacion": nombre_identificacion,
@@ -197,6 +197,6 @@ def set_request(row, nombre_identificacion, codigo_usuario):
             "correoElectronico": "",
             "idPlan": "",
             "tipoUsuario": codigo_usuario,
-            "Eps": row[11],
-            "Modalidad": row[12]
+            "Eps": code_responsable,
+            "Modalidad": tipo_atencion
         })
