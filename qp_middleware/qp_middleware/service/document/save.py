@@ -48,11 +48,11 @@ def handler(upload_xlsx):
 
             item_code = ""
 
-            quantity = 1
-
             invoice_value = 0 if document.lhc_contrato else float(document.invoice_value)
             
             quantity = float(line["cantidad_a_facturar"])
+
+            quantity_invoice = float(line["cantidad_a_facturar"])
 
             unit_price = invoice_value / quantity
 
@@ -100,7 +100,7 @@ def handler(upload_xlsx):
 
             item = frappe.new_doc("qp_md_DocumentItem")
 
-            setup_item(item,item_code, item_code_2, quantity, line_no,
+            setup_item(item, item_code, item_code_2, quantity_invoice,  quantity, line_no,
                     unit_price, item_type, document, document.patient_code, modality_code=code_modality)
             
             document.items.append(item)
@@ -111,7 +111,7 @@ def handler(upload_xlsx):
 
                 item = frappe.new_doc("qp_md_DocumentItem")
 
-                setup_item(item, "IG01001", "IG01001", int(line["empty_2"]), line_no,
+                setup_item(item, "IG01001", "IG01001", quantity_invoice, int(line["empty_2"]), line_no,
                            0, item_type, document, document.patient_code, modality_code=code_modality)
                 
                 document.items.append(item)
@@ -126,7 +126,7 @@ def handler(upload_xlsx):
         
                 quantity = 1
 
-                setup_item(item, "28050501", "28050501", quantity, line_no,
+                setup_item(item, "28050501", "28050501", quantity_invoice, quantity, line_no,
                            unit_price, "G/L Account", document, document.patient_code, modality_code=code_modality)
 
                 document.items.append(item)
@@ -321,7 +321,7 @@ def set_fecha_periodo(document):
     document.lhc_periodo_fin_fecha_fact =datetime.strftime( date_format + relativedelta(day=31), '%Y-%m-%d')
     
 
-def setup_item(item,item_code, item_code_2, quantity, line_no, unit_price, type_code, document, patient_code
+def setup_item(item,item_code, item_code_2, quantity_invoice, quantity, line_no, unit_price, type_code, document, patient_code
                ,document_type = "Invoice", modality_code = ""):
 
     item.item_code  = item_code
@@ -337,7 +337,7 @@ def setup_item(item,item_code, item_code_2, quantity, line_no, unit_price, type_
     item.modality_code = modality_code
     item.parentfield = "items"
     item.unit_price =  unit_price
-
+    item.quantity_invoice = quantity_invoice
     if type_code == "G/L Account":
         
         item.line_amount = unit_price
