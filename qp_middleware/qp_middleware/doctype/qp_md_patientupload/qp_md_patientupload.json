@@ -9,7 +9,8 @@
   "total",
   "total_created",
   "total_repeat",
-  "total_error"
+  "total_error",
+  "errors"
  ],
  "fields": [
   {
@@ -38,11 +39,16 @@
    "fieldname": "total_error",
    "fieldtype": "Int",
    "label": "Total Errores"
+  },
+  {
+   "fieldname": "errors",
+   "fieldtype": "Long Text",
+   "label": "Errors"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-16 10:04:30.661675",
+ "modified": "2024-04-17 12:01:50.690778",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_PatientUpload",

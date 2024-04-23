@@ -6,7 +6,11 @@
  "engine": "InnoDB",
  "field_order": [
   "file",
+  "invoice_start",
+  "scsales_invoice_date_column",
   "invoice_date",
+  "invoice_end",
+  "ssinvoice_end",
   "invoice_total",
   "invoice_success",
   "total_repeat",
@@ -121,11 +125,31 @@
    "fieldname": "error",
    "fieldtype": "Check",
    "label": "error"
+  },
+  {
+   "fieldname": "invoice_start",
+   "fieldtype": "Date",
+   "label": "invoice_start",
+   "reqd": 1
+  },
+  {
+   "fieldname": "scsales_invoice_date_column",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "invoice_end",
+   "fieldtype": "Date",
+   "label": "invoice_end",
+   "reqd": 1
+  },
+  {
+   "fieldname": "ssinvoice_end",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-04 12:36:28.863984",
+ "modified": "2024-04-17 12:12:20.076643",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_upload_xlsx",

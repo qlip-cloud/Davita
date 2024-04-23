@@ -20,6 +20,8 @@
   "id_plan",
   "tipo_usuario",
   "nombre_usuario",
+  "cod_responsable",
+  "tipo_atencion",
   "fecha_mov",
   "group_code",
   "dimension",
@@ -164,11 +166,21 @@
    "fieldtype": "Link",
    "label": "dimension_code",
    "options": "qp_md_DimensionPatient"
+  },
+  {
+   "fieldname": "cod_responsable",
+   "fieldtype": "Data",
+   "label": "cod_responsable"
+  },
+  {
+   "fieldname": "tipo_atencion",
+   "fieldtype": "Data",
+   "label": "tipo_atencion"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-24 12:49:02.029674",
+ "modified": "2024-04-17 10:57:07.280181",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Patient",
