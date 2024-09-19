@@ -49,8 +49,8 @@ def save_row(rows, upload_id):
 
     total = 0
     
-    for row in rows:
-
+    
+    for key,row in enumerate(rows):
         if row_valid and row[0] and str(row[16]).lower() == "DESPACHADO".lower():       
 
             total += 1
@@ -68,10 +68,6 @@ def save_row(rows, upload_id):
 
             posting_date = getdate(row[7]).strftime('%Y-%m-%d')
 
-            
-            #if row[4] == 22917094  and row[8] == "M000080":
-
-            #    print("break")
 
             justify = row[10]
             
@@ -79,7 +75,7 @@ def save_row(rows, upload_id):
 
                 justify = justify.strftime('%Y-%m-%d')
             
-            quantity = row[12] or ""
+            quantity = row[12] or 0
             
             tuple_list.append(
                 (
