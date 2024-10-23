@@ -52,7 +52,10 @@
   "confirm_response",
   "is_confirm",
   "group_code",
-  "confirm_dian"
+  "confirm_dian",
+  "dimensions",
+  "sales_invoices",
+  "patients"
  ],
  "fields": [
   {
@@ -317,11 +320,29 @@
    "fieldname": "code_modality",
    "fieldtype": "Data",
    "label": "code_modality"
+  },
+  {
+   "fieldname": "dimensions",
+   "fieldtype": "Table",
+   "label": "Dimensions",
+   "options": "qp_md_DocumentDimension"
+  },
+  {
+   "fieldname": "sales_invoices",
+   "fieldtype": "Table",
+   "label": "Sales Invoices",
+   "options": "qp_md_DocumentSalesInvoice"
+  },
+  {
+   "fieldname": "patients",
+   "fieldtype": "Table",
+   "label": "Patients",
+   "options": "qp_md_DocumentPatient"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-27 13:48:46.608502",
+ "modified": "2024-09-27 15:32:34.082174",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Document",

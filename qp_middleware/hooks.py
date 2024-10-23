@@ -93,6 +93,9 @@ doc_events = {
  	"qp_md_upload_xlsx": {
  		"after_insert": "qp_middleware.qp_middleware.uses_cases.invoice.import.handler"         
 	},
+  	"qp_md_MultiPatientUpload": {
+ 		"after_insert": "qp_middleware.qp_middleware.uses_cases.multi_patient.import.handler"         
+	},
     "qp_md_PatientUpload": {
  		"before_save": "qp_middleware.qp_middleware.uses_cases.patient.import.handler"         
 	},

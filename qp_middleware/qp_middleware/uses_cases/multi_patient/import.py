@@ -1,84 +1,85 @@
 import frappe
-from qp_middleware.qp_middleware.service.document.save import handler as document_save
-from qp_middleware.qp_middleware.service.document.sync import handler as document_sync
+from qp_middleware.qp_middleware.service.multipatient_document.save import handler as document_save
+from qp_middleware.qp_middleware.service.multipatient_document.sync import handler as document_sync
 
 from frappe.utils.xlsxutils import read_xlsx_file_from_attached_file
 
-def handler(upload_xlsx, method):
+def handler(multi_patient_upload, method):
 
-    if upload_xlsx.is_background:
+    if multi_patient_upload.is_background:
 
         return {
             "status": 500,
             "msg": "Ya existe una confirmacion en proceso"
         }
     
-    upload_xlsx.is_background = True
+    multi_patient_upload.is_background = True
 
-    upload_xlsx.save()
+    multi_patient_upload.save()
 
     frappe.enqueue(
                 import_xlsx,
                 queue='long',                
                 #is_async=True,
                 now = True,
-                job_name="send invoice: "+ upload_xlsx.name,
+                job_name="send invoice: "+ multi_patient_upload.name,
                 timeout=5400000,
-                upload_xlsx = upload_xlsx
+                multi_patient_upload = multi_patient_upload
                 )
 
-def import_xlsx(upload_xlsx):
+def import_xlsx(multi_patient_upload):
     
     try:
-
-        list_repeat,list_group_code = import_excel(upload_xlsx)
-
-        result = document_save(upload_xlsx)
-
-        set_stadistic(upload_xlsx, list_group_code, list_repeat, result)
+        result=[]
         
-        sync_invoices(upload_xlsx)
+        list_repeat,list_group_code = import_excel(multi_patient_upload)
+
+        result = document_save(multi_patient_upload)
+
+        set_stadistic(multi_patient_upload, list_group_code, list_repeat, result)
+        
+        sync_invoices(multi_patient_upload)
 
     except Exception as error:
+        
+        frappe.log_error(message=frappe.get_traceback(), title="Error importando xlsx: "+ multi_patient_upload.name)
 
-        frappe.log_error(message=frappe.get_traceback(), title="Error importando xlsx: "+ upload_xlsx.name)
+        multi_patient_upload.error = True
 
-        upload_xlsx.error = True
+    multi_patient_upload.is_background = False
 
-    upload_xlsx.is_background = False
+    multi_patient_upload.save()
 
-    upload_xlsx.save()
+def sync_invoices(multi_patient_upload):
 
-def sync_invoices(upload_xlsx):
-
-    if upload_xlsx.is_valid:
+    if multi_patient_upload.is_valid:
         
         setup = frappe.get_doc("qp_md_Setup")
 
         enviroment = frappe.get_doc("qp_md_Enviroment", setup.enviroment)
         
-        result = document_sync(upload_xlsx, setup, enviroment)
+        result = document_sync(multi_patient_upload, setup, enviroment)
         
-        upload_xlsx.send_success = result["send_success"]
+        multi_patient_upload.send_success = result["send_success"]
     
-        upload_xlsx.send_error = result["send_error"]
+        multi_patient_upload.send_error = result["send_error"]
 
-def set_stadistic(upload_xlsx, list_group_code, list_repeat, result):
+def set_stadistic(multi_patient_upload, list_group_code, list_repeat, result):
 
-    upload_xlsx.invoice_total = len(list_group_code)
-    upload_xlsx.total_repeat = len(list_repeat)
-    upload_xlsx.invoice_repeat = str(list_repeat).replace(",","\n")
-    upload_xlsx.invoice_success = result["invoice_success"]
-    upload_xlsx.invoice_error = result["invoice_error"]
-    upload_xlsx.customer_count = result["customer_count"]
-    upload_xlsx.item_count = result["item_count"]
-    upload_xlsx.is_valid = result["is_valid"]
+    multi_patient_upload.invoice_total = len(list_group_code)
+    multi_patient_upload.total_repeat = len(list_repeat)
+    multi_patient_upload.invoice_repeat = str(list_repeat).replace(",","\n")
+    multi_patient_upload.invoice_success = result["invoice_success"] or 0
+    multi_patient_upload.invoice_error = result["invoice_error"] or 0
+    multi_patient_upload.customer_count = result["customer_count"] or 0
+    multi_patient_upload.item_count = result["item_count"] or 0
+    multi_patient_upload.is_valid = result["is_valid"] or 0
 
-def import_excel(upload_xlsx):
+def import_excel(multi_patient_upload):
 
-    rows = read_xlsx_file_from_attached_file(file_url = upload_xlsx.file)
+    rows = read_xlsx_file_from_attached_file(file_url = multi_patient_upload.file)
 
-    return save_row(rows, upload_xlsx.name)
+    return save_row(rows, multi_patient_upload.name)
 
 def save_row(rows, upload_id):
 

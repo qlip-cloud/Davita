@@ -1,0 +1,83 @@
+{
+ "actions": [],
+ "creation": "2024-09-27 15:32:07.274531",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "no_identification",
+  "tipo_identification",
+  "no_authorization",
+  "lhc_mipres",
+  "lhc_id_mipres",
+  "lhc_no_poliza",
+  "patient_headquarter",
+  "patient_modality",
+  "item_code",
+  "quantity"
+ ],
+ "fields": [
+  {
+   "fieldname": "no_identification",
+   "fieldtype": "Data",
+   "label": "No identification"
+  },
+  {
+   "fieldname": "tipo_identification",
+   "fieldtype": "Data",
+   "label": "Tipo identification"
+  },
+  {
+   "fieldname": "no_authorization",
+   "fieldtype": "Data",
+   "label": "No authorization"
+  },
+  {
+   "fieldname": "lhc_mipres",
+   "fieldtype": "Data",
+   "label": "LHC MIPRES"
+  },
+  {
+   "fieldname": "lhc_id_mipres",
+   "fieldtype": "Data",
+   "label": "LHC ID MIPRES"
+  },
+  {
+   "fieldname": "lhc_no_poliza",
+   "fieldtype": "Data",
+   "label": "LHC No Poliza"
+  },
+  {
+   "fieldname": "patient_headquarter",
+   "fieldtype": "Data",
+   "label": "patient_headquarter"
+  },
+  {
+   "fieldname": "patient_modality",
+   "fieldtype": "Data",
+   "label": "patient_modality"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "item_code"
+  },
+  {
+   "fieldname": "quantity",
+   "fieldtype": "Int",
+   "label": "quantity"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-09-27 15:32:11.918761",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_DocumentPatient",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

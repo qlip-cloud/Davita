@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "autoname": "fieldname:code_dynamics",
  "creation": "2023-11-27 13:17:55.053464",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -12,16 +13,27 @@
  ],
  "fields": [
   {
+   "allow_in_quick_entry": 1,
    "fieldname": "code_dynamics",
    "fieldtype": "Data",
+   "in_filter": 1,
+   "in_global_search": 1,
    "in_list_view": 1,
-   "label": "C\u00f3digo Dynamics"
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "C\u00f3digo Dynamics",
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fieldname": "name_dynamics",
    "fieldtype": "Data",
+   "in_global_search": 1,
    "in_list_view": 1,
-   "label": "Nombre Dynamics"
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Nombre Dynamics",
+   "search_index": 1
   },
   {
    "fieldname": "code_servinte",
@@ -38,7 +50,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-27 13:22:23.277321",
+ "modified": "2024-10-23 08:38:50.208817",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Modality",
@@ -57,7 +69,9 @@
    "write": 1
   }
  ],
+ "search_fields": "code_dynamics",
  "sort_field": "modified",
  "sort_order": "DESC",
+ "title_field": "name_dynamics",
  "track_changes": 1
 }

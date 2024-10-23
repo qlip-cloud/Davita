@@ -1,11 +1,11 @@
 import frappe
 import time
-from datetime import datetime
 import json
-from frappe.utils import today
 import requests
-
+from datetime import datetime
+from frappe.utils import today
 from dateutil.relativedelta import relativedelta
+from qp_middleware.qp_middleware.service.document.init import init_document, get_nit_customer_no_repeat, get_items_codes, get_code_modality, get_contract_customer, set_document_error, get_cuota_moderadora_no_repeat,get_code_dimension_not_repeat
 
 COD = ["JF-", "EJC", "PL1"]
 
@@ -18,7 +18,7 @@ LIMIT = {
 @frappe.whitelist()
 def handler(upload_xlsx):
     
-    lines = frappe.get_list("qp_md_invoice_sync", filters = {"upload_id": upload_xlsx.name, "is_repeat": False}, fields = ["*"])
+    lines = frappe.get_list("qp_md_invoice_sync", filters = {"upload_id": upload_xlsx.name}, fields = ["*"])
 
     #lines = frappe.get_list("qp_md_invoice_test", filters = {"upload_id": upload_id}, fields = ["*"])
     
@@ -43,61 +43,15 @@ def handler(upload_xlsx):
         document.items = []
 
         for line in lines_iter:
-            
-            item_code_2 = line["codigo_procedimiento_facturacion"]
-
-            item_code = ""
-
-            invoice_value = 0 if document.lhc_contrato else float(document.invoice_value)
-            
-            quantity = float(line["cantidad_a_facturar"])
-
+                        
             quantity_invoice = float(line["cantidad_a_facturar"])
-
-            unit_price = invoice_value / quantity
 
             item_type = "Item"
 
-            code_modality, error_modality, msg_error_modality = get_code_modality(line["codigo_centro_de_costo"])
+            code_modality = get_code_modality(line["codigo_centro_de_costo"], document)
             
-            if error_modality:
-                
-                document.is_valid = not error_modality
-
-                document.error += msg_error_modality
-
-            if item_code_2 == "399501":
-
-                if line["tipo_servicio"] == "HD PAQUETE":
-
-                    item_code = "IG01002"
-
-                    item_code_2 = "C40111"
-
-                    quantity = 1
-                    
-                    unit_price = 0
-
-                else:
-                    
-                    if line["tipo_servicio"] in ("HD SESSION", "HD SESION"):
-
-                        item_code = "IG01001"
-
-            else:
-
-                item_code = frappe.get_list("Item", filters = {"qp_item_code_2": item_code_2 }, fields = ["item_code"])
-
-                item_code = item_code[0]["item_code"] if item_code else ""
-
-            if not item_code:
-
-                if document.is_valid:
-                    
-                    document.is_valid = False
-                
-                document.error += "Producto {} no existe".format(item_code_2)
-
+            item_code, item_code_2, quantity, unit_price = get_items_codes(line, document)
+            
             item = frappe.new_doc("qp_md_DocumentItem")
 
             setup_item(item, item_code, item_code_2, quantity_invoice,  quantity, line_no,
@@ -161,79 +115,24 @@ def handler(upload_xlsx):
 
 def setup_document(lines_iter, upload_xlsx):
 
-    code_customer, error_customer, msg_error_customer = get_nit_customer(lines_iter)
+    code_customer, error_customer, msg_error_customer = get_nit_customer_no_repeat(lines_iter)
         
-    code_dimension, error_dimension, msg_error_dimension = get_code_dimension(lines_iter)
+    code_dimension, error_dimension, msg_error_dimension = get_code_dimension_not_repeat(lines_iter)
 
     code_patient, error_patient, msg_error_patient = get_nit_patient(lines_iter)
 
     code_contrat_patient, error_contrat_patient, msg_error_contrat_patient = get_contract_customer(code_customer)
 
-    code_cuota_moderadora, error_cuota_moderadora, msg_error_cuota_moderadora = get_cuota_moderadora(lines_iter)
+    code_cuota_moderadora, error_cuota_moderadora, msg_error_cuota_moderadora = get_cuota_moderadora_no_repeat(lines_iter)
 
     code_numero_autorizacion, error_numero_autorizacion, msg_error_numero_autorizacion = get_numero_autorizacion(lines_iter)
-
-    document = frappe.new_doc("qp_md_Document")
-
-    document.customer_code = code_customer
-
-    document.document_type = "Invoice"
-
-    document.headquarter_code = code_dimension
-
-    document.posting_date = upload_xlsx.invoice_date
-
-    document.lhc_contrato = code_contrat_patient
     
-    document.invoice_value = lines_iter[0]["vr_a_facturar"] 
-
-    document.cod_empresa = lines_iter[0]["cod_empresa"]
-
-    document.lhc_cuota_moderadora = code_cuota_moderadora if code_cuota_moderadora and code_cuota_moderadora != '0' else 0
-
-    document.lhc_numero_autorizacion = code_numero_autorizacion
-
-    document.lhc_consecutivo_interno = lines_iter[0]["id_unico_ingreso_fuente_no_cargo"]
-
-    document.lhc_documento = lines_iter[0]["id_unico_ingreso_fuente_no_cargo"]
-
-    document.lhc_tipo_operacion_davita = "SS-CUFE" if code_cuota_moderadora else "SS-SinAporte"
-
-    document.lhc_tipo_factura_doc = "Estándar"
-
-    document.lhc_mipres = ""
-
-    document.lhc_id_mipres = ""
-
-    document.lhc_no_poliza = ""
-
-    document.currency_code = ""
+    numero_orden_compra =  get_orden_compra(lines_iter[0]["cod_empresa"], lines_iter[0]["nit"])
     
-    document.responsibility_center = code_dimension
+    document = init_document(upload_xlsx, lines_iter[0], code_customer, code_cuota_moderadora, code_contrat_patient, code_numero_autorizacion, 
+                            code_dimension, code_patient, numero_orden_compra, lines_iter[0]["group_code"])
 
-    document.lhc_numero_orden_compra = get_orden_compra(document.cod_empresa, lines_iter[0]["nit"])
-
-    document.work_description = ""
-
-    document.vat_registration_no = code_customer
-
-    document.patient_code = code_patient
-
-    document.upload_id = upload_xlsx.name
-    
-    document.group_code = lines_iter[0]["group_code"] 
-
-    document.lhc_periodo_inicio_fecha_fact =  upload_xlsx.invoice_start
-
-    document.lhc_periodo_fin_fecha_fact = upload_xlsx.invoice_end
-
-    error = error_customer or error_dimension or error_cuota_moderadora or error_numero_autorizacion or error_patient or error_contrat_patient
-
-    msg = msg_error_customer + msg_error_dimension + msg_error_numero_autorizacion + msg_error_cuota_moderadora + msg_error_patient + msg_error_contrat_patient
-
-    document.is_valid = not error
-
-    document.error = msg
+    set_document_error(document, error_customer , error_contrat_patient , error_dimension , error_cuota_moderadora , error_numero_autorizacion , error_patient , msg_error_customer , msg_error_dimension , msg_error_numero_autorizacion , msg_error_cuota_moderadora , msg_error_patient , msg_error_contrat_patient)
 
     return document
 
@@ -264,15 +163,7 @@ def get_orden_compra(cod_empresa, nit):
     return cod_split[0]
 
 
-def get_contract_customer(code_customer):
-    
-    contract = frappe.get_list("qp_md_Contract", filters = {"id_cliente": code_customer, "estado_contrato": "Activo"}, pluck = "id_contrato")
 
-    if not contract:
-
-        return "", False, "Cliente {} No posee un contrato activo\n".format(code_customer)
-    
-    return contract[0], False, ""
 
 def get_nit_patient(lines_iter):
     
@@ -292,15 +183,7 @@ def get_nit_patient(lines_iter):
 
     return patient_nit, False, ""
 
-def get_cuota_moderadora(lines_iter):
 
-    cuota_moderadora = list(set(map(lambda x: x["cuota_moderadora"] , lines_iter)))
-
-    if len(cuota_moderadora) > 1:
-
-        return cuota_moderadora[0], True, "Cuota moderadora diferentes para la misma factura: {}\n".format(cuota_moderadora)
-
-    return cuota_moderadora[0], False, ""
 
 def get_numero_autorizacion(lines_iter):
 
@@ -338,57 +221,7 @@ def setup_item(item,item_code, item_code_2, quantity_invoice, quantity, line_no,
     item.parentfield = "items"
     item.unit_price =  unit_price
     item.quantity_invoice = quantity_invoice
+    
     if type_code == "G/L Account":
         
         item.line_amount = unit_price
-
-
-def get_nit_customer(lines_iter):
-
-    document_set = list(set(map(lambda x: x["nit"] , lines_iter)))
-
-    if len(document_set) > 1:
-
-        return document_set[0], True, "Clientes diferentes para la misma factura: {}\n".format(document_set)
-    
-    document_code = document_set[0].split("_")
-    
-    line = list(filter(lambda x: x["nit"] == document_set[0], lines_iter))
-    
-    document_code_complete = "{}-{}".format(document_code[0],line[0]["regimen"][0])
-
-    tax_id = frappe.db.get_list("Customer", {"tax_id": ["in", (document_code[0], document_code_complete)]}, 'tax_id')
-
-    if not tax_id:
-
-        return document_code[0], True, "Clientes {} No existe \n".format(document_code[0])
-
-    return tax_id[0]['tax_id'], False, ""
-
-
-def get_code_modality(codes_servinte):
-
-    code_dynamics = frappe.db.get_value("qp_md_Modality", {"code_servinte": codes_servinte}, ["code_dynamics"])
-    
-    if not code_dynamics:
-
-        return codes_servinte, True, "Modalidad {} No existe\n".format(codes_servinte)
-
-    return code_dynamics, False, ""
-
-def get_code_dimension(lines_iter):
-
-    dimension_code = list(set(map(lambda x: x["sede_de_origne"], lines_iter)))
-
-    if len(dimension_code) > 1:
-
-        return dimension_code[0], True, "Sede {} diferentes para la misma factura\n".format(dimension_code)
-    
-    headquarter = frappe.get_list("qp_md_headquarter", {"title": dimension_code[0] })
-    
-    if not headquarter:
-
-        return lines_iter[0]["sede_de_origne"], True, "Sede {} No existe\n".format(lines_iter[0]["sede_de_origne"])
-
-    
-    return headquarter[0].name, False, ""

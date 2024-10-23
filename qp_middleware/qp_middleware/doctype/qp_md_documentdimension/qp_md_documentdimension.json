@@ -1,0 +1,35 @@
+{
+ "actions": [],
+ "creation": "2024-09-27 15:23:40.988299",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "code",
+  "value_code"
+ ],
+ "fields": [
+  {
+   "fieldname": "code",
+   "fieldtype": "Data",
+   "label": "code"
+  },
+  {
+   "fieldname": "value_code",
+   "fieldtype": "Data",
+   "label": "value_code"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-09-27 15:23:40.988299",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_DocumentDimension",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
