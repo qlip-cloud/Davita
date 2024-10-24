@@ -141,7 +141,7 @@ def set_patients_and_get_unit_price(document, lines):
                     {
                         "no_identification": line["no_identificacion"],
                         "tipo_identification": line["tipo_documento"],
-                        "no_authorization": line["autorizacion_final"],
+                        "no_authorization": "", #line["autorizacion_final"],
                         "lhc_mipres": "",
                         "lhc_id_mipres": "",
                         "lhc_no_poliza": "",

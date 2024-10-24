@@ -20,8 +20,8 @@ def handler(multi_patient_upload, method):
     frappe.enqueue(
                 import_xlsx,
                 queue='long',                
-                #is_async=True,
-                now = True,
+                is_async=True,
+                #now = True,
                 job_name="send invoice: "+ multi_patient_upload.name,
                 timeout=5400000,
                 multi_patient_upload = multi_patient_upload
