@@ -103,9 +103,7 @@ def send_document(payload, url):
     payload_xml = """<?xml version="1.0" encoding="utf-8"?><soap:Envelope  xmlns:nav="urn:microsoft-dynamics-schemas/codeunit/RegistrarFacturasVentaWS" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><nav:RegistrarFacturasVentaWS><nav:factura>{}</nav:factura></nav:RegistrarFacturasVentaWS></soap:Body></soap:Envelope>""".format(json.dumps(payload))
     
     payload_xml = payload_xml.replace("'","")
-    
-    #URL_HEADER = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/api/v2.0/companies(798ec2fe-ddfe-ed11-8f6e-6045bd3980fd)/salesInvoices"
-    
+        
     add_header = {
         "SOAPAction": "#POST"
     }
@@ -113,17 +111,7 @@ def send_document(payload, url):
     response, response_json, error = send_petition(token, url, payload_xml, add_header = add_header, is_json= False)
     
     return response, response_json, error
-    #document.response = response
 
-    """if not error:
-        
-        document.document_code = response_json["number"]
-
-        document.is_complete = True
-
-    elif(document.is_complete):
-        
-        document.is_complete = False"""
 
 def get_payload(document):
 

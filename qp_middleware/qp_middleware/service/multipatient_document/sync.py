@@ -41,11 +41,11 @@ def handler(upload_xlsx, setup, enviroment):
 
     for n in range(range_total):
         
-        response, response_json, error = send_document(payloads, url)
+        response, response_json, error = send_document(payloads[n * setup.invoices_group : (n+1) * setup.invoices_group], url)
         
         try:
             
-            return_value = response_json["Soap:Envelope"]["Soap:Body"]["RegistrarFacturasVentaWS_Result"]["return_value"]
+            return_value = response_json["Soap:Envelope"]["Soap:Body"]["SWCrearFacturasVenta_Result"]["return_value"]
             
             list_split = return_value.split(";")
         
@@ -99,7 +99,7 @@ def handler(upload_xlsx, setup, enviroment):
 def send_document(payload, url):
 
     token = get_token()
-
+   
     payload_xml = """<?xml version="1.0" encoding="utf-8"?><soap:Envelope  xmlns:nav="urn:microsoft-dynamics-schemas/codeunit/SWCrearFacturasVenta" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><nav:SWCrearFacturasVenta><nav:factura>{}</nav:factura></nav:SWCrearFacturasVenta></soap:Body></soap:Envelope>""".format(json.dumps(payload))
     
     payload_xml = payload_xml.replace("'","")

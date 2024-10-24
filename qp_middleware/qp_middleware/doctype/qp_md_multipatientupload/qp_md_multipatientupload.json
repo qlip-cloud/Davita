@@ -1,0 +1,217 @@
+{
+ "actions": [],
+ "creation": "2024-09-27 10:19:48.394020",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "file",
+  "ssdates_section",
+  "invoice_date",
+  "invoice_end",
+  "scsales_invoice_date_column",
+  "invoice_start",
+  "ssdavitacode",
+  "headquarter",
+  "scdavitacode",
+  "modality",
+  "cod_modality",
+  "ssinvoice_end",
+  "invoice_total",
+  "invoice_success",
+  "total_repeat",
+  "invoice_repeat",
+  "invoice_error",
+  "send_success",
+  "send_error",
+  "confirm_success",
+  "confirm_error",
+  "is_valid",
+  "is_background",
+  "is_confirm",
+  "error"
+ ],
+ "fields": [
+  {
+   "fieldname": "file",
+   "fieldtype": "Attach",
+   "label": "Archivo",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "ssdates_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "invoice_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Fecha de Facturacion",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "invoice_end",
+   "fieldtype": "Date",
+   "label": "invoice_end",
+   "reqd": 1
+  },
+  {
+   "fieldname": "scsales_invoice_date_column",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "invoice_start",
+   "fieldtype": "Date",
+   "label": "invoice_start",
+   "reqd": 1
+  },
+  {
+   "fieldname": "ssdavitacode",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "headquarter",
+   "fieldtype": "Link",
+   "label": "Sede",
+   "options": "qp_md_headquarter",
+   "reqd": 1
+  },
+  {
+   "fieldname": "scdavitacode",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "modality",
+   "fieldtype": "Link",
+   "label": "Modalidad",
+   "options": "qp_md_Modality",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "modality.code_dynamics",
+   "fieldname": "cod_modality",
+   "fieldtype": "Read Only",
+   "hidden": 1,
+   "label": "cod_modality"
+  },
+  {
+   "fieldname": "ssinvoice_end",
+   "fieldtype": "Section Break"
+  },
+  {
+   "depends_on": "eval:doc.name != null;",
+   "fieldname": "invoice_total",
+   "fieldtype": "Int",
+   "label": "Total de Facturas",
+   "read_only": 1
+  },
+  {
+   "fieldname": "invoice_success",
+   "fieldtype": "Int",
+   "label": "Facturas correctas",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_repeat",
+   "fieldtype": "Int",
+   "label": "Total Facturas Repetidas",
+   "read_only": 1
+  },
+  {
+   "fieldname": "invoice_repeat",
+   "fieldtype": "Long Text",
+   "label": "Facturas Repetidas",
+   "read_only": 1
+  },
+  {
+   "fieldname": "invoice_error",
+   "fieldtype": "Int",
+   "label": "Facturas con errores",
+   "read_only": 1
+  },
+  {
+   "fieldname": "send_success",
+   "fieldtype": "Int",
+   "label": "Enviadas Correctas",
+   "read_only": 1
+  },
+  {
+   "fieldname": "send_error",
+   "fieldtype": "Int",
+   "label": "Error en envios",
+   "read_only": 1
+  },
+  {
+   "fieldname": "confirm_success",
+   "fieldtype": "Int",
+   "label": "confirm_success",
+   "read_only": 1
+  },
+  {
+   "fieldname": "confirm_error",
+   "fieldtype": "Int",
+   "label": "confirm_error",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.name != null;",
+   "fieldname": "is_valid",
+   "fieldtype": "Check",
+   "label": "is_valid",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.name != null;",
+   "fieldname": "is_background",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "En Segundo plano",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.name != null;",
+   "fieldname": "is_confirm",
+   "fieldtype": "Check",
+   "label": "is confirm",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "depends_on": "eval:doc.name != null;",
+   "fieldname": "error",
+   "fieldtype": "Check",
+   "label": "error"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-10-23 17:42:16.458476",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_MultiPatientUpload",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

@@ -7,7 +7,7 @@ import frappe
 @frappe.whitelist()
 def handler(upload_id):
 
-    upload = frappe.get_doc("qp_md_upload_xlsx",upload_id)
+    upload = frappe.get_doc("qp_md_MultiPatientUpload",upload_id)
 
     if upload.is_background:
 
@@ -16,15 +16,15 @@ def handler(upload_id):
             "msg": "Ya existe una confirmacion en proceso"
         }
     
-    frappe.db.set_value('qp_md_upload_xlsx', upload_id, 'is_background', True)
+    frappe.db.set_value('qp_md_MultiPatientUpload', upload_id, 'is_background', True)
     
     frappe.db.commit()
     
     frappe.enqueue(
                 confirm,
                 queue='long',                
-                #now=True,
-                is_async=True,
+                now=True,
+                #is_async=True,
                 job_name="send confirm: "+ upload_id,
                 timeout=5400000,
                 upload_id = upload_id
@@ -88,7 +88,7 @@ def update_upload_xlsx(upload_id):
 
             error = result["total"]
 
-    frappe.db.set_value('qp_md_upload_xlsx', upload_id,{
+    frappe.db.set_value('qp_md_MultiPatientUpload', upload_id,{
         "is_background": False,
         "confirm_success": success,
         "confirm_error": error
