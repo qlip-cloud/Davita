@@ -114,7 +114,7 @@ def set_sales_invoice(document, unit_price, qty):
                 "line_no": 1000,
                 "type": "Item",
                 "no": item["item_code"],
-                "quantity": qty,
+                "quantity": 1, #qty,
                 "unit_of_measure_code": "UND",
                 "unit_price": unit_price,
                 "cantidadPBI": 0,
