@@ -116,6 +116,7 @@ def set_sales_invoice(document, lines):
         for line in lines:
             
             item_code, item_code_2, quantity, unit_price = get_items_codes(line, document)
+            
             line_group[item_code] += quantity
 
         for key, (item_code, qty_total) in enumerate(line_group.items()):
@@ -150,13 +151,12 @@ def init_sales_order(document, item_code, quantity, unit_price = 0, line = 0):
 
 def set_patients_and_get_unit_price(document, lines):
     
-   
     for line in lines:
         
         item_code, item_code_2, quantity, unit_price = get_items_codes(line, document)
         
-
         code_dimension, error_dimension, msg_error_dimension = get_code_dimension(line["sede_de_origne"])
+        
         code_patient, error_patient, msg_error_patient = get_nit_patient(line)
         
         patient_error = not error_dimension and not error_patient
@@ -178,6 +178,6 @@ def set_patients_and_get_unit_price(document, lines):
                         "patient_headquarter": code_dimension,
                         "patient_modality": get_code_modality(line["codigo_centro_de_costo"], document),
                         "item_code": item_code,
-                        "quantity": quantity
+                        "quantity": quantity if document.is_group_item else line["cantidad_a_facturar"] 
                     }
                 )
