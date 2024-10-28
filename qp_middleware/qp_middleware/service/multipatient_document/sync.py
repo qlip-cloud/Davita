@@ -66,8 +66,6 @@ def handler(upload_xlsx, setup, enviroment):
 
         try:
 
-            int(response_list[key])
-
             document.document_code = response_list[key]
 
             document.is_complete = True

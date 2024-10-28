@@ -7,10 +7,11 @@
  "field_order": [
   "file",
   "ssdates_section",
+  "is_group_item",
+  "invoice_start",
+  "scsales_invoice_date_column",
   "invoice_date",
   "invoice_end",
-  "scsales_invoice_date_column",
-  "invoice_start",
   "ssdavitacode",
   "headquarter",
   "scdavitacode",
@@ -188,11 +189,17 @@
    "fieldname": "error",
    "fieldtype": "Check",
    "label": "error"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_group_item",
+   "fieldtype": "Check",
+   "label": "Agrupar Por Productos"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-23 17:42:16.458476",
+ "modified": "2024-10-28 13:23:07.619981",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_MultiPatientUpload",

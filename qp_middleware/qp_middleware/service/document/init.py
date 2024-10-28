@@ -187,7 +187,26 @@ def set_document_error(document, error_customer = "", error_contrat_patient = ""
 
     document.error = msg
     
+def get_nit_patient_not_repeat(lines_iter):
     
+    patient_code = list(set(map(lambda x: x["no_identificacion"], lines_iter)))
+
+    if len(patient_code) > 1:
+
+        return patient_code[0], True, "Paciente {} diferentes para la misma factura\n".format(patient_code)
+
+    return get_nit_patient(lines_iter[0])
+
+def get_nit_patient(line):
+       
+    if not frappe.db.exists("qp_md_Patient", {"numero_identificacion": line["no_identificacion"]}):
+
+        return line["no_identificacion"], True, "Paciente {} No existe\n".format(line["no_identificacion"])
+
+    patient_nit = line["tipo_documento"] + str(line["no_identificacion"])
+
+    return patient_nit, False, ""
+
 def get_code_dimension_not_repeat(lines_iter):
 
     dimension_code = list(set(map(lambda x: x["sede_de_origne"], lines_iter)))

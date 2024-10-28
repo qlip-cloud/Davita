@@ -8,6 +8,7 @@
   "document_confirm",
   "document_code",
   "document_type",
+  "is_group_item",
   "customer_code",
   "posting_date",
   "headquarter_code",
@@ -338,11 +339,18 @@
    "fieldtype": "Table",
    "label": "Patients",
    "options": "qp_md_DocumentPatient"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_group_item",
+   "fieldtype": "Check",
+   "label": "Esta agrupado por productos",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-09-27 15:32:34.082174",
+ "modified": "2024-10-28 13:24:03.431342",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Document",

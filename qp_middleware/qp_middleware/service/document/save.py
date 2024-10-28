@@ -5,7 +5,7 @@ import requests
 from datetime import datetime
 from frappe.utils import today
 from dateutil.relativedelta import relativedelta
-from qp_middleware.qp_middleware.service.document.init import init_document, get_nit_customer_no_repeat, get_items_codes, get_code_modality, get_contract_customer, set_document_error, get_cuota_moderadora_no_repeat,get_code_dimension_not_repeat
+from qp_middleware.qp_middleware.service.document.init import init_document, get_nit_customer_no_repeat, get_items_codes, get_code_modality, get_contract_customer, set_document_error, get_cuota_moderadora_no_repeat,get_code_dimension_not_repeat, get_nit_patient_not_repeat
 
 COD = ["JF-", "EJC", "PL1"]
 
@@ -119,7 +119,7 @@ def setup_document(lines_iter, upload_xlsx):
         
     code_dimension, error_dimension, msg_error_dimension = get_code_dimension_not_repeat(lines_iter)
 
-    code_patient, error_patient, msg_error_patient = get_nit_patient(lines_iter)
+    code_patient, error_patient, msg_error_patient = get_nit_patient_not_repeat(lines_iter)
 
     code_contrat_patient, error_contrat_patient, msg_error_contrat_patient = get_contract_customer(code_customer)
 
@@ -161,27 +161,6 @@ def get_orden_compra(cod_empresa, nit):
     cod_split = cod_part.split("-")
 
     return cod_split[0]
-
-
-
-
-def get_nit_patient(lines_iter):
-    
-    patient_code = list(set(map(lambda x: x["no_identificacion"], lines_iter)))
-
-    if len(patient_code) > 1:
-
-        return patient_code[0], True, "Paciente {} diferentes para la misma factura\n".format(patient_code)
-    
-    patient = frappe.get_list("qp_md_Patient", filters = {"numero_identificacion": patient_code[0] }, fields = ["*"])
-    
-    if not patient:
-
-        return lines_iter[0]["no_identificacion"], True, "Paciente {} No existe\n".format(lines_iter[0]["no_identificacion"])
-
-    patient_nit = lines_iter[0]["tipo_documento"] + str(lines_iter[0]["no_identificacion"])
-
-    return patient_nit, False, ""
 
 
 

@@ -1,12 +1,12 @@
-import frappe
 import time
-from datetime import datetime
 import json
-from frappe.utils import today
+import frappe
 import requests
-
+from datetime import datetime
+from frappe.utils import today
+from collections import defaultdict
 from dateutil.relativedelta import relativedelta
-from qp_middleware.qp_middleware.service.document.init import init_document, get_from_tax_id, get_items_codes,get_contract_customer,set_document_error,get_code_modality,get_code_dimension
+from qp_middleware.qp_middleware.service.document.init import init_document, get_from_tax_id, get_items_codes,get_contract_customer,set_document_error,get_code_modality,get_code_dimension,get_nit_patient
 
 COD = ["JF-", "EJC", "PL1"]
 
@@ -35,11 +35,13 @@ def handler(upload_xlsx):
         
         document = setup_document(nit, [lines[0]], upload_xlsx)
         
+        document.is_group_item = upload_xlsx.is_group_item
+        
         set_dimensions(document, upload_xlsx)
         
-        unit_price, qty = set_patients_and_get_unit_price(document, lines)
+        set_patients_and_get_unit_price(document, lines)
         
-        set_sales_invoice(document, unit_price, qty)
+        set_sales_invoice(document, lines)
 
         document.insert()  
 
@@ -72,8 +74,7 @@ def setup_document(nit, lines_iter, upload_xlsx):
     
     code_contrat_patient, error_contrat_patient, msg_error_contrat_patient = get_contract_customer(code_customer)
     
-    
-        
+            
     document = init_document(upload_xlsx, lines_iter[0], code_customer, lines_iter[0]["cuota_moderadora"], code_contrat_patient, "", "", "","","", tipo_operacion = "multiusuario")
     
     set_document_error(document, error_customer , error_contrat_patient, msg_error_customer = msg_error_customer, msg_error_contrat_patient = msg_error_contrat_patient)
@@ -106,36 +107,65 @@ def set_dimensions(document, upload_xlsx):
                         "value_code": upload_xlsx.cod_modality
                     })
     
-def set_sales_invoice(document, unit_price, qty):
+def set_sales_invoice(document, lines):
     
-    item = frappe.get_value("qp_md_Contract", { "id_cliente": document.customer_code}, ["item_code", "item_code_2"], as_dict=1 )
+    if document.is_group_item:
+        
+        line_group = defaultdict(int)
+
+        for line in lines:
+            
+            item_code, item_code_2, quantity, unit_price = get_items_codes(line, document)
+            line_group[item_code] += quantity
+
+        for key, (item_code, qty_total) in enumerate(line_group.items()):
+
+            init_sales_order(document, item_code, qty_total, line=key)
+
+    else:
+          
+        item = frappe.get_value("qp_md_Contract", { "id_cliente": document.customer_code}, ["item_code", "item_code_2"], as_dict=1 )
+        
+        init_sales_order(document, item["item_code"], quantity = 1)
+        
+        
+        
+def init_sales_order(document, item_code, quantity, unit_price = 0, line = 0):
+    
+    if not item_code:
+        document.is_valid = False
+        document.error += "Código de producto no valido\n"
     
     document.append("sales_invoices", {
-                "line_no": 1000,
-                "type": "Item",
-                "no": item["item_code"],
-                "quantity": 1, #qty,
-                "unit_of_measure_code": "UND",
-                "unit_price": unit_price,
-                "cantidadPBI": 0,
-                "Modalidad": ""#modalidad del product
-            }
+                    "line_no": line + 1000,
+                    "type": "Item",
+                    "no": item_code,
+                    "quantity": quantity, #qty,
+                    "unit_of_measure_code": "UND",
+                    "unit_price": unit_price,
+                    "cantidadPBI": 0,
+                    "Modalidad": ""#modalidad del product
+                }
         )
+
 def set_patients_and_get_unit_price(document, lines):
     
-    unit_price = 0
-    qty = 0
-    
+   
     for line in lines:
         
         item_code, item_code_2, quantity, unit_price = get_items_codes(line, document)
         
 
         code_dimension, error_dimension, msg_error_dimension = get_code_dimension(line["sede_de_origne"])
+        code_patient, error_patient, msg_error_patient = get_nit_patient(line)
         
-        document.is_valid = not error_dimension or document.is_valid
+        patient_error = not error_dimension and not error_patient
         
-        document.error += msg_error_dimension
+        if document.is_valid:
+            
+            document.is_valid = patient_error
+        
+        document.error += msg_error_dimension + msg_error_patient
 
         document.append("patients",
                     {
@@ -151,7 +181,3 @@ def set_patients_and_get_unit_price(document, lines):
                         "quantity": quantity
                     }
                 )
-        unit_price += float(line["vr_a_facturar"])
-        qty += int(quantity)
-        
-    return unit_price, qty
