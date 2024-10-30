@@ -6,7 +6,7 @@ from datetime import datetime
 from frappe.utils import today
 from collections import defaultdict
 from dateutil.relativedelta import relativedelta
-from qp_middleware.qp_middleware.service.document.init import init_document, get_from_tax_id, get_items_codes,get_contract_customer,set_document_error,get_code_modality,get_code_dimension,get_nit_patient
+from qp_middleware.qp_middleware.service.document.init import init_document, get_from_tax_id, get_items_codes,get_contract_customer,set_document_error,get_code_modality,get_code_dimension,get_nit_patient, get_code_dimension_not_repeat
 
 COD = ["JF-", "EJC", "PL1"]
 
@@ -75,7 +75,7 @@ def setup_document(nit, lines_iter, upload_xlsx):
     code_contrat_patient, error_contrat_patient, msg_error_contrat_patient = get_contract_customer(code_customer)
     
             
-    document = init_document(upload_xlsx, lines_iter[0], code_customer, lines_iter[0]["cuota_moderadora"], code_contrat_patient, "", "", "","","", tipo_operacion = "multiusuario")
+    document = init_document(upload_xlsx, lines_iter[0], code_customer, lines_iter[0]["cuota_moderadora"], code_contrat_patient, "", upload_xlsx.headquarter, "","","", tipo_operacion = "multiusuario")
     
     set_document_error(document, error_customer , error_contrat_patient, msg_error_customer = msg_error_customer, msg_error_contrat_patient = msg_error_contrat_patient)
 
