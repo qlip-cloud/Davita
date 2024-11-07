@@ -112,16 +112,21 @@ def set_sales_invoice(document, lines):
     if document.is_group_item:
         
         line_group = defaultdict(int)
+        line_modality_group = defaultdict(str)
 
         for line in lines:
             
             item_code, item_code_2, quantity, unit_price = get_items_codes(line, document)
             
             line_group[item_code] += quantity
-
+            
+            if not item_code in line_modality_group:
+                
+                line_modality_group [item_code] = get_code_modality(line["codigo_centro_de_costo"], document)
+            
         for key, (item_code, qty_total) in enumerate(line_group.items()):
-
-            init_sales_order(document, item_code, qty_total, line=key)
+            
+            init_sales_order(document, item_code, qty_total, line=key, modality = line_modality_group[item_code])
 
     else:
           
@@ -129,9 +134,7 @@ def set_sales_invoice(document, lines):
         
         init_sales_order(document, item["item_code"], quantity = 1)
         
-        
-        
-def init_sales_order(document, item_code, quantity, unit_price = 0, line = 0):
+def init_sales_order(document, item_code, quantity, unit_price = 0, line = 0, modality = ""):
     
     if not item_code:
         document.is_valid = False
@@ -145,7 +148,7 @@ def init_sales_order(document, item_code, quantity, unit_price = 0, line = 0):
                     "unit_of_measure_code": "UND",
                     "unit_price": unit_price,
                     "cantidadPBI": 0,
-                    "Modalidad": ""#modalidad del product
+                    "modality": modality
                 }
         )
 
