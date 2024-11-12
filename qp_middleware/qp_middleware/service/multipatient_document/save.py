@@ -6,7 +6,7 @@ from datetime import datetime
 from frappe.utils import today
 from collections import defaultdict
 from dateutil.relativedelta import relativedelta
-from qp_middleware.qp_middleware.service.document.init import init_document, get_from_tax_id, get_items_codes,get_contract_customer,set_document_error,get_code_modality,get_code_dimension,get_nit_patient, get_code_dimension_not_repeat
+from qp_middleware.qp_middleware.service.document.init import init_document, get_from_tax_id, get_items_codes,get_contract_customer,set_document_error,get_code_modality,get_code_dimension,get_nit_patient, get_code_dimension_not_repeat, validate_code_modality
 
 COD = ["JF-", "EJC", "PL1"]
 
@@ -41,7 +41,7 @@ def handler(upload_xlsx):
         
         set_patients_and_get_unit_price(document, lines)
         
-        set_sales_invoice(document, lines)
+        set_sales_invoice(document, lines, upload_xlsx)
 
         document.insert()  
 
@@ -102,12 +102,15 @@ def set_dimensions(document, upload_xlsx):
                         "code": "SEDE",
                         "value_code": upload_xlsx.headquarter
                     })
-    document.append("dimensions",{
-                        "code": "MODALIDAD",
-                        "value_code": upload_xlsx.cod_modality
-                    })
     
-def set_sales_invoice(document, lines):
+    if not document.is_group_item:
+        
+        document.append("dimensions",{
+                            "code": "MODALIDAD",
+                            "value_code": upload_xlsx.cod_modality
+                        })
+        
+def set_sales_invoice(document, lines, upload_xlsx):
     
     if document.is_group_item:
         
@@ -122,7 +125,7 @@ def set_sales_invoice(document, lines):
             
             if not item_code in line_modality_group:
                 
-                line_modality_group [item_code] = get_code_modality(line["codigo_centro_de_costo"], document)
+                line_modality_group [item_code] = validate_code_modality(line["codigo_centro_de_costo"], document)
             
         for key, (item_code, qty_total) in enumerate(line_group.items()):
             
@@ -132,7 +135,7 @@ def set_sales_invoice(document, lines):
           
         item = frappe.get_value("qp_md_Contract", { "id_cliente": document.customer_code}, ["item_code", "item_code_2"], as_dict=1 )
         
-        init_sales_order(document, item["item_code"], quantity = 1)
+        init_sales_order(document, item["item_code"], quantity = 1, modality=upload_xlsx.cod_modality)
         
 def init_sales_order(document, item_code, quantity, unit_price = 0, line = 0, modality = ""):
     
@@ -179,7 +182,7 @@ def set_patients_and_get_unit_price(document, lines):
                         "lhc_id_mipres": "",
                         "lhc_no_poliza": "",
                         "patient_headquarter": code_dimension,
-                        "patient_modality": get_code_modality(line["codigo_centro_de_costo"], document),
+                        "patient_modality": validate_code_modality(line["codigo_centro_de_costo"], document),
                         "item_code": item_code,
                         "quantity": quantity if document.is_group_item else line["cantidad_a_facturar"] 
                     }

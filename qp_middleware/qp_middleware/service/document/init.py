@@ -163,6 +163,18 @@ def get_contract_customer(code_customer):
     
     return contract, False, ""
 
+def validate_code_modality(cod_dinamyc, document):
+
+    code_dynamics = frappe.db.get_value("qp_md_Modality", {"code_dynamics": cod_dinamyc}, ["code_dynamics"])
+    
+    if not code_dynamics:
+       
+        document.is_valid = False
+
+        document.error += "Modalidad {} No existe\n".format(cod_dinamyc)
+        
+    return code_dynamics
+
 def get_code_modality(codes_servinte, document):
 
     code_dynamics = frappe.db.get_value("qp_md_Modality", {"code_servinte": codes_servinte}, ["code_dynamics"])
