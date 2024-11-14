@@ -135,7 +135,7 @@ def set_sales_invoice(document, lines, upload_xlsx):
           
         item = frappe.get_value("qp_md_Contract", { "id_cliente": document.customer_code}, ["item_code", "item_code_2"], as_dict=1 )
         
-        init_sales_order(document, item["item_code"], quantity = 1, modality=upload_xlsx.cod_modality)
+        init_sales_order(document, item["item_code"], quantity = 1)
         
 def init_sales_order(document, item_code, quantity, unit_price = 0, line = 0, modality = ""):
     
