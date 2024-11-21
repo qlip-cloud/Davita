@@ -27,7 +27,7 @@ def handler(upload_xlsx, setup, enviroment):
         payloads.append(payload)
 
 
-    endpoint = frappe.get_doc("qp_md_Endpoint", "create_document")
+    endpoint = frappe.get_doc("qp_md_Endpoint", "create_multipatient_document")
 
     url = enviroment.get_url_ws_protocol(endpoint.url)
 
@@ -45,7 +45,7 @@ def handler(upload_xlsx, setup, enviroment):
         
         try:
             
-            return_value = response_json["Soap:Envelope"]["Soap:Body"]["RegistrarFacturasVentaWS_Result"]["return_value"]
+            return_value = response_json["Soap:Envelope"]["Soap:Body"]["SWCrearFacturasVenta_Result"]["return_value"]
             
             list_split = return_value.split(";")
         
@@ -65,8 +65,6 @@ def handler(upload_xlsx, setup, enviroment):
     for key, document in enumerate(documents):
 
         try:
-
-            int(response_list[key])
 
             document.document_code = response_list[key]
 
@@ -99,8 +97,8 @@ def handler(upload_xlsx, setup, enviroment):
 def send_document(payload, url):
 
     token = get_token()
-
-    payload_xml = """<?xml version="1.0" encoding="utf-8"?><soap:Envelope  xmlns:nav="urn:microsoft-dynamics-schemas/codeunit/RegistrarFacturasVentaWS" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><nav:RegistrarFacturasVentaWS><nav:factura>{}</nav:factura></nav:RegistrarFacturasVentaWS></soap:Body></soap:Envelope>""".format(json.dumps(payload))
+   
+    payload_xml = """<?xml version="1.0" encoding="utf-8"?><soap:Envelope  xmlns:nav="urn:microsoft-dynamics-schemas/codeunit/SWCrearFacturasVenta" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><nav:SWCrearFacturasVenta><nav:factura>{}</nav:factura></nav:SWCrearFacturasVenta></soap:Body></soap:Envelope>""".format(json.dumps(payload))
     
     payload_xml = payload_xml.replace("'","")
         
@@ -144,52 +142,67 @@ def get_payload(document):
         "ResponsibilityCenter": document.responsibility_center,
         "WorkDescription": document.work_description,
         "ExternalDocumentNo": document.name,
-        "dimensionSetLines": [
-             {            
-                "code": "TERCERO",            
-                "valueCode": customer_nit[0]    
-            },
-            {            
-                "code": "SEDE",            
-                "valueCode": document.headquarter_code          
-            },
-            {       
-                "code": "PACIENTE",            
-                "valueCode": document.patient_code         
-            },
-            {      
-                "code": "LIBRO",            
-                "valueCode": "NCIF"        
-            }
-        ],
-
-        "SalesInvoiceLine": get_items_payload(document)
+        "dimensionSetLines": get_dimensions_payload(document),
+        "SalesInvoiceLine": get_sales_invoices_payload(document),
+        "Paciente": get_patients_payload(document)
+        
 
     }
 
-def get_items_payload(document):
+def get_sales_invoices_payload(document):
 
     requests = []
     
-    for key, item in enumerate(sorted(document.items, key=lambda x: x.line)):
+    for key, sale_invoice in enumerate(sorted(document.sales_invoices, key=lambda x: x.line_no)):
     
         request = {
-            "Document_Type": "Invoice",
-            "Line_No": item.line,
-            "Type": item.type_code,
-            "No": item.item_code,
-            "Quantity": int(item.quantity),            
-            "Unit_of_Measure_Code": "UND",
-            "Unit_Price": float(item.unit_price),
-            "CantidadPBI": item.quantity_invoice,
-            "Modalidad": item.modality_code
+            "Line_No": sale_invoice.line_no,
+            "Type": sale_invoice.type,
+            "No": sale_invoice.no,
+            "Quantity": int(sale_invoice.quantity),            
+            "Unit_of_Measure_Code": sale_invoice.unit_of_measure_code,
+            "Unit_Price": float(sale_invoice.unit_price),
+            "CantidadPBI": sale_invoice.cantidadpbi,
+            "Modalidad": sale_invoice.modality or ""
         }
 
-        if item.type_code == "G/L Account":
+        requests.append(request)
+        
+    return requests
 
-            request.update({    
-                "Line_Amount": float(item.line_amount)
-            })
+def get_dimensions_payload(document):
+
+    requests = []
+    
+    for key, dimension in enumerate(document.dimensions):
+    
+        request = {
+            "code": dimension.code,
+            "valueCode": dimension.value_code            
+        }
+
+        requests.append(request)
+        
+    return requests
+
+def get_patients_payload(document):
+
+    requests = []
+    
+    for key, patient in enumerate(document.patients):
+    
+        request = {
+            "NoIdentificacion": patient.no_identification,
+            "TipoIdentificacion": patient.tipo_identification,
+            "NoAutorizacion": patient.no_authorization or "",
+            "LHCMIPRES": patient.lhc_mipres or "",
+            "LHCIDMIPRES": patient.lhc_id_mipres or "",
+            "LHCNoPoliza": patient.lhc_no_poliza or "",
+            "SedePaciente": patient.patient_headquarter or "",
+            "ModalidadPaciente": patient.patient_modality or "",
+            "Producto": patient.item_code,
+            "Cantidad": patient.quantity
+        }
 
         requests.append(request)
         

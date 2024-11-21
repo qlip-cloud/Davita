@@ -40,7 +40,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-18 10:07:55.002555",
+ "modified": "2024-10-23 08:40:41.731116",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_headquarter",
@@ -59,7 +59,9 @@
    "write": 1
   }
  ],
+ "search_fields": "code",
  "sort_field": "modified",
- "sort_order": "DESC",
+ "sort_order": "ASC",
+ "title_field": "title",
  "track_changes": 1
 }

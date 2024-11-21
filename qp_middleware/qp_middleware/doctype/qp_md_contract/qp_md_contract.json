@@ -19,7 +19,9 @@
   "id_tipo_contrato",
   "tipo_cliente",
   "punto_facturacion",
-  "com_desccondicionado"
+  "com_desccondicionado",
+  "item_code",
+  "item_code_2"
  ],
  "fields": [
   {
@@ -98,11 +100,23 @@
    "fieldname": "com_desccondicionado",
    "fieldtype": "Data",
    "label": "comDescCondicionado"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "label": "Producto",
+   "options": "Item"
+  },
+  {
+   "fetch_from": "item_code.qp_item_code_2",
+   "fieldname": "item_code_2",
+   "fieldtype": "Read Only",
+   "label": "item"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-27 17:52:08.325510",
+ "modified": "2024-10-01 14:42:34.683549",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Contract",
