@@ -3,98 +3,118 @@ import json
 import math
 from datetime import datetime
 from qp_authorization.use_case.oauth2.authorize import get_token
-
 from qp_middleware.qp_middleware.service.util.sync import send_petition
 
 def handler(upload_xlsx, setup, enviroment):
-
-    document_names = frappe.get_list("qp_md_Document", {"upload_id": upload_xlsx.name})
-
-    documents = []
-
-    payloads = []
-
-    for document_name in document_names:
-
-        document = frappe.get_doc("qp_md_Document", document_name)
-
-        payload = get_payload(document)
-
-        document.request = json.dumps(payload)
-
-        documents.append(document)
-
-        payloads.append(payload)
-
-
+    
+    document_names = frappe.get_list("qp_md_Document", {"upload_id": upload_xlsx.name, "is_valid": True})
+    
+    range_total = math.ceil(len(document_names) / setup.invoices_group)
+    
     endpoint = frappe.get_doc("qp_md_Endpoint", "create_document")
 
     url = enviroment.get_url_ws_protocol(endpoint.url)
-
-    #url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/WS/DAVITA/Codeunit/RegistrarFacturasVentaWS"
-
-    #send_request(documents, setup, send_document, token, url)
     
-    range_total = math.ceil(len(payloads) / setup.invoices_group)
-
-    response_list = []
+    count_complete = 0
 
     for n in range(range_total):
+
+        documents = []
         
-        response, response_json, error = send_document(payloads[n * setup.invoices_group : (n+1) * setup.invoices_group], url)
+        payloads = []
         
+        page_start = n * setup.invoices_group
+        
+        page_end = (n+1) * setup.invoices_group
+        
+        for document_name in document_names[page_start: page_end]:
+            
+            document = frappe.get_doc("qp_md_Document", document_name)
+
+            payload = get_payload(document)
+
+            document.request = json.dumps(payload)
+
+            documents.append(document)
+
+            payloads.append(payload)
+                    
         try:
+            response, response_json, error = send_document(payloads, url)
+                        
+            return_value = get_return_value(response_json)
             
-            return_value = response_json["Soap:Envelope"]["Soap:Body"]["RegistrarFacturasVentaWS_Result"]["return_value"]
-            
-            list_split = return_value.split(";")
+            list_split = get_list_split(return_value)
+                        
+            count_complete += update_document_lot(documents, list_split, response, error)
         
-            del list_split[-1]
-
-            list_split = list(map(lambda x: x.replace(" ", ""), list_split))
-
-            response_list += list_split
-        
-        except:
-
-            pass      
-        
-
-    is_complete = 0
-
-    for key, document in enumerate(documents):
-
-        try:
-
-            int(response_list[key])
-
-            document.document_code = response_list[key]
-
-            document.is_complete = True
-
-            is_complete +=1
-
-            document.response = response
-
-        except:
+        except Exception as e:
             
-            document.response = response_list[key] if response_list and response_list[key] else response
-
-        #if response_list[key] != "Error" and response_list[key] != "":
-            
-        #document.is_complete = True
-
-        #document.document_code = response_list[key]
-
-
-        document.save()
+            frappe.log_error(message = str(e), title = f"Error en sincronizacion: {upload_xlsx.name}")
+            message = response + str(e)
+            update_document_lot(documents, [], message, True)
 
     frappe.db.commit()
 
     return {
-        "send_success": is_complete,
-        "send_error": len(documents) - is_complete
+        "send_success": count_complete,
+        "send_error": len(documents) - count_complete
     }
+    
+def get_return_value(response_json):
+    
+    if  "Soap:Envelope" in response_json:
+        if "Soap:Body" in response_json["Soap:Envelope"]:
+            if "RegistrarFacturasVentaWS_Result" in response_json["Soap:Envelope"]["Soap:Body"]:
+                if "return_value" in response_json["Soap:Envelope"]["Soap:Body"]["RegistrarFacturasVentaWS_Result"]:
+                    return response_json["Soap:Envelope"]["Soap:Body"]["RegistrarFacturasVentaWS_Result"]["return_value"]
+    
+    raise Exception("\n\nError en conversión respuesta recibida")
+    
+def get_list_split(return_value):
+            
+    list_split = return_value.split(";")
+
+    del list_split[-1]
+
+    return list(map(lambda x: x.replace(" ", ""), list_split))
+            
+def update_document_lot(documents_lot, list_split, response, error):
+    
+    count_complete = 0
+        
+    for key, document in enumerate(documents_lot):
+                
+        document.response = response
+        
+        if  not error and len(documents_lot) == len(list_split):
+            
+            try:
+
+                int(list_split[key])
+
+                document.document_code = list_split[key]
+
+                document.is_complete = True
+
+                count_complete +=1
+
+            except:
+                            
+                document.response += f"\n\n Error al asignar codigo, valor asignado:{list_split[key]}"
+        else:
+            if len(documents_lot) != len(list_split):
+                
+                document.response += f"\n\n Error en proceso: el numero de respuesta no es igual al esperado. Esperado:{len(documents_lot)} recibidos {len(list_split)}"
+                
+            else:
+                document.response += f"\n\n Error en respuesta recibida"
+            
+            
+            
+        document.save()
+        
+    return count_complete
 
 def send_document(payload, url):
 
@@ -111,7 +131,6 @@ def send_document(payload, url):
     response, response_json, error = send_petition(token, url, payload_xml, add_header = add_header, is_json= False)
     
     return response, response_json, error
-
 
 def get_payload(document):
 
@@ -164,7 +183,6 @@ def get_payload(document):
         ],
 
         "SalesInvoiceLine": get_items_payload(document)
-
     }
 
 def get_items_payload(document):
