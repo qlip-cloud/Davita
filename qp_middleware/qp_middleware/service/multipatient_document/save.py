@@ -19,7 +19,7 @@ LIMIT = {
 @frappe.whitelist()
 def handler(upload_xlsx):
     
-    group_nit = frappe.get_list("qp_md_invoice_sync", filters = {"upload_id": upload_xlsx.name, }, pluck='nit',group_by='nit')
+    group_nit = frappe.get_list("qp_md_invoice_sync", filters = {"upload_id": upload_xlsx.name }, pluck='nit',group_by='nit')
     
     response = []
     

@@ -215,6 +215,10 @@ def get_nit_patient(line):
 
         return line["no_identificacion"], True, "Paciente {} No existe\n".format(line["no_identificacion"])
 
+    if not frappe.db.exists("qp_md_Patient", {"numero_identificacion": line["no_identificacion"], "is_sync": True}):
+        
+        return line["no_identificacion"], True, "Paciente {} No esta sincronizaco en BC \n".format(line["no_identificacion"])
+        
     patient_nit = line["tipo_documento"] + str(line["no_identificacion"])
 
     return patient_nit, False, ""
