@@ -126,7 +126,7 @@ def set_request(code_headquarter, code_item, dimension_code, posting_date, quant
             "JournalTemplateName": "INVENTARIO",
             "JournalBatchName": "INVCNS-{}".format(code_headquarter), 
             "PostingDate": posting_date,
-            "EntryType": "Positive Adjmt.",
+            "EntryType": "Negative Adjmt.",
             "ItemNo": code_item, 
             "LocationCode": code_headquarter,
             "BinCode": "SF{}".format(code_headquarter),
