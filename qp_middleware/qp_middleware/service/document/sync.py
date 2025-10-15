@@ -58,7 +58,7 @@ def handler(upload_xlsx, setup, enviroment):
 
     return {
         "send_success": count_complete,
-        "send_error": len(documents) - count_complete
+        "send_error": len(document_names) - count_complete
     }
     
 def get_return_value(response_json):
