@@ -8,27 +8,34 @@ import time
 import traceback
 from qp_authorization.use_case.oauth2.authorize import get_token
 
-def get_list(enviroment, code, filters = None):
+def get_list(enviroment, code, filters = None, include_prefer = False, select = None):
     
     enpoint = frappe.get_doc("qp_md_Endpoint", code)
 
-    url = enviroment.get_url_with_company_and_filters(enpoint.url, filters) if filters else enviroment.get_url_with_company(enpoint.url)
+    url = enviroment.get_url_with_company_and_filters(enpoint.url, filters, select) if filters else enviroment.get_url_with_company(enpoint.url)
 
     response_values = {
         "value" : []
     }
 
-    callback_get_list(url, response_values)
+    callback_get_list(url, response_values, include_prefer)
 
     return response_values
 
-def callback_get_list(url, response_values):
+def callback_get_list(url, response_values, include_prefer = False):
 
     token = get_token()
 
     headers = {
         'Authorization': 'Bearer {}'.format(token)
     }
+    
+    if include_prefer:
+        
+        headers.update({
+            "Prefer": "odata.maxpagesize=100"
+        })
+        
 
     response = requests.get(url, headers=headers)
 
@@ -42,15 +49,15 @@ def callback_get_list(url, response_values):
 
     if "@odata.nextLink" in response_json and response_json["@odata.nextLink"]:
 
-        callback_get_list(response_json["@odata.nextLink"], response_values)
+        callback_get_list(response_json["@odata.nextLink"], response_values, include_prefer)
 
-def get_response(code, filters = None):
+def get_response(code, filters = None, include_prefer = False, select = None):
 
     setup = frappe.get_doc("qp_md_Setup")
 
     enviroment = frappe.get_doc("qp_md_Enviroment", setup.enviroment)
     
-    return get_list(enviroment, code, filters)
+    return get_list(enviroment, code, filters, include_prefer, select)
 
 def persist(table, fields, values):
 
