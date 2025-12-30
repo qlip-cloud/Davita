@@ -23,11 +23,21 @@ class qp_md_Enviroment(Document):
 
 		return url
 	
-	def get_url_with_company_and_filters(self, endpoint, filters):
+	def get_url_with_company_and_filters(self, endpoint, filters, select = None):
 
 		basic = self.get_url_with_company(endpoint)
-
-		url = basic + "?$filter=" + filters
+		
+		concat = "?" if select or filters else ""
+		
+		url = f"{basic}{concat}"
+  
+		if select:
+			concat = "&" if filters else ""
+			url += f"$select={select}{concat}"
+   
+		if filters:
+    		
+			url += f"$filter={filters}"
 
 		return url
 	
