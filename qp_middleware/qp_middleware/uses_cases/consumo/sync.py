@@ -94,7 +94,7 @@ def send_consumos(consumos):
             
                 response, response_json, return_value, error = send_document([consumo.get("request")], consumo_url)
 
-                error_response =  True if error or (return_value not in ("Registro exitosamente: -;", "Registro con exito;"))else False
+                error_response =  True if error or (return_value not in ("Registro exitosamente: -;", "Registro con exito;")) else False
 
                 frappe.db.set_value('qp_md_Consumo', consumo.get("name"), {
                         'response': response,
@@ -153,15 +153,21 @@ def send_document(payloads, url):
     }
 
     response, response_json, error = send_petition(token, url, payload_xml, add_header = add_header, is_json= False)
-    
-    if not error:
         
-        try:
+    try:
+        
+        if error:
+            
+            raise Exception(response)
 
-            response_value = response_json.get("Soap:Envelope").get("Soap:Body").get("registroDiarioProducto_Result").get("return_value")
-
-        except Exception as error:
-                
-            return response, response_json, "",True
-
-    return response, response_json, response_value, False
+        response_value = response_json.get("Soap:Envelope").get("Soap:Body").get("registroDiarioProducto_Result").get("return_value")
+        
+        return response, response_json, response_value, False
+        
+    except Exception as error:
+        
+        pass
+        
+    finally:
+            
+        return response, None, None, True

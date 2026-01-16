@@ -48,8 +48,6 @@ def handler(dimension_code, name = "", second_name = "", lastname = "", second_l
                  
                 dimension.response = str(error)
 
-    
-    
     return dimension
 
 
@@ -70,6 +68,10 @@ def sync(dimension):
     dimension.response = response
     
     if error_response:
+        
+        if not "error" in response_json or not "code" in response_json.get("error"):
+            
+            raise Exception("Error at connection Dimension")
         
         if response_json.get("error").get("code") != 'Internal_EntityWithSameKeyExists':
 

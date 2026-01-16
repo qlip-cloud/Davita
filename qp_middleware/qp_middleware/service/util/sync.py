@@ -84,18 +84,34 @@ def send_petition(token, url, payload, method = "POST", add_header = None, is_js
     if add_header:
 
         headers.update(add_header)
-
-    response = requests.request(method, url, headers=headers, data=payload)
         
+    response = None
+    
+    response_json = None
+    
+    try:
+        
+        response = requests.request(method, url, headers=headers, data=payload)
+    
+    except Exception as error:
+        
+        return f"Error en peticion: {error}", response_json, True       
+    
     try:
         
         response_json = json.loads(response.text) if is_json else xmltodict.parse(response.text)
+    
+        return response.text, response_json, "error" in response_json
+    
 
     except:
 
-        return response.text, None, True
+        pass
 
-    return response.text, response_json, "error" in response_json
+    finally:
+
+        return response.text, response_json, True
+
 
 def send_request(documents, setup, target, token, url):
 
