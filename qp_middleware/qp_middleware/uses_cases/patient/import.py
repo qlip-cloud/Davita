@@ -91,8 +91,16 @@ def save_row(rows, upload_id):
 
                 error += f'Tipo de Atencion {row[12]} del Paciente {row[1]} No configurado\n'
             
+            birthdate = None
+            
+            try:
+                birthdate = get_validate_date(row[14])
+            except:
+                count_error += 1
+
+                error += f'Error en conversion de fecha de nacimiento del Paciente {row[1]} \n' 
                 
-            if not code_responsable or not tipo_atencion:
+            if not code_responsable or not tipo_atencion or not birthdate:
 
                 continue
 
@@ -115,13 +123,7 @@ def save_row(rows, upload_id):
                 group_code = str(dimension + '_' + row[9]).upper()
 
                 if (not group_code in list_group_code) and (not group_code in new_group_code):
-                    birthdate = ""
-                    try:
-                        birthdate = get_validate_date(row[14])
-                    except:
-                        count_error += 1
-
-                        error += f'Error en conversion de fecha de nacimiento del Paciente {row[1]} \n'
+                    
                         
                     tuple_list.append(
                         (
