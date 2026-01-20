@@ -42,7 +42,7 @@ def handler():
                 if not group_code in list_group_code:
 
                     values.append((group_code, tipo_identificacion, iter['tipoIdentificacion'], iter['numeroIdentificacion'],iter['primerNombre'], iter['segundoNombre'], iter['primerApellido'],
-                        iter['segundoApellido'], iter['numeroTelefonico'], iter['correoElectronico'],iter['idPlan'], iter['tipoUsuario'][0], iter['tipoUsuario'], "Import", True, group_code, dimension, now(), now(), 'Administrator', 'Administrator'))
+                        iter['segundoApellido'], iter['numeroTelefonico'], iter['correoElectronico'],iter['idPlan'], iter['tipoUsuario'][0], iter['tipoUsuario'], "Import", True, group_code, dimension, iter['fechaNacimiento'], iter['paisOrigen'], iter['paisResidencia'], iter['Municipio'], iter['zonaTerritorial'], now(), now(), 'Administrator', 'Administrator'))
         
         else:
 
@@ -53,8 +53,7 @@ def handler():
 
         table = "tabqp_md_Patient"
 
-        fields = "(name, tipo_identificacion, nombre_identificacion, numero_identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, numero_telefonico \
-                    ,correo_electronico, id_plan, tipo_usuario, nombre_usuario,origin, is_sync, group_code, dimension, creation, modified, modified_by, owner)"
+        fields = "(name, tipo_identificacion, nombre_identificacion, numero_identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, numero_telefonico, correo_electronico, id_plan, tipo_usuario, nombre_usuario,origin, is_sync, group_code, dimension, birthdate, country_origin, country_residence, municipality, territorial_zone, creation, modified, modified_by, owner)"
         
         persist(table, fields, values)
 

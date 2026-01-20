@@ -39,8 +39,13 @@ def callback_get_list(url, response_values, include_prefer = False):
 
     response = requests.get(url, headers=headers)
 
-    response_json = json.loads(response.text)
 
+    if response.status_code != 200:
+        
+        frappe.throw(f"Error en solicitud: {response.reason} status {response.status_code}")
+        
+    response_json = json.loads(response.text)
+    
     if "error" in response_json:
 
         frappe.throw(response_json["error"])

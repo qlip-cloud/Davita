@@ -35,8 +35,7 @@ def insert_data(tuple_list):
         table = "tabqp_md_Patient"
 
         fields = """(name, nombre_identificacion, tipo_identificacion,numero_identificacion,primer_apellido,segundo_apellido,primer_nombre,segundo_nombre,
-        numero_telefonico,celular,direccion,tipo_usuario,nombre_usuario,cod_responsable, tipo_atencion, fecha_mov,upload_id,group_code,dimension,origin, request,creation, 
-        modified, modified_by, owner)"""
+        numero_telefonico,celular,direccion,tipo_usuario,nombre_usuario,cod_responsable, tipo_atencion, fecha_mov,upload_id,group_code,dimension,origin, request,birthdate, country_origin, country_residence, municipality, territorial_zone, creation, modified, modified_by, owner)"""
 
         persist(table, fields, tuple_list)
 
@@ -116,7 +115,14 @@ def save_row(rows, upload_id):
                 group_code = str(dimension + '_' + row[9]).upper()
 
                 if (not group_code in list_group_code) and (not group_code in new_group_code):
-                
+                    birthdate = ""
+                    try:
+                        birthdate = get_validate_date(row[14])
+                    except:
+                        count_error += 1
+
+                        error += f'Error en conversion de fecha de nacimiento del Paciente {row[1]} \n'
+                        
                     tuple_list.append(
                         (
                             group_code, 
@@ -136,7 +142,12 @@ def save_row(rows, upload_id):
                             tipo_atencion,
                             str(fecha_mov),
                             upload_id, group_code, dimension, "Excel", 
-                            set_request(row, nombre_identificacion, codigo_usuario, tipo_atencion, code_responsable) ,
+                            set_request(row, nombre_identificacion, codigo_usuario, tipo_atencion, code_responsable, birthdate),
+                            birthdate,
+                            row[15] or "",
+                            row[16] or "",
+                            row[17] or "",
+                            row[18] or "",
                             now(),now(), "Administrator", "Administrator" 
                         )
                     )
@@ -149,7 +160,7 @@ def save_row(rows, upload_id):
         if row[0] == "TIPO_IDENT":
 
             row_valid = True
-
+    
     if tuple_list:
         
         return tuple_list, total, len(tuple_list), repeat, error, count_error
@@ -184,7 +195,7 @@ def get_format(doctype, key, value):
 
     return dic_result
 
-def set_request(row, nombre_identificacion, codigo_usuario, tipo_atencion, code_responsable):
+def set_request(row, nombre_identificacion, codigo_usuario, tipo_atencion, code_responsable, birthdate):
 
     return json.dumps({
             "tipoIdentificacion": nombre_identificacion,
@@ -198,5 +209,18 @@ def set_request(row, nombre_identificacion, codigo_usuario, tipo_atencion, code_
             "idPlan": "",
             "tipoUsuario": codigo_usuario,
             "Eps": code_responsable,
-            "Modalidad": tipo_atencion
+            "Modalidad": tipo_atencion,
+            "fechaNacimiento": birthdate,
+            "paisOrigen": row[15] or "",
+            "Municipio": row[17] or "",
+            "zonaTerritorial": row[18] or ""
         })
+    
+def get_validate_date(date_str, input_format="%d/%m/%Y", output_format="%Y-%m-%d"):
+    
+           
+    date_str = date_str.replace("-","/")
+        
+    date_obj = datetime.strptime(date_str, input_format)
+       
+    return date_obj.strftime(output_format)

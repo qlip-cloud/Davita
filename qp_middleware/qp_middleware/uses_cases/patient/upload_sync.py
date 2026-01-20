@@ -48,9 +48,9 @@ def sync(sync_log, patients):
 
             try:
                 
-                token = get_token()
                 
                 patient = frappe.get_doc("qp_md_Patient", patient_iter.name)
+                token = get_token()
 
                 sync_patient(patient, token, sync_log, patient_url)
 
