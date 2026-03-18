@@ -12,7 +12,8 @@ def handler():
     
     date_ago = get_date_two_months_ago()
     
-    filters = f"CustomerSince gt {date_ago}"
+    #filters = f"CustomerSince gt {date_ago}"
+    filters = None
     
     response_json = get_response("list_customers", filters, include_prefer = True, select = select)
 
