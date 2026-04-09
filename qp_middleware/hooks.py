@@ -106,7 +106,13 @@ doc_events = {
 
 # Scheduled Tasks
 # ---------------
-
+scheduler_events = {
+    "cron": {
+        "0 6,12 * * *": [
+            "qp_middleware.qp_middleware.uses_cases.glosa.sync.handler"
+        ]
+    }
+}
 # scheduler_events = {
 # 	"all": [
 # 		"qp_middleware.tasks.all"
