@@ -1,0 +1,126 @@
+{
+ "actions": [],
+ "creation": "2026-04-02 04:11:55.608726",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "invoice_total",
+  "glosa_total",
+  "error_total",
+  "invoice_found_total",
+  "glosa_found_total",
+  "glosa_send_total",
+  "glosa_not_found_total",
+  "glosa_response_error_total",
+  "glosa_error_total",
+  "invoice_not_found_total",
+  "invoice_response_error_total",
+  "unknow_error_total",
+  "lines"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "error_total",
+   "fieldtype": "Int",
+   "label": "error total"
+  },
+  {
+   "default": "0",
+   "fieldname": "invoice_found_total",
+   "fieldtype": "Int",
+   "label": "invoice found total"
+  },
+  {
+   "default": "0",
+   "fieldname": "glosa_found_total",
+   "fieldtype": "Int",
+   "label": "glosa found total"
+  },
+  {
+   "default": "0",
+   "fieldname": "glosa_send_total",
+   "fieldtype": "Int",
+   "label": "glosa send total"
+  },
+  {
+   "default": "0",
+   "fieldname": "invoice_not_found_total",
+   "fieldtype": "Int",
+   "label": "invoice not found total"
+  },
+  {
+   "default": "0",
+   "fieldname": "unknow_error_total",
+   "fieldtype": "Int",
+   "label": "unknow error total"
+  },
+  {
+   "fieldname": "lines",
+   "fieldtype": "Table",
+   "label": "lines",
+   "options": "qp_md_GlosaErrorLine"
+  },
+  {
+   "default": "0",
+   "fieldname": "glosa_not_found_total",
+   "fieldtype": "Int",
+   "label": "glosa not found total"
+  },
+  {
+   "default": "0",
+   "fieldname": "glosa_response_error_total",
+   "fieldtype": "Int",
+   "label": "glosa response error total"
+  },
+  {
+   "default": "0",
+   "fieldname": "invoice_response_error_total",
+   "fieldtype": "Int",
+   "label": "invoice response error total"
+  },
+  {
+   "default": "0",
+   "fieldname": "invoice_total",
+   "fieldtype": "Int",
+   "label": "invoice total"
+  },
+  {
+   "default": "0",
+   "fieldname": "glosa_total",
+   "fieldtype": "Data",
+   "label": "glosa total"
+  },
+  {
+   "default": "0",
+   "fieldname": "glosa_error_total",
+   "fieldtype": "Int",
+   "label": "glosa_error_total"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-04-02 09:25:20.284015",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_GlosaError",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

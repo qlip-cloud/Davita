@@ -1,0 +1,203 @@
+{
+ "actions": [],
+ "creation": "2026-03-31 15:45:21.790341",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "gloss_invoice_tracking_id",
+  "invoice_id",
+  "return_value",
+  "observation",
+  "return_code_id",
+  "return_code_description",
+  "formulation_date",
+  "report_date",
+  "report_user",
+  "response_code_id",
+  "response_code_description",
+  "response_observation",
+  "response_date",
+  "response_report_user",
+  "response_report_date",
+  "reiteration_return_code_id",
+  "reiteration_return_code_description",
+  "reiteration_observation",
+  "reiteration_return_formulation_date",
+  "reiteration_return_report_date",
+  "reiteration_return_report_user",
+  "reiteration_return_response_code_id",
+  "reiteration_return_response_code_description",
+  "reiteration_return_response_observation",
+  "reiteration_return_response_formulation_date",
+  "reiteration_return_response_report_date",
+  "reiteration_return_response_report_user",
+  "attachment"
+ ],
+ "fields": [
+  {
+   "fieldname": "gloss_invoice_tracking_id",
+   "fieldtype": "Int",
+   "label": "idSeguimientoFacturaGlosa"
+  },
+  {
+   "fieldname": "invoice_id",
+   "fieldtype": "Int",
+   "label": "idFactura"
+  },
+  {
+   "fieldname": "return_value",
+   "fieldtype": "Float",
+   "label": "valorDevolucion"
+  },
+  {
+   "fieldname": "observation",
+   "fieldtype": "Data",
+   "label": "observacion"
+  },
+  {
+   "fieldname": "return_code_id",
+   "fieldtype": "Data",
+   "label": "idSeguimientoTipoCodigoDevolucion"
+  },
+  {
+   "fieldname": "return_code_description",
+   "fieldtype": "Data",
+   "label": "descripcionSeguimientoTipoCodigoDevolucion"
+  },
+  {
+   "fieldname": "formulation_date",
+   "fieldtype": "Datetime",
+   "label": "fechaFormulacion"
+  },
+  {
+   "fieldname": "report_date",
+   "fieldtype": "Datetime",
+   "label": "fechaReporte"
+  },
+  {
+   "fieldname": "report_user",
+   "fieldtype": "Data",
+   "label": "usuarioReporte"
+  },
+  {
+   "fieldname": "response_code_id",
+   "fieldtype": "Data",
+   "label": "idSeguimientoTipoCodigoRespuesta"
+  },
+  {
+   "fieldname": "response_code_description",
+   "fieldtype": "Data",
+   "label": "descripcionSeguimientoTipoCodigoRespuesta"
+  },
+  {
+   "fieldname": "response_observation",
+   "fieldtype": "Data",
+   "label": "observacionRespuesta"
+  },
+  {
+   "fieldname": "response_date",
+   "fieldtype": "Datetime",
+   "label": "fechaRespuesta"
+  },
+  {
+   "fieldname": "response_report_user",
+   "fieldtype": "Data",
+   "label": "usuarioReporteRespuesta"
+  },
+  {
+   "fieldname": "response_report_date",
+   "fieldtype": "Datetime",
+   "label": "fechaReporteRespuesta"
+  },
+  {
+   "fieldname": "reiteration_return_code_id",
+   "fieldtype": "Data",
+   "label": "idSeguimientoTipoCodigoDevolucionReiteracion"
+  },
+  {
+   "fieldname": "reiteration_return_code_description",
+   "fieldtype": "Data",
+   "label": "descripcionSeguimientoTipoCodigoDevolucionReiteracion"
+  },
+  {
+   "fieldname": "reiteration_observation",
+   "fieldtype": "Data",
+   "label": "observacionReiteracion"
+  },
+  {
+   "fieldname": "reiteration_return_formulation_date",
+   "fieldtype": "Datetime",
+   "label": "fechaFormulacionDevolucionReiteracion"
+  },
+  {
+   "fieldname": "reiteration_return_report_date",
+   "fieldtype": "Datetime",
+   "label": "fechaReporteDevolucionReiteracion"
+  },
+  {
+   "fieldname": "reiteration_return_report_user",
+   "fieldtype": "Data",
+   "label": "usuarioReporteDevolucionReiteracion"
+  },
+  {
+   "fieldname": "reiteration_return_response_code_id",
+   "fieldtype": "Data",
+   "label": "idSeguimientoTipoCodigoDevolucionReiteracionRespuesta"
+  },
+  {
+   "fieldname": "reiteration_return_response_code_description",
+   "fieldtype": "Data",
+   "label": "descripcionSeguimientoTipoCodigoDevolucionReiteracionRespuesta"
+  },
+  {
+   "fieldname": "reiteration_return_response_observation",
+   "fieldtype": "Data",
+   "label": "observacionReiteracionRespuesta"
+  },
+  {
+   "fieldname": "reiteration_return_response_formulation_date",
+   "fieldtype": "Datetime",
+   "label": "fechaFormulacionDevolucionReiteracionRespuesta"
+  },
+  {
+   "fieldname": "reiteration_return_response_report_date",
+   "fieldtype": "Datetime",
+   "label": "fechaReporteDevolucionReiteracionRespuesta"
+  },
+  {
+   "fieldname": "reiteration_return_response_report_user",
+   "fieldtype": "Data",
+   "label": "usuarioReporteDevolucionReiteracionRespuesta"
+  },
+  {
+   "fieldname": "attachment",
+   "fieldtype": "Data",
+   "label": "anexo"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-31 15:45:21.790341",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_ReturnRequest",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

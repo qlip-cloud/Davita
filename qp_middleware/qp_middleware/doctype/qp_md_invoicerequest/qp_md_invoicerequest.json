@@ -1,0 +1,162 @@
+{
+ "actions": [],
+ "creation": "2026-03-24 12:48:42.678825",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "issuer_invoice_id",
+  "due_date",
+  "total_discount",
+  "invoice_number",
+  "issue_date",
+  "total_gross_value",
+  "buyer_invoice_id",
+  "total_gross_value_attributes",
+  "invoice_value",
+  "total_charge",
+  "profile_execution_id_2",
+  "invoice_type",
+  "invoice_id",
+  "issue_time",
+  "total_taxable_base_value",
+  "total_advance_payment",
+  "operation_type_indicator",
+  "item_count",
+  "invoice_currency",
+  "cufe",
+  "lines"
+ ],
+ "fields": [
+  {
+   "fieldname": "issuer_invoice_id",
+   "fieldtype": "Data",
+   "label": "idFacturaEmisor"
+  },
+  {
+   "fieldname": "due_date",
+   "fieldtype": "Datetime",
+   "label": "fechaVencimiento"
+  },
+  {
+   "fieldname": "total_discount",
+   "fieldtype": "Float",
+   "label": "descuentoTotal"
+  },
+  {
+   "fieldname": "invoice_number",
+   "fieldtype": "Data",
+   "label": "numeroFactura"
+  },
+  {
+   "fieldname": "issue_date",
+   "fieldtype": "Datetime",
+   "label": "fechaEmision"
+  },
+  {
+   "fieldname": "total_gross_value",
+   "fieldtype": "Float",
+   "label": "totalValorBruto"
+  },
+  {
+   "fieldname": "buyer_invoice_id",
+   "fieldtype": "Data",
+   "label": "idFacturaAdquiriente"
+  },
+  {
+   "fieldname": "total_gross_value_attributes",
+   "fieldtype": "Float",
+   "label": "totalValorBrutoAtributos"
+  },
+  {
+   "fieldname": "invoice_value",
+   "fieldtype": "Float",
+   "label": "valorFactura"
+  },
+  {
+   "fieldname": "total_charge",
+   "fieldtype": "Float",
+   "label": "cargoTotal"
+  },
+  {
+   "fieldname": "profile_execution_id_2",
+   "fieldtype": "Data",
+   "label": "profileexecutionid2"
+  },
+  {
+   "fieldname": "invoice_type",
+   "fieldtype": "Data",
+   "label": "tipoFactura"
+  },
+  {
+   "fieldname": "invoice_id",
+   "fieldtype": "Int",
+   "label": "idFactura"
+  },
+  {
+   "fieldname": "issue_time",
+   "fieldtype": "Time",
+   "label": "horaEmision"
+  },
+  {
+   "fieldname": "total_taxable_base_value",
+   "fieldtype": "Float",
+   "label": "totalValorBaseImponible"
+  },
+  {
+   "fieldname": "total_advance_payment",
+   "fieldtype": "Float",
+   "label": "anticipoTotal"
+  },
+  {
+   "fieldname": "operation_type_indicator",
+   "fieldtype": "Data",
+   "label": "indicadorTipoOperacion"
+  },
+  {
+   "fieldname": "item_count",
+   "fieldtype": "Data",
+   "label": "numeroElementos"
+  },
+  {
+   "fieldname": "invoice_currency",
+   "fieldtype": "Data",
+   "label": "divisaFactura"
+  },
+  {
+   "fieldname": "cufe",
+   "fieldtype": "Data",
+   "label": "cufe"
+  },
+  {
+   "fieldname": "lines",
+   "fieldtype": "Table",
+   "label": "Lines",
+   "options": "qp_md_InvoiceLineRequest"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-24 12:52:34.277505",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_InvoiceRequest",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

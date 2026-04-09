@@ -1,0 +1,251 @@
+{
+ "actions": [],
+ "creation": "2026-03-25 04:58:32.450501",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "reiteration_gloss_code_description",
+  "response_code_description",
+  "attachment",
+  "gloss_tracking_id",
+  "response_report_user",
+  "reiteration_gloss_report_user",
+  "user_id",
+  "gloss_code_description",
+  "report_date",
+  "response_code_id",
+  "reiteration_gloss_response_code_id",
+  "report_user",
+  "reiteration_gloss_formulation_date",
+  "reiteration_gloss_response_code_description",
+  "other_service_id",
+  "observation",
+  "medication_id",
+  "response_observation",
+  "newborn_id",
+  "reiteration_gloss_report_date",
+  "procedure_id",
+  "reiteration_gloss_code_id",
+  "emergency_id",
+  "gloss_value",
+  "gloss_code_id",
+  "consultation_id",
+  "formulation_date",
+  "response_date",
+  "reiteration_observation",
+  "reiteration_gloss_response_report_date",
+  "invoice_id",
+  "reiteration_response_observation",
+  "response_report_date",
+  "reiteration_gloss_response_formulation_date",
+  "reiteration_gloss_response_report_user",
+  "hospitalization_id"
+ ],
+ "fields": [
+  {
+   "fieldname": "reiteration_gloss_code_description",
+   "fieldtype": "Data",
+   "label": "descripcionSeguimientoTipoCodigoGlosaReiteracion"
+  },
+  {
+   "fieldname": "response_code_description",
+   "fieldtype": "Data",
+   "label": "descripcionSeguimientoTipoCodigoRespuesta"
+  },
+  {
+   "fieldname": "attachment",
+   "fieldtype": "Data",
+   "label": "anexo"
+  },
+  {
+   "fieldname": "gloss_tracking_id",
+   "fieldtype": "Int",
+   "label": "idSeguimientoFacturaGlosa"
+  },
+  {
+   "fieldname": "response_report_user",
+   "fieldtype": "Data",
+   "label": "usuarioReporteRespuesta"
+  },
+  {
+   "fieldname": "reiteration_gloss_report_user",
+   "fieldtype": "Data",
+   "label": "usuarioReporteGlosaReiteracion"
+  },
+  {
+   "fieldname": "user_id",
+   "fieldtype": "Data",
+   "label": "idUsuario"
+  },
+  {
+   "fieldname": "gloss_code_description",
+   "fieldtype": "Data",
+   "label": "descripcionSeguimientoTipoCodigoGlosa"
+  },
+  {
+   "fieldname": "report_date",
+   "fieldtype": "Datetime",
+   "label": "fechaReporte"
+  },
+  {
+   "fieldname": "response_code_id",
+   "fieldtype": "Data",
+   "label": "idSeguimientoTipoCodigoRespuesta"
+  },
+  {
+   "fieldname": "reiteration_gloss_response_code_id",
+   "fieldtype": "Data",
+   "label": "idSeguimientoTipoCodigoGlosaReiteracionRespuesta"
+  },
+  {
+   "fieldname": "report_user",
+   "fieldtype": "Data",
+   "label": "usuarioReporte"
+  },
+  {
+   "fieldname": "reiteration_gloss_formulation_date",
+   "fieldtype": "Datetime",
+   "label": "fechaFormulacionGlosaReiteracion"
+  },
+  {
+   "fieldname": "reiteration_gloss_response_code_description",
+   "fieldtype": "Data",
+   "label": "descripcionSeguimientoTipoCodigoGlosaReiteracionRespuesta"
+  },
+  {
+   "fieldname": "other_service_id",
+   "fieldtype": "Int",
+   "label": "idOtroServicio"
+  },
+  {
+   "fieldname": "observation",
+   "fieldtype": "Data",
+   "label": "observacion"
+  },
+  {
+   "fieldname": "medication_id",
+   "fieldtype": "Int",
+   "label": "idMedicamento"
+  },
+  {
+   "fieldname": "response_observation",
+   "fieldtype": "Data",
+   "label": "observacionRespuesta"
+  },
+  {
+   "fieldname": "newborn_id",
+   "fieldtype": "Int",
+   "label": "idRecienNacido"
+  },
+  {
+   "fieldname": "reiteration_gloss_report_date",
+   "fieldtype": "Datetime",
+   "label": "fechaReporteGlosaReiteracion"
+  },
+  {
+   "fieldname": "procedure_id",
+   "fieldtype": "Int",
+   "label": "idProcedimiento"
+  },
+  {
+   "fieldname": "reiteration_gloss_code_id",
+   "fieldtype": "Data",
+   "label": "idSeguimientoTipoCodigoGlosaReiteracion"
+  },
+  {
+   "fieldname": "emergency_id",
+   "fieldtype": "Int",
+   "label": "idUrgencia"
+  },
+  {
+   "fieldname": "gloss_value",
+   "fieldtype": "Float",
+   "label": "valorGlosa"
+  },
+  {
+   "fieldname": "gloss_code_id",
+   "fieldtype": "Data",
+   "label": "idSeguimientoTipoCodigoGlosa"
+  },
+  {
+   "fieldname": "consultation_id",
+   "fieldtype": "Int",
+   "label": "idConsulta"
+  },
+  {
+   "fieldname": "formulation_date",
+   "fieldtype": "Datetime",
+   "label": "fechaFormulacion"
+  },
+  {
+   "fieldname": "response_date",
+   "fieldtype": "Datetime",
+   "label": "fechaRespuesta"
+  },
+  {
+   "fieldname": "reiteration_observation",
+   "fieldtype": "Data",
+   "label": "observacionReiteracion"
+  },
+  {
+   "fieldname": "reiteration_gloss_response_report_date",
+   "fieldtype": "Datetime",
+   "label": "fechaReporteGlosaReiteracionRespuesta"
+  },
+  {
+   "fieldname": "invoice_id",
+   "fieldtype": "Int",
+   "label": "idFactura"
+  },
+  {
+   "fieldname": "reiteration_response_observation",
+   "fieldtype": "Data",
+   "label": "observacionReiteracionRespuesta"
+  },
+  {
+   "fieldname": "response_report_date",
+   "fieldtype": "Datetime",
+   "label": "fechaReporteRespuesta"
+  },
+  {
+   "fieldname": "reiteration_gloss_response_formulation_date",
+   "fieldtype": "Datetime",
+   "label": "fechaFormulacionGlosaReiteracionRespuesta"
+  },
+  {
+   "fieldname": "reiteration_gloss_response_report_user",
+   "fieldtype": "Data",
+   "label": "usuarioReporteGlosaReiteracionRespuesta"
+  },
+  {
+   "fieldname": "hospitalization_id",
+   "fieldtype": "Int",
+   "label": "idHospitalizacion"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-25 05:03:36.282951",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_GlosaRequest",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
