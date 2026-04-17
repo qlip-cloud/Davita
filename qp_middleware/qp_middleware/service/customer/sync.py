@@ -5,7 +5,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 @frappe.whitelist()
-def handler():
+def handler(setup_list_code = None):
 
     
     select = "No,Name,CustomerSince"
@@ -15,7 +15,7 @@ def handler():
     #filters = f"CustomerSince gt {date_ago}"
     filters = None
     
-    response_json = get_response("list_customers", filters, include_prefer = True, select = select)
+    response_json = get_response("list_customers", filters, include_prefer = True, select = select, setup_list_code = setup_list_code)
 
     customer_nit = tuple([ customer["No"] for customer in response_json["value"]])
 

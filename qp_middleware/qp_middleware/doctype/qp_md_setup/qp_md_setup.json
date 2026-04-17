@@ -1,6 +1,7 @@
 {
  "actions": [],
- "creation": "2023-10-05 11:06:08.185946",
+ "autoname": "field:code",
+ "creation": "2026-04-16 09:00:11.550893",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
@@ -8,7 +9,8 @@
   "wait_time",
   "number_request",
   "invoices_group",
-  "enviroment"
+  "enviroment",
+  "code"
  ],
  "fields": [
   {
@@ -24,21 +26,28 @@
    "label": "Cantidad de peticiones"
   },
   {
+   "fieldname": "invoices_group",
+   "fieldtype": "Int",
+   "label": "Grupo de Facturas"
+  },
+  {
    "fieldname": "enviroment",
    "fieldtype": "Link",
    "label": "Enviroment",
    "options": "qp_md_Enviroment"
   },
   {
-   "fieldname": "invoices_group",
-   "fieldtype": "Int",
-   "label": "Grupo de Facturas"
+   "fieldname": "code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "code",
+   "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
- "issingle": 1,
  "links": [],
- "modified": "2024-01-15 13:00:50.073591",
+ "modified": "2026-04-16 09:00:11.550893",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Setup",

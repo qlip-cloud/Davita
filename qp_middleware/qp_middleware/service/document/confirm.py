@@ -1,4 +1,3 @@
-from qp_authorization.use_case.oauth2.authorize import get_token
 from qp_middleware.qp_middleware.service.util.sync import send_petition, get_enviroment
 
 import json
@@ -38,9 +37,6 @@ def handler(upload_id):
 def confirm(upload_id):
 
     try:
-        enviroment, endpoint = get_enviroment("confirm_document")
-
-        url = enviroment.get_url_without_company(endpoint.url)
 
         document_names = frappe.get_list("qp_md_Document", {"upload_id": upload_id, "is_complete": True, 'is_confirm': False})
 
@@ -50,7 +46,7 @@ def confirm(upload_id):
 
             document.confirm_request = get_confirm_payload(document)
 
-            send_confirm(document, url, enviroment.company_code)
+            send_confirm(document)
 
     except:
 
@@ -102,16 +98,11 @@ def get_confirm_payload(document):
         "no": document.document_code
     })
 
-def send_confirm(document, url, company_code):
+def send_confirm(document):
     
-    token = get_token()
-    
-    add_header = {
-            'If-Match': '*',
-            'company': company_code
-    }
+    endpoint_code = "confirm_document"
         
-    response, response_json, error = send_petition(token, url, document.confirm_request, add_header = add_header)
+    response, response_json, error = send_petition(endpoint_code, document.confirm_request, add_header = True)
 
     document.confirm_response = response
 
@@ -132,8 +123,6 @@ def send_confirm(document, url, company_code):
             document.document_confirm = document_confirm[0]
 
             document.is_confirm = True
-
-            
 
         except:
 

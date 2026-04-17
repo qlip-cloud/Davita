@@ -2,18 +2,13 @@ import frappe
 import json
 import math
 from datetime import datetime
-from qp_authorization.use_case.oauth2.authorize import get_token
 from qp_middleware.qp_middleware.service.util.sync import send_petition
 
-def handler(upload_xlsx, setup, enviroment):
+def handler(upload_xlsx, setup):
     
     document_names = frappe.get_list("qp_md_Document", {"upload_id": upload_xlsx.name, "is_valid": True})
     
     range_total = math.ceil(len(document_names) / setup.invoices_group)
-    
-    endpoint = frappe.get_doc("qp_md_Endpoint", "create_document")
-
-    url = enviroment.get_url_ws_protocol(endpoint.url)
     
     count_complete = 0
 
@@ -40,7 +35,7 @@ def handler(upload_xlsx, setup, enviroment):
             payloads.append(payload)
                     
         try:
-            response, response_json, error = send_document(payloads, url)
+            response, response_json, error = send_document(payloads)
                         
             return_value = get_return_value(response_json)
             
@@ -116,19 +111,15 @@ def update_document_lot(documents_lot, list_split, response, error):
         
     return count_complete
 
-def send_document(payload, url):
-
-    token = get_token()
+def send_document(payload):
 
     payload_xml = """<?xml version="1.0" encoding="utf-8"?><soap:Envelope  xmlns:nav="urn:microsoft-dynamics-schemas/codeunit/RegistrarFacturasVentaWS" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><nav:RegistrarFacturasVentaWS><nav:factura>{}</nav:factura></nav:RegistrarFacturasVentaWS></soap:Body></soap:Envelope>""".format(json.dumps(payload))
     
     payload_xml = payload_xml.replace("'","")
-        
-    add_header = {
-        "SOAPAction": "#POST"
-    }
-
-    response, response_json, error = send_petition(token, url, payload_xml, add_header = add_header, is_json= False)
+    
+    endpoint_code = "create_document"
+    
+    response, response_json, error = send_petition(endpoint_code, payload_xml, add_header = True, is_json= False)
     
     return response, response_json, error
 

@@ -1,6 +1,5 @@
 import frappe
 from qp_middleware.qp_middleware.service.util.sync import send_petition
-from qp_authorization.use_case.oauth2.authorize import get_token
 from frappe.utils import now
 from qp_middleware.qp_middleware.uses_cases.dimension_patient.sync import handler as sync_dimension
 
@@ -42,22 +41,18 @@ def sync(sync_log, patients):
 
     try:
 
-        patient_url=  get_urls()
-
         for patient_iter in patients:
 
             try:
                 
-                
                 patient = frappe.get_doc("qp_md_Patient", patient_iter.name)
-                token = get_token()
-
-                sync_patient(patient, token, sync_log, patient_url)
+            
+                sync_patient(patient, sync_log)
 
                 __sync_dimension(patient, sync_log)
 
-            except:
-                
+            except Exception as error:
+                print(frappe.get_traceback())
                 pass
             
             sync_log.save()
@@ -77,18 +72,6 @@ def sync(sync_log, patients):
     sync_log.save()
 
     frappe.db.commit()
-
-def get_urls():
-
-    setup = frappe.get_doc("qp_md_Setup")
-
-    enviroment = frappe.get_doc("qp_md_Enviroment", setup.enviroment)
-
-    enpoint = frappe.get_doc("qp_md_Endpoint", "patient_create")
-
-    patient_url = enviroment.get_url_with_company(enpoint.url)
-
-    return patient_url
 
 def __sync_dimension(patient, sync_log):
 
@@ -110,11 +93,13 @@ def __sync_dimension(patient, sync_log):
         
         sync_log.dimension_created += 1
     
-def sync_patient(patient, token, sync_log, url):
-
+def sync_patient(patient, sync_log):
+    
+    endpoint_code = "patient_create"
+    
     if not patient.created_sync:
             
-        response, response_json, error = send_petition(token, url, patient.request)
+        response, response_json, error = send_petition(endpoint_code, patient.request)
 
         patient.response = response
 
