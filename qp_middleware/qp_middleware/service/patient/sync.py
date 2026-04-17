@@ -42,7 +42,11 @@ def handler(setup_list_code):
                 if not group_code in list_group_code:
 
                     values.append((group_code, tipo_identificacion, iter['tipoIdentificacion'], iter['numeroIdentificacion'],iter['primerNombre'], iter['segundoNombre'], iter['primerApellido'],
-                        iter['segundoApellido'], iter['numeroTelefonico'], iter['correoElectronico'],iter['idPlan'], iter['tipoUsuario'][0], iter['tipoUsuario'], "Import", True, group_code, dimension, iter['fechaNacimiento'], iter['paisOrigen'], iter['paisResidencia'], iter['Municipio'], iter['zonaTerritorial'], now(), now(), 'Administrator', 'Administrator'))
+                        iter['segundoApellido'], iter['numeroTelefonico'], iter['correoElectronico'],iter['idPlan'], iter['tipoUsuario'][0], iter['tipoUsuario'], "Import", True, group_code, dimension, iter.get('fechaNacimiento', ""), iter.get('paisOrigen', ""), iter.get('paisResidencia', ""), iter.get('Municipio', ""), iter.get('zonaTerritorial', ""), now(), now(), 'Administrator', 'Administrator'))
+
+                else:
+
+                    values.append((group_code, tipo_identificacion, iter['Municipio'], iter['zonaTerritorial'], now(), now(), 'Administrator', 'Administrator'))
         
         else:
 
