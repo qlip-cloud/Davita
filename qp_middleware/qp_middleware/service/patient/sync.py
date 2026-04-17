@@ -44,9 +44,9 @@ def handler(setup_list_code):
                     values.append((group_code, tipo_identificacion, iter['tipoIdentificacion'], iter['numeroIdentificacion'],iter['primerNombre'], iter['segundoNombre'], iter['primerApellido'],
                         iter['segundoApellido'], iter['numeroTelefonico'], iter['correoElectronico'],iter['idPlan'], iter['tipoUsuario'][0], iter['tipoUsuario'], "Import", True, group_code, dimension, iter.get('fechaNacimiento', ""), iter.get('paisOrigen', ""), iter.get('paisResidencia', ""), iter.get('Municipio', ""), iter.get('zonaTerritorial', ""), now(), now(), 'Administrator', 'Administrator'))
 
-                else:
+                #else:
 
-                    values.append((group_code, tipo_identificacion, iter['Municipio'], iter['zonaTerritorial'], now(), now(), 'Administrator', 'Administrator'))
+                    #values.append((group_code, tipo_identificacion, iter.get('Municipio', ""), iter.get('zonaTerritorial', ""), now(), now(), 'Administrator', 'Administrator'))
         
         else:
 
