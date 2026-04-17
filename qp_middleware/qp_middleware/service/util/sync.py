@@ -1,44 +1,39 @@
 import frappe
 import json
 import requests
-import requests
 import threading
 import xmltodict
 import time
 import traceback
 from qp_authorization.use_case.oauth2.authorize import get_token
 
-def get_list(enviroment, code, filters = None, include_prefer = False, select = None):
+def get_list(enviroment, enpoint, maxpagesize = 0, filters = None, select = None):
     
-    enpoint = frappe.get_doc("qp_md_Endpoint", code)
-
-    url = enviroment.get_url_with_company_and_filters(enpoint.url, filters, select) if filters else enviroment.get_url_with_company(enpoint.url)
+    url = enviroment.get_url(enpoint, filters, select)  
 
     response_values = {
         "value" : []
     }
 
-    callback_get_list(url, response_values, include_prefer)
+    callback_get_list(url, response_values, enviroment.name, int(maxpagesize))
 
     return response_values
 
-def callback_get_list(url, response_values, include_prefer = False):
+def callback_get_list(url, response_values, enviroment_code, maxpagesize = 0):
 
-    token = get_token()
+    token = get_token(enviroment_code)
 
     headers = {
         'Authorization': 'Bearer {}'.format(token)
     }
     
-    if include_prefer:
+    if maxpagesize and maxpagesize > 0:
         
         headers.update({
-            "Prefer": "odata.maxpagesize=100"
+            "Prefer": f"odata.maxpagesize={maxpagesize}"
         })
         
-
     response = requests.get(url, headers=headers)
-
 
     if response.status_code != 200:
         
@@ -54,15 +49,19 @@ def callback_get_list(url, response_values, include_prefer = False):
 
     if "@odata.nextLink" in response_json and response_json["@odata.nextLink"]:
 
-        callback_get_list(response_json["@odata.nextLink"], response_values, include_prefer)
+        callback_get_list(response_json["@odata.nextLink"], response_values, enviroment_code, maxpagesize)
 
-def get_response(code, filters = None, include_prefer = False, select = None):
-
-    setup = frappe.get_doc("qp_md_Setup")
-
-    enviroment = frappe.get_doc("qp_md_Enviroment", setup.enviroment)
+def get_response(endpoint_code, filters = None, include_prefer = False, select = None, setup_list_code = None):
     
-    return get_list(enviroment, code, filters, include_prefer, select)
+    maxpagesize = 0
+
+    enviroment, endpoint, setup = get_enviroment(endpoint_code, setup_list_code)
+    
+    if include_prefer:
+        
+        maxpagesize = setup.invoices_group
+    
+    return get_list(enviroment, endpoint, maxpagesize, filters, select)
 
 def persist(table, fields, values):
 
@@ -79,7 +78,13 @@ def persist(table, fields, values):
 
     frappe.db.commit()
 
-def send_petition(token, url, payload, method = "POST", add_header = None, is_json = True):
+def send_petition(endpoint_code, payload, method = "POST", add_header = False, is_json = True):
+    
+    enviroment, endpoint, setup = get_enviroment(endpoint_code)
+    
+    url = enviroment.get_url(endpoint)
+    
+    token = get_token(enviroment.name)  
     
     headers = {
         'Content-Type': 'application/json' if is_json else "application/xml",
@@ -87,8 +92,10 @@ def send_petition(token, url, payload, method = "POST", add_header = None, is_js
     }
 
     if add_header:
-
-        headers.update(add_header)
+        
+        header = enviroment.get_header(endpoint)
+        
+        headers.update(header)
         
     response = None
     
@@ -96,7 +103,7 @@ def send_petition(token, url, payload, method = "POST", add_header = None, is_js
     
     try:
         
-        response = requests.request(method, url, headers=headers, data=payload)
+        response = requests.request(endpoint.request, url, headers=headers, data=payload)
     
     except Exception as error:
         
@@ -108,7 +115,6 @@ def send_petition(token, url, payload, method = "POST", add_header = None, is_js
     
         return response.text, response_json, "error" in response_json
     
-
     except:
 
         pass
@@ -148,12 +154,18 @@ def callback(document,threads, setup, target, token, url):
 
         callback(document,threads, setup, target, token, url)
 
-def get_enviroment(endpoint_code):
+def get_enviroment(endpoint_code, setup_list_code = None):
 
-    setup = frappe.get_doc("qp_md_Setup")
-
-    enviroment = frappe.get_doc("qp_md_Enviroment", setup.enviroment)
-    
     endpoint = frappe.get_doc("qp_md_Endpoint", endpoint_code)
+    
+    if not setup_list_code:
+        
+        setup_list_code = endpoint.setup
+        
+    setup = frappe.get_doc("qp_md_Setup", setup_list_code)
+    
+    enviroment_code = setup.enviroment
+        
+    enviroment = frappe.get_doc("qp_md_Enviroment", enviroment_code)
 
-    return enviroment, endpoint
+    return enviroment, endpoint, setup
