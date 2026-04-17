@@ -1,7 +1,6 @@
 import frappe 
 import json
 from qp_middleware.qp_middleware.service.util.sync import send_petition
-from qp_authorization.use_case.oauth2.authorize import get_token
 
 def handler(dimension_code, name = "", second_name = "", lastname = "", second_lastname = ""):
 
@@ -53,17 +52,9 @@ def handler(dimension_code, name = "", second_name = "", lastname = "", second_l
 
 def sync(dimension):
 
-    token = get_token()
+    endpoint_code = "dimension_create"
 
-    setup = frappe.get_doc("qp_md_Setup")
-
-    enviroment = frappe.get_doc("qp_md_Enviroment", setup.enviroment)
-
-    enpoint = frappe.get_doc("qp_md_Endpoint", "dimension_create")
-
-    dimension_url = enviroment.get_url_with_company(enpoint.url)
-
-    response, response_json, error_response = send_petition(token, dimension_url, dimension.request)
+    response, response_json, error_response = send_petition(endpoint_code, dimension.request)
 
     dimension.response = response
     
