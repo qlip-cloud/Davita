@@ -104,24 +104,25 @@ def send_petition(endpoint_code, payload, method = "POST", add_header = False, i
     try:
         
         response = requests.request(endpoint.request, url, headers=headers, data=payload)
-    
+        
     except Exception as error:
         
         return f"Error en peticion: {error}", response_json, True       
     
+    response_text = response.text
+    response_json = None
+    is_error = True
+    
+    
     try:
         
-        response_json = json.loads(response.text) if is_json else xmltodict.parse(response.text)
+        response_json = json.loads(response_text) if is_json else xmltodict.parse(response_text)
     
-        return response.text, response_json, "error" in response_json
-    
-    except:
-
-        pass
+        is_error = "error" in response_json
 
     finally:
 
-        return response.text, response_json, True
+        return response_text, response_json, is_error
 
 
 def send_request(documents, setup, target, token, url):

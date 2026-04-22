@@ -5,6 +5,7 @@ from qp_middleware.qp_middleware.service.util.sync import send_petition
 from qp_middleware.qp_middleware.uses_cases.dimension_patient.sync import handler as sync_dimension
 import math
 from datetime import datetime
+import traceback
 @frappe.whitelist()
 def handler(upload_id):
 
@@ -116,7 +117,7 @@ def send_consumos(consumos):
             frappe.db.commit()
 
         except Exception as error:
-            #traceback.print_exc()
+            traceback.print_exc()
             frappe.db.set_value('qp_md_Consumo', consumo.get("name"), {
                         'response': str(error),
                         'return_value': "",
@@ -137,21 +138,19 @@ def send_document(payloads):
     endpoint_code = "create_consumo"
     
     response, response_json, error = send_petition(endpoint_code, payload_xml, add_header = True, is_json= False)
-        
+    
+    response_value  = None
+    
+    is_error = True
+          
     try:
         
-        if error:
+        if not error:
             
-            raise Exception(response)
-
-        response_value = response_json.get("Soap:Envelope").get("Soap:Body").get("registroDiarioProducto_Result").get("return_value")
+            response_value = response_json.get("Soap:Envelope").get("Soap:Body").get("registroDiarioProducto_Result").get("return_value")
         
-        return response, response_json, response_value, False
-        
-    except Exception as error:
-        
-        pass
+            is_error = False
         
     finally:
             
-        return response, None, None, True
+        return response, response_json, response_value, is_error
