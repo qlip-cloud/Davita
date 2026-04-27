@@ -36,7 +36,7 @@ def handler(upload_xlsx, setup):
                     
         try:
             response, response_json, error = send_document(payloads)
-                        
+            
             return_value = get_return_value(response_json)
             
             list_split = get_list_split(return_value)
@@ -120,6 +120,8 @@ def send_document(payload):
     endpoint_code = "create_document"
     
     response, response_json, error = send_petition(endpoint_code, payload_xml, add_header = True, is_json= False)
+    
+
     
     return response, response_json, error
 
