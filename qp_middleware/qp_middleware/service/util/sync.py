@@ -101,27 +101,33 @@ def send_petition(endpoint_code, payload, method = "POST", add_header = False, i
     
     response_json = None
     
+    is_error = True
+    
     try:
         
         response = requests.request(endpoint.request, url, headers=headers, data=payload)
-    
+        
     except Exception as error:
         
-        return f"Error en peticion: {error}", response_json, True       
+        return f"Error en peticion: {error}", response_json, is_error       
     
+    response_text = response.text
+    
+    #response_text = """<s:Soap:Envelope xmlns:Soap="http://schemas.xmlsoap.org/soap/envelope/"><s:Soap:Body><s:RegistrarFacturasVentaWS_Result xmlns="urn:microsoft-dynamics-schemas/codeunit/RegistrarFacturasVentaWS"><s:return_value>690815;690816;690817;<s:/return_value><s:/RegistrarFacturasVentaWS_Result><s:/Soap:Body><s:/Soap:Envelope>"""
+        
     try:
         
-        response_json = json.loads(response.text) if is_json else xmltodict.parse(response.text)
+        response_json = json.loads(response_text) if is_json else xmltodict.parse(response_text)
     
-        return response.text, response_json, "error" in response_json
-    
-    except:
+        is_error = "error" in response_json
 
-        pass
-
+    except Exception as error:
+        
+        frappe.log_error(message=traceback.format_exc(), title="Error en conversión respuesta recibida")
+        
     finally:
 
-        return response.text, response_json, True
+        return response_text, response_json, is_error
 
 
 def send_request(documents, setup, target, token, url):
