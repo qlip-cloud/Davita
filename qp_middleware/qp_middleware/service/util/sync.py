@@ -113,7 +113,7 @@ def send_petition(endpoint_code, payload, method = "POST", add_header = False, i
     
     response_text = response.text
     
-    #response_text = """<s:Soap:Envelope xmlns:Soap="http://schemas.xmlsoap.org/soap/envelope/"><s:Soap:Body><s:RegistrarFacturasVentaWS_Result xmlns="urn:microsoft-dynamics-schemas/codeunit/RegistrarFacturasVentaWS"><s:return_value>690815;690816;690817;<s:/return_value><s:/RegistrarFacturasVentaWS_Result><s:/Soap:Body><s:/Soap:Envelope>"""
+    #response_text = """s:Soap:Envelope xmlns:Soap="http://schemas.xmlsoap.org/soap/envelope/"><12s:adsSoap:Body><s:RegistrarFacturasVentaWS_Result xmlns="urn:microsoft-dynamics-schemas/codeunit/RegistrarFacturasVentaWS"><s:return_value>690815;690816;690817;<s:/return_value><s:/RegistrarFacturasVentaWS_Result><s:/Soap:Body><s:/Soap:Envelope>"""
         
     try:
         
@@ -122,8 +122,9 @@ def send_petition(endpoint_code, payload, method = "POST", add_header = False, i
         is_error = "error" in response_json
 
     except Exception as error:
-        
-        frappe.log_error(message=traceback.format_exc(), title="Error en conversión respuesta recibida")
+        trace = traceback.format_exc()
+        msg = f"""Recibido {response_text} error {error} is_json {is_json} \n\n {trace} """
+        frappe.log_error(message=msg, title="Error en conversión respuesta recibida")
         
     finally:
 
