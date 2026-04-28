@@ -51,6 +51,7 @@ def save_row(rows, upload_id):
     
     
     for key,row in enumerate(rows):
+        
         if row_valid and row[0] and str(row[16]).lower() == "DESPACHADO".lower():       
 
             total += 1

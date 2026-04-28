@@ -121,7 +121,9 @@ function send_request(method, frm){
 			if (!r.exc) {
 
 				const response = r.message
+
 				let message = ""
+
 				if (response.status == 200) {
 				
 					message = `
@@ -132,14 +134,15 @@ function send_request(method, frm){
 							<li> Errores: ${"error" in response  ? response.error : 0}</li>
 						</ul>`
 				}
+				
 				if (response.status == 202){
 					message = response.msg
 				}
 
 				frappe.msgprint({
-					message: message,
+					title: __('Success'),
 					indicator: 'green',
-					title: __('Success')
+					message: message
 				});
 
 			}
