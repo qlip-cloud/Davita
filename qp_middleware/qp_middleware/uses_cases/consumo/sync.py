@@ -6,6 +6,7 @@ from qp_middleware.qp_middleware.uses_cases.dimension_patient.sync import handle
 import math
 from datetime import datetime
 import traceback
+
 @frappe.whitelist()
 def handler(upload_id):
 
@@ -150,7 +151,11 @@ def send_document(payloads):
             response_value = response_json.get("Soap:Envelope").get("Soap:Body").get("registroDiarioProducto_Result").get("return_value")
         
             is_error = False
+            
+    except Exception as error:
         
+        frappe.log_error(message=traceback.format_exc(), title="Error en conversión respuesta recibida")
+            
     finally:
             
         return response, response_json, response_value, is_error
