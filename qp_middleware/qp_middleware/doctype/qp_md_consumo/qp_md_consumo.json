@@ -35,7 +35,10 @@
   "is_valid",
   "is_error_sync",
   "return_value",
-  "is_error_connection"
+  "is_error_connection",
+  "is_return",
+  "is_returned",
+  "return_root"
  ],
  "fields": [
   {
@@ -196,11 +199,28 @@
    "fieldname": "is_error_connection",
    "fieldtype": "Check",
    "label": "is error connection"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_return",
+   "fieldtype": "Check",
+   "label": "is return"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_returned",
+   "fieldtype": "Check",
+   "label": "is returned"
+  },
+  {
+   "fieldname": "return_root",
+   "fieldtype": "Data",
+   "label": "return_root"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-14 07:16:43.048815",
+ "modified": "2026-04-23 13:46:11.587394",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Consumo",

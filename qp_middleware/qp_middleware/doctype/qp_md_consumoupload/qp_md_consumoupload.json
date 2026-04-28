@@ -11,9 +11,11 @@
   "total_created",
   "total_error",
   "total_repeat",
+  "return_error",
   "scconsumorepetido",
   "send_success",
   "send_error",
+  "return_success",
   "sssend_error",
   "is_background",
   "scisbackground",
@@ -23,7 +25,9 @@
   "sserror",
   "start_date",
   "scstartdate",
-  "end_date"
+  "end_date",
+  "return_start_date",
+  "return_end_date"
  ],
  "fields": [
   {
@@ -129,11 +133,33 @@
   {
    "fieldname": "sc1",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "return_success",
+   "fieldtype": "Int",
+   "label": "devoluciones Correctas",
+   "read_only": 1
+  },
+  {
+   "fieldname": "return_error",
+   "fieldtype": "Int",
+   "label": "devoluciones con errores",
+   "read_only": 1
+  },
+  {
+   "fieldname": "return_start_date",
+   "fieldtype": "Datetime",
+   "label": "Inicio devoluciones"
+  },
+  {
+   "fieldname": "return_end_date",
+   "fieldtype": "Datetime",
+   "label": "Fin Devoluciones"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-14 08:06:25.063772",
+ "modified": "2026-04-23 13:38:37.949320",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_ConsumoUpload",
