@@ -5,7 +5,7 @@
 from frappe.model.document import Document
 import json
 ERROR = "Error"
-GLOSA = "GLOSA"
+GLOSA = "Glosa"
 GLOSAS = "GLOSAS"
 REITERACION = "REITERACION"
 DEVOLUCIONES = "DEVOLUCIONES"
