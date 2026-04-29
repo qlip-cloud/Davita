@@ -8,7 +8,7 @@ class qp_md_ReturnRequest(Document):
     
 	def load_from_external_json(self, data):
 
-		self.gloss_invoice_tracking_id = data.get("idSeguimientoFacturaGlosa")
+		self.gloss_tracking_id = data.get("idSeguimientoFacturaGlosa")
 		self.invoice_id = data.get("idFactura")
 		self.return_value = data.get("valorDevolucion")
 		self.observation = data.get("observacion")

@@ -5,7 +5,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "gloss_invoice_tracking_id",
+  "gloss_tracking_id",
   "invoice_id",
   "return_value",
   "observation",
@@ -35,11 +35,6 @@
   "attachment"
  ],
  "fields": [
-  {
-   "fieldname": "gloss_invoice_tracking_id",
-   "fieldtype": "Int",
-   "label": "idSeguimientoFacturaGlosa"
-  },
   {
    "fieldname": "invoice_id",
    "fieldtype": "Int",
@@ -174,11 +169,16 @@
    "fieldname": "attachment",
    "fieldtype": "Data",
    "label": "anexo"
+  },
+  {
+   "fieldname": "gloss_tracking_id",
+   "fieldtype": "Int",
+   "label": "idSeguimientoFacturaGlosa"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-31 15:45:21.790341",
+ "modified": "2026-04-29 01:41:39.946389",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_ReturnRequest",
