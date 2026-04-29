@@ -170,7 +170,7 @@ class qp_md_Glosa(Document):
        
 				response, status, status_code = tracking_glosa.send_minsalud_response(glosa_line)
 				
-				self.__set_glosa_petition(glosa_line.index_number, glosa_line.get_payload(), status_code, status, response)
+				self.__set_glosa_petition(glosa_line.index_number, glosa_line.get_payload_type(), status_code, status, response)
 
 				self.set_is_sync_by_status_code(glosa_line, status_code)
     
