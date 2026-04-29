@@ -113,25 +113,25 @@ class ApiGlosaService:
         #/api/SeguimientoFacturaGlosa/Respuesta PUT
         endpoint = "send_glosa"        
         
-        return self.__send_request_status(endpoint, payload = glosa_line.payload, glosa_id = glosa_line.index_number)
+        return self.__send_request_status(endpoint, payload = glosa_line.get_payload(), glosa_id = glosa_line.index_number)
     
     def send_glosa_reiteracion(self, glosa_line):
         #/api/SeguimientoFacturaGlosa/ReiteracionRespuesta PUT
         endpoint = "send_glosa_reiteracion"        
         
-        return self.__send_request_status(endpoint, payload = glosa_line.payload, glosa_id = glosa_line.index_number)
+        return self.__send_request_status(endpoint, payload = glosa_line.get_payload(), glosa_id = glosa_line.index_number)
     
     def send_return(self, glosa_line):
         #/api/SeguimientoFacturaDevolucion/Respuesta PUT
         endpoint = "send_return"        
         
-        return self.__send_request_status(endpoint, payload = glosa_line.payload, glosa_id = glosa_line.index_number)
+        return self.__send_request_status(endpoint, payload = glosa_line.get_payload(), glosa_id = glosa_line.index_number)
     
     def send_return_reiteracion(self, glosa_line):
         #/api/SeguimientoFacturaDevolucion/ReiteracionRespuesta PUT
         endpoint = "send_return_reiteracion"        
         
-        return self.__send_request_status(endpoint, payload = glosa_line.payload, glosa_id = glosa_line.index_number)
+        return self.__send_request_status(endpoint, payload = glosa_line.get_payload(), glosa_id = glosa_line.index_number)
                         
     def __send_request_status(self, endpoint, payload = "", param = "", glosa_id = "", is_query_param = False):
         
