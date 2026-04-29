@@ -61,7 +61,7 @@ class ApiGlosaService:
         #/api/SeguimientoFacturaGlosa/ByIdFactura GET
         endpoint = "get_glosas"
         
-        query_param = f"ByIdFactura={self.id_invoice}"
+        query_param = f"IdFactura={self.id_invoice}"
         
         response, status, status_code = self.__send_request_status(endpoint, param = query_param, is_query_param = True)
                 
@@ -73,7 +73,7 @@ class ApiGlosaService:
         #/api/SeguimientoFacturaDevolucion/ByIdFactura GET
         endpoint = "get_returns"
         
-        query_param = f"ByIdFactura={self.id_invoice}"
+        query_param = f"IdFactura={self.id_invoice}"
         
         response, status,status_code = self.__send_request_status(endpoint, param = query_param, is_query_param = True)
         
