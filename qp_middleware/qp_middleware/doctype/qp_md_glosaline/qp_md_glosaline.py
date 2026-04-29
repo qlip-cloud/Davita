@@ -94,7 +94,7 @@ class qp_md_GlosaLine(Document):
 
 	def get_payload(self):
      
-		return self.payload
+		return json.loads(self.payload)
 
 	def get_erp_response_date_str(self):
 		
