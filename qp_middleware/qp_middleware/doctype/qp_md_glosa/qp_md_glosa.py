@@ -165,6 +165,7 @@ class qp_md_Glosa(Document):
 	def __send_glosa_petition(self, tracking_glosa, glosa_line, glosa_error_control):
 		
 		if glosa_line.is_response_valid():
+      
 			try:
        
 				response, status, status_code = tracking_glosa.send_minsalud_response(glosa_line)
@@ -174,6 +175,7 @@ class qp_md_Glosa(Document):
 				self.set_is_sync_by_status_code(glosa_line, status_code)
     
 			except (GlosaObjectionLineError) as error:
+       
 				traceback = frappe.get_traceback()
 				
 				glosa_error_control.add_glosa_error(error, traceback)
