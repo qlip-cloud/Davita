@@ -7,7 +7,7 @@ import json
 ERROR = "Error"
 GLOSA = "GLOSAS"
 REITERACION = "REITERACION"
-DEVOLUCION = "DEVOLUCION"
+DEVOLUCION = "DEVOLUCIONES"
 class qp_md_GlosaLine(Document):
     
 	def is_not_error(self):

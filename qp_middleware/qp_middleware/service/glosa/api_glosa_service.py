@@ -61,7 +61,9 @@ class ApiGlosaService:
         #/api/SeguimientoFacturaGlosa/ByIdFactura GET
         endpoint = "get_glosas"
         
-        response, status, status_code = self.__send_request_status(endpoint, param = self.id_invoice)
+        query_param = f"ByIdFactura={self.id_invoice}"
+        
+        response, status, status_code = self.__send_request_status(endpoint, param = query_param, is_query_param = True)
                 
         result = get_result(response, self.id_invoice, endpoint)
         
@@ -71,7 +73,9 @@ class ApiGlosaService:
         #/api/SeguimientoFacturaDevolucion/ByIdFactura GET
         endpoint = "get_returns"
         
-        response, status,status_code = self.__send_request_status(endpoint, param = self.id_invoice)
+        query_param = f"ByIdFactura={self.id_invoice}"
+        
+        response, status,status_code = self.__send_request_status(endpoint, param = query_param, is_query_param = True)
         
         result = get_result(response, self.id_invoice, endpoint)
         
@@ -90,8 +94,8 @@ class ApiGlosaService:
                 return self.send_glosa_reiteracion(glosa_line)
                 
             raise GlosaTypeLineError(self.id_invoice, glosa_line.get_title_type_line(), glosa_id=glosa_line.index_number)
-        
-        if glosa_line.objection_type.lower() == "DEVOLUCION".lower():
+            
+        if glosa_line.objection_type.lower() == "DEVOLUCIONES".lower():
             
             if glosa_line.type_line.lower() == "Glosa".lower():
             
@@ -129,9 +133,9 @@ class ApiGlosaService:
         
         return self.__send_request_status(endpoint, payload = glosa_line.payload, glosa_id = glosa_line.index_number)
                         
-    def __send_request_status(self, endpoint, payload = "", param = "", glosa_id = ""):
+    def __send_request_status(self, endpoint, payload = "", param = "", glosa_id = "", is_query_param = False):
         
-        response, status_code = send_request_status(endpoint, payload = payload, param = param)
+        response, status_code = send_request_status(endpoint, payload = payload, param = param, is_query_param = is_query_param)
         
         self.assert_that_status_code_valid(response, status_code, glosa_id, endpoint)
         
