@@ -7,7 +7,7 @@ import json
 ERROR = "Error"
 GLOSA = "GLOSAS"
 REITERACION = "REITERACION"
-DEVOLUCION = "DEVOLUCIONES"
+DEVOLUCIONES = "DEVOLUCIONES"
 class qp_md_GlosaLine(Document):
     
 	def is_not_error(self):
@@ -35,13 +35,54 @@ class qp_md_GlosaLine(Document):
 		self.id_glosa = id_glosa
     
 	def set_payload(self):
-    
-		self.payload = json.dumps({
-			"idSeguimientoFacturaGlosa": self.id_glosa,
-			"idSeguimientoTipoCodigoRespuesta": self.response_code,
-			"observacionRespuesta": self.response_details,
-			"fechaRespuesta": self.get_erp_response_date_str()
-		})
+		
+		self.payload = json.dumps(self.get_payload_type())
+  
+	def get_payload_type(self):
+     
+		dictionary ={
+			GLOSA: {
+				GLOSA: {
+            		"id_glosa": "idSeguimientoFacturaGlosa",
+					"response_code": "idSeguimientoTipoCodigoRespuesta",
+					"observacion_respuesta": "observacionRespuesta",
+					"fecha_respuesta": "fechaRespuesta"
+              	},
+				REITERACION: {
+					"id_glosa": "idSeguimientoFacturaGlosa",
+					"response_code": "idSeguimientoTipoCodigoGlosaReiteracion",
+					"observacion_respuesta": "observacionReiteracion",
+					"fecha_respuesta": "fechaFormulacionGlosaReiteracion"
+				}
+			},
+   
+			DEVOLUCIONES: {
+				GLOSA: {
+					"id_glosa": "idSeguimientoFacturaDevolucion",
+					"response_code": "idSeguimientoTipoCodigoRespuesta",
+					"observacion_respuesta": "observacionRespuesta",
+					"fecha_respuesta": "fechaRespuesta"
+				},
+				REITERACION: {
+					"id_glosa": "idSeguimientoFacturaDevolucion",
+					"response_code": "idSeguimientoTipoCodigoGlosaReiteracion",
+					"observacion_respuesta": "observacionReiteracion",
+					"fecha_respuesta": "fechaFormulacionGlosaReiteracion"
+				}
+			}
+		}
+     
+		if self.is_objection_type_valid() and self.is_type_line_valid():
+
+			dictionay_key = dictionary[self.objection_type][self.type_line]
+   
+			return {
+				dictionay_key["id_glosa"]: self.id_glosa,
+				dictionay_key["response_code"]: self.response_code,
+				dictionay_key["observacion_respuesta"]: self.response_details,
+				dictionay_key["fecha_respuesta"]: self.get_erp_response_date_str()
+			}
+
 	def get_title_type_line(self):
      
 		return f"Tipo de línea no válida objection_type: {self.objection_type}  type_line :{self.type_line}"
@@ -56,7 +97,7 @@ class qp_md_GlosaLine(Document):
 
 	def get_erp_response_date_str(self):
 		
-		return self.erp_response_date.strftime("%Y-%m-%dT%H:%M:%S.000+00:00") if self.erp_response_date else None
+		return self.erp_response_date.strftime("%Y-%m-%dT%H:%M:%S.000Z") if self.erp_response_date else None
 
 	def set_is_sync(self):
 	 
@@ -68,7 +109,11 @@ class qp_md_GlosaLine(Document):
 
 	def is_objection_type_valid(self):
 		
-		return self.objection_type.lower() in [GLOSA.lower(), DEVOLUCION.lower()]
+		return self.objection_type.lower() in [GLOSA.lower(), DEVOLUCIONES.lower()]
+
+	def is_type_line_valid(self):
+		
+		return self.type_line.lower() in [GLOSA.lower(), REITERACION.lower()]
 
 	def is_objection_glosa(self):
 		
@@ -76,4 +121,4 @@ class qp_md_GlosaLine(Document):
 
 	def is_objection_devolucion(self):
 		
-		return self.objection_type.lower() == DEVOLUCION.lower()
+		return self.objection_type.lower() == DEVOLUCIONES.lower()
