@@ -5,7 +5,8 @@
 from frappe.model.document import Document
 import json
 ERROR = "Error"
-GLOSA = "GLOSAS"
+GLOSA = "GLOSA"
+GLOSAS = "GLOSAS"
 REITERACION = "REITERACION"
 DEVOLUCIONES = "DEVOLUCIONES"
 class qp_md_GlosaLine(Document):
@@ -41,7 +42,7 @@ class qp_md_GlosaLine(Document):
 	def get_payload_type(self):
      
 		dictionary ={
-			GLOSA: {
+			GLOSAS: {
 				GLOSA: {
             		"id_glosa": "idSeguimientoFacturaGlosa",
 					"response_code": "idSeguimientoTipoCodigoRespuesta",
@@ -109,7 +110,7 @@ class qp_md_GlosaLine(Document):
 
 	def is_objection_type_valid(self):
 		
-		return self.objection_type.lower() in [GLOSA.lower(), DEVOLUCIONES.lower()]
+		return self.objection_type.lower() in [GLOSAS.lower(), DEVOLUCIONES.lower()]
 
 	def is_type_line_valid(self):
 		
@@ -117,7 +118,7 @@ class qp_md_GlosaLine(Document):
 
 	def is_objection_glosa(self):
 		
-		return self.objection_type.lower() == GLOSA.lower()
+		return self.objection_type.lower() == GLOSAS.lower()
 
 	def is_objection_devolucion(self):
 		
