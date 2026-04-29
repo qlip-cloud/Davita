@@ -77,12 +77,14 @@ class qp_md_GlosaLine(Document):
 
 			dictionay_key = dictionary[self.objection_type][self.type_line]
    
-			return {
-				dictionay_key["id_glosa"]: self.id_glosa,
-				dictionay_key["response_code"]: self.response_code,
-				dictionay_key["observacion_respuesta"]: self.response_details,
-				dictionay_key["fecha_respuesta"]: self.get_erp_response_date_str()
-			}
+			return { 
+           		"command": {
+					dictionay_key["id_glosa"]: self.id_glosa,
+					dictionay_key["response_code"]: self.response_code,
+					dictionay_key["observacion_respuesta"]: self.response_details,
+					dictionay_key["fecha_respuesta"]: self.get_erp_response_date_str()
+				}
+           	}
 
 	def get_title_type_line(self):
      
