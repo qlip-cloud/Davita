@@ -94,6 +94,8 @@ def send_petition(token, url, payload, method = "POST", add_header = None, is_js
     
     response_json = None
     
+    is_error = True
+
     try:
         
         response = requests.request(method, url, headers=headers, data=payload)
@@ -102,20 +104,22 @@ def send_petition(token, url, payload, method = "POST", add_header = None, is_js
         
         return f"Error en peticion: {error}", response_json, True       
     
+    response_text = response.text
+    
     try:
         
-        response_json = json.loads(response.text) if is_json else xmltodict.parse(response.text)
-    
-        return response.text, response_json, "error" in response_json
-    
+        response_json = json.loads(response_text) if is_json else xmltodict.parse(response_text)
 
-    except:
+        is_error = "error" in response_json  
 
-        pass
+    except Exception as error:
+        trace = traceback.format_exc()
+        msg = f"""Recibido {response_text} error {error} is_json {is_json} \n\n {trace} """
+        frappe.log_error(message=msg, title="Error en conversión respuesta recibida")
 
     finally:
 
-        return response.text, response_json, True
+        return response_text, response_json, is_error
 
 
 def send_request(documents, setup, target, token, url):
