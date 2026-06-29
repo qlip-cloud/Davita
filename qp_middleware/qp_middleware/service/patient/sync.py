@@ -1,6 +1,7 @@
 import frappe
 import json
 import requests
+import unicodedata
 
 from frappe.utils import now
 from qp_middleware.qp_middleware.service.util.sync import get_response, persist
@@ -29,19 +30,22 @@ def handler(setup_list_code):
 
     for iter in response_json["value"]:
 
+        raw_ni = str(iter.get("numeroIdentificacion", ""))
+        numero_identificacion = "".join(c for c in raw_ni if unicodedata.category(c) != "Cf")
+
         tipo_identificacion = format_tipos_Identificaciones.get(iter['tipoIdentificacion'])
         
         if tipo_identificacion:
             
             if iter['tipoUsuario']:
 
-                dimension = str(tipo_identificacion + str(iter.get("numeroIdentificacion"))).upper()
+                dimension = str(tipo_identificacion + numero_identificacion).upper()
                 
                 group_code = str(dimension + '_' + iter['tipoUsuario'][0]).upper()
             
                 if not group_code in list_group_code:
 
-                    values.append((group_code, tipo_identificacion, iter['tipoIdentificacion'], iter['numeroIdentificacion'],iter['primerNombre'], iter['segundoNombre'], iter['primerApellido'],
+                    values.append((group_code, tipo_identificacion, iter['tipoIdentificacion'], numero_identificacion, iter['primerNombre'], iter['segundoNombre'], iter['primerApellido'],
                         iter['segundoApellido'], iter['numeroTelefonico'], iter['correoElectronico'],iter['idPlan'], iter['tipoUsuario'][0], iter['tipoUsuario'], "Import", True, group_code, dimension, iter.get('fechaNacimiento', ""), iter.get('paisOrigen', ""), iter.get('paisResidencia', ""), iter.get('Municipio', ""), iter.get('zonaTerritorial', ""), now(), now(), 'Administrator', 'Administrator'))
 
                 #else:
