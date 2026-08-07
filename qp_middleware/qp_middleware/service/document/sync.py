@@ -98,14 +98,13 @@ def update_document_lot(documents_lot, list_split, response, error):
                             
                 document.response += f"\n\n Error al asignar codigo, valor asignado:{list_split[key]}"
         else:
+            
             if len(documents_lot) != len(list_split):
                 
                 document.response += f"\n\n Error en proceso: el numero de respuesta no es igual al esperado. Esperado:{len(documents_lot)} recibidos {len(list_split)}"
                 
             else:
-                document.response += f"\n\n Error en respuesta recibida"
-            
-            
+                document.response += f"\n\n Error en respuesta recibida"            
             
         document.save()
         
@@ -120,9 +119,7 @@ def send_document(payload):
     endpoint_code = "create_document"
     
     response, response_json, error = send_petition(endpoint_code, payload_xml, add_header = True, is_json= False)
-    
-
-    
+        
     return response, response_json, error
 
 def get_payload(document):
