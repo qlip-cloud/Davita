@@ -152,11 +152,12 @@
    "fieldtype": "Long Text",
    "label": "response"
   },
-  {
-   "fieldname": "upload_id",
-   "fieldtype": "Data",
-   "label": "upload_id"
-  },
+   {
+    "fieldname": "upload_id",
+    "fieldtype": "Data",
+    "label": "upload_id",
+    "search_index": 1
+   },
   {
    "fieldname": "headquarter_dynamic",
    "fieldtype": "Data",
