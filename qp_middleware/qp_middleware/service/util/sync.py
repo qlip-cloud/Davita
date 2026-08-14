@@ -131,6 +131,38 @@ def send_petition(endpoint_code, payload, method = "POST", add_header = False, i
         return response_text, response_json, is_error
 
 
+SOAP_PAYLOAD_PLACEHOLDER = "__PAYLOAD__"
+
+
+def render_soap_payload(template, payload, strip_single_quotes=True):
+    """Inserta el payload JSON en el template SOAP (funcion pura)."""
+    payload_xml = template.replace(SOAP_PAYLOAD_PLACEHOLDER, json.dumps(payload))
+    if strip_single_quotes:
+        payload_xml = payload_xml.replace("'", "")
+    return payload_xml
+
+
+def send_soap(endpoint_code, payload):
+    """Arma y envia una peticion SOAP a partir del template configurado
+    en el qp_md_Endpoint (soap_template). El payload JSON se inserta en el
+    placeholder SOAP_PAYLOAD_PLACEHOLDER."""
+    enviroment, endpoint, setup = get_enviroment(endpoint_code)
+
+    template = getattr(endpoint, "soap_template", None) or ""
+    if not template:
+        frappe.throw(
+            "Endpoint {} sin soap_template configurado".format(endpoint_code)
+        )
+
+    payload_xml = render_soap_payload(
+        template,
+        payload,
+        bool(getattr(endpoint, "strip_single_quotes", 1)),
+    )
+
+    return send_petition(endpoint_code, payload_xml, add_header=True, is_json=False)
+
+
 def send_request(documents, setup, target, token, url):
 
     #setup = frappe.get_doc("qp_md_Setup")

@@ -5,15 +5,17 @@
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
- "field_order": [
-  "title",
-  "url",
-  "request",
-  "code",
-  "setup",
-  "enviroment",
-  "type_url"
- ],
+  "field_order": [
+   "title",
+   "url",
+   "request",
+   "code",
+   "setup",
+   "enviroment",
+   "type_url",
+   "soap_template",
+   "strip_single_quotes"
+  ],
  "fields": [
   {
    "fieldname": "title",
@@ -51,16 +53,29 @@
    "label": "setup",
    "options": "qp_md_Setup"
   },
-  {
-   "fieldname": "type_url",
-   "fieldtype": "Select",
-   "label": "type_url",
-   "options": "with_company\nwith_company_and_filters\nwithout_company\nws_protocol"
-  }
- ],
+   {
+    "fieldname": "type_url",
+    "fieldtype": "Select",
+    "label": "type_url",
+    "options": "with_company\nwith_company_and_filters\nwithout_company\nws_protocol"
+   },
+   {
+    "fieldname": "soap_template",
+    "fieldtype": "Long Text",
+    "label": "Template SOAP",
+    "description": "Envelope SOAP completo con el placeholder __PAYLOAD__ donde se inserta el payload JSON. Usar Long Text (texto plano), no Text Editor."
+   },
+   {
+    "default": "1",
+    "fieldname": "strip_single_quotes",
+    "fieldtype": "Check",
+    "label": "Remover comillas simples del payload",
+    "description": "Replica el reemplazo de comillas simples para evitar que apostrofes rompan el XML."
+   }
+  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-16 13:12:53.074992",
+ "modified": "2026-08-13 18:02:52.000000",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Endpoint",
