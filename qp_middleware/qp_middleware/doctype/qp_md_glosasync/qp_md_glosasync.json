@@ -176,7 +176,7 @@
   },
   {
    "fieldname": "description",
-   "fieldtype": "Data",
+   "fieldtype": "Long Text",
    "label": "Descripcion"
   },
   {
@@ -201,7 +201,7 @@
   },
   {
    "fieldname": "response_details",
-   "fieldtype": "Data",
+   "fieldtype": "Long Text",
    "label": "Respuesta"
   },
   {
@@ -302,7 +302,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-08 15:17:16.838634",
+ "modified": "2026-08-14 09:06:52.307168",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_GlosaSync",
