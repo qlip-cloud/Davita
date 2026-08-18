@@ -4,7 +4,7 @@
 # import frappe
 from frappe.model.document import Document
 from qp_middleware.qp_middleware.service.glosa.api_invoice_service import ApiInvoiceService
-from qp_middleware.qp_middleware.service.glosa.api_glosa_service import ApiGlosaService
+from qp_middleware.qp_middleware.service.glosa.api_glosa_service import ApiGlosaService, is_already_responded
 from qp_middleware.qp_middleware.service.glosa.exceptions import GlosaNotFoundError, ResponseStatusError, GlosaTypeLineError, GlosaObjectionLineError, InvoiceNotFoundError
 import frappe
 import json
@@ -172,7 +172,7 @@ class qp_md_Glosa(Document):
 				
 				self.__set_glosa_petition(glosa_line.index_number, glosa_line.payload, status_code, status, response)
 
-				self.set_is_sync_by_status_code(glosa_line, status_code)
+				self.set_is_sync_by_status_code(glosa_line, status_code, response)
     
 			except (GlosaObjectionLineError) as error:
        
@@ -196,15 +196,15 @@ class qp_md_Glosa(Document):
 				traceback = frappe.get_traceback()
     
 				glosa_error_control.add_glosa_error_unknown(self.invoice_prefix, str(error), traceback, glosa_id = glosa_line.index_number)
-    	
-	def set_is_sync_by_status_code(self, glosa_line, status_code):
+	def set_is_sync_by_status_code(self, glosa_line, status_code, response = None):
 		
-		if status_code == 200:
+		if status_code == 200 or is_already_responded(response):
 			
 			glosa_line.set_is_sync()
-   
+
 	def __set_glosa_petition(self, index_number, payload, status_code, status, response):
-           
+        
+            
 			self.append("glosas_petition",{
 				"payload": payload,
 				"glosa_line_id": index_number,

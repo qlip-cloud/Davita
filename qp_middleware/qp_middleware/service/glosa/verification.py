@@ -29,10 +29,10 @@ def setup_glosas(glosas_name, nit_emisor):
         
         glosa_error_control = frappe.new_doc("qp_md_GlosaError")
         
-        try:
-                
-            for glosa_name in glosas_name:
-                
+        for glosa_name in glosas_name:
+        
+            try:
+            
                 glosa_error_control.count_invoice_total()
                 
                 glosa = frappe.get_doc("qp_md_Glosa", glosa_name)
@@ -41,26 +41,26 @@ def setup_glosas(glosas_name, nit_emisor):
                 
                 glosa.save()
         
-        except InvoiceNotFoundError as error:
-            
-            traceback = frappe.get_traceback()
-            
-            glosa_error_control.add_invoice_not_found_error(error, traceback)
-            
-        except ResponseStatusError as error:
-            
-            traceback = frappe.get_traceback()
-            
-            glosa_error_control.add_invoice_response_error(error, traceback)
-            
-        except Exception as error:
-            
-            traceback = frappe.get_traceback()
-            
-            glosa_error_control.add_invoice_error_unknown(glosa_name, str(error), traceback)
-            
-        finally:
-            
-            glosa_error_control.save()
-            
-            frappe.db.commit()
+            except InvoiceNotFoundError as error:
+                
+                traceback = frappe.get_traceback()
+                
+                glosa_error_control.add_invoice_not_found_error(error, traceback)
+                
+            except ResponseStatusError as error:
+                
+                traceback = frappe.get_traceback()
+                
+                glosa_error_control.add_invoice_response_error(error, traceback)
+                
+            except Exception as error:
+                
+                traceback = frappe.get_traceback()
+                
+                glosa_error_control.add_invoice_error_unknown(glosa_name, str(error), traceback)
+                
+            finally:
+                    
+                glosa_error_control.save()
+                    
+                frappe.db.commit()
