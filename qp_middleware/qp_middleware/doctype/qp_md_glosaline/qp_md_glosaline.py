@@ -104,9 +104,13 @@ class qp_md_GlosaLine(Document):
 	 
 		self.is_sync = True
   
+	def is_response_ready(self):
+	 
+		return self.is_not_error() and self.payload and self.payload != "null"
+
 	def is_response_valid(self):
 	 
-		return self.is_not_error() and self.id_glosa and not self.is_sync
+		return self.is_response_ready() and not self.is_sync
 
 	def is_objection_type_valid(self):
 		

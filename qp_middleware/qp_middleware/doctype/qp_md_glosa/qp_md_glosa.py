@@ -49,7 +49,9 @@ class qp_md_Glosa(Document):
 		
 		self.tracking_glosa_control(tracking_glosa.init_glosas, glosa_error_control)
 		
-		self.tracking_glosa_control(tracking_glosa.init_returns, glosa_error_control)
+		if any(line.is_objection_devolucion() for line in self.glosas):
+			
+			self.tracking_glosa_control(tracking_glosa.init_returns, glosa_error_control)
 
 		return tracking_glosa
    
@@ -103,6 +105,8 @@ class qp_md_Glosa(Document):
 				if not glosa_line.is_verified:
 		
 					self.__set_glosa_verified_and_status(glosa_line)
+
+				if not glosa_line.is_response_ready():
 
 					glosa_external = self.setup_by_glosa_external(tracking_glosa, glosa_line)
 
