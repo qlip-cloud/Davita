@@ -1,4 +1,5 @@
 import frappe
+import json
 from qp_authorization.use_case.bearer.authorize import send_request_status
 from qp_middleware.qp_middleware.service.glosa.exceptions import GlosaNotFoundError, ResponseStatusError, GlosaTypeLineError, GlosaObjectionLineError
 
@@ -139,11 +140,17 @@ class ApiGlosaService:
         
         self.assert_that_status_code_valid(response, status_code, glosa_id, endpoint)
         
-        return response, self.status.get(status_code, "Estado no definido"), status_code
+        status = self.status.get(status_code, "Estado no definido")
+        
+        if status_code != 200 and is_already_responded(response):
+            
+            status = "Glosa ya respondida en MINSALUD"
+        
+        return response, status, status_code
     
     def assert_that_status_code_valid(self, response, status_code, glosa_id, endpoint):
 
-        if status_code != 200:
+        if status_code != 200 and not is_already_responded(response):
             
             raise ResponseStatusError(self.id_invoice, self.status.get(status_code, "Error desconocido"), str(response), endpoint, glosa_id)
         
@@ -170,3 +177,25 @@ def get_result(response, id_invoice, endpoint):
         raise GlosaNotFoundError(id_invoice, endpoint = endpoint)
     
     return response.get("resultado")
+
+ALREADY_RESPONDED_MESSAGE = "ya tiene un registro previo de respuesta"
+
+def is_already_responded(response):
+    
+    if not response:
+        
+        return False
+    
+    errors = response.get("errors")
+    
+    if not errors:
+        
+        return False
+    
+    if isinstance(errors, dict):
+        
+        errors = list(errors.values())
+    
+    text = json.dumps(errors)
+    
+    return ALREADY_RESPONDED_MESSAGE in text
