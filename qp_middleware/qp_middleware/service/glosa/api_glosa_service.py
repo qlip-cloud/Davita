@@ -1,5 +1,6 @@
 import frappe
 import json
+from frappe.utils import flt
 from qp_authorization.use_case.bearer.authorize import send_request_status
 from qp_middleware.qp_middleware.service.glosa.exceptions import GlosaNotFoundError, ResponseStatusError, GlosaTypeLineError, GlosaObjectionLineError
 
@@ -23,6 +24,8 @@ class ApiGlosaService:
             404: "Seguimiento no encontrado",
             500: "Error interno del servidor (MINSAlUD)",
         }
+        
+        self.last_request_name = None
     
     def init_glosas(self):
         
@@ -48,14 +51,49 @@ class ApiGlosaService:
         
         raise GlosaNotFoundError(self.id_invoice, endpoint = "get_last_glosa", glosa_id = glosa_line.index_number)
             
-    def search_glosa(self, glosa_line):
-                
-        for glosa_iter in self.glosas:
+    def search_glosa(self, glosa_line, match_mode = "first"):
+        
+        records = self.__get_records_by_objection_type(glosa_line)
+        
+        matches = [glosa_iter for glosa_iter in records if self.__match_glosa(glosa_line, glosa_iter)]
+        
+        if not matches:
             
-            if (glosa_line.claim_amount == glosa_iter.gloss_value and 
-                glosa_line.notification_date == glosa_iter.formulation_date):
-                
-                return glosa_iter
+            return None
+        
+        return matches[-1] if match_mode == "last" else matches[0]
+    
+    def __get_records_by_objection_type(self, glosa_line):
+        
+        if glosa_line.is_objection_glosa():
+            
+            return getattr(self, "glosas", [])
+        
+        if glosa_line.is_objection_devolucion():
+            
+            return getattr(self, "returns", [])
+        
+        return []
+    
+    def __match_glosa(self, glosa_line, glosa_iter):
+        
+        if glosa_line.is_objection_glosa():
+            
+            return (
+                flt(glosa_line.claim_amount) == flt(glosa_iter.gloss_value) and
+                glosa_line.claim_code == glosa_iter.gloss_code_id and
+                str(glosa_line.notification_date)[:10] == str(glosa_iter.formulation_date)[:10]
+            )
+        
+        if glosa_line.is_objection_devolucion():
+            
+            return (
+                flt(glosa_line.claim_amount) == flt(glosa_iter.return_value) and
+                glosa_line.claim_code == glosa_iter.return_code_id and
+                str(glosa_line.notification_date)[:10] == str(glosa_iter.formulation_date)[:10]
+            )
+        
+        return False
         
     def get_glosas_by_id_invoice(self):
         
@@ -65,9 +103,17 @@ class ApiGlosaService:
         query_param = f"IdFactura={self.id_invoice}"
         
         response, status, status_code = self.__send_request_status(endpoint, param = query_param, is_query_param = True)
-                
-        result = get_result(response, self.id_invoice, endpoint)
         
+        try:
+                
+            result = get_result(response, self.id_invoice, endpoint)
+        
+        except GlosaNotFoundError:
+        
+            self.__persist_no_info_request("qp_md_GlosaRequest", endpoint)
+        
+            raise
+            
         return list(map(lambda glosa: self.__set_glosa_request(glosa), result))
             
     def get_returns_by_id_invoice(self):
@@ -78,9 +124,35 @@ class ApiGlosaService:
         
         response, status,status_code = self.__send_request_status(endpoint, param = query_param, is_query_param = True)
         
-        result = get_result(response, self.id_invoice, endpoint)
+        try:
+                
+            result = get_result(response, self.id_invoice, endpoint)
         
+        except GlosaNotFoundError:
+        
+            self.__persist_no_info_request("qp_md_ReturnRequest", endpoint)
+        
+            raise
+            
         return list(map(lambda glosa: self.__set_return_request(glosa), result))
+        
+    def __persist_no_info_request(self, doctype, endpoint):
+        
+        existing_name = frappe.db.exists(doctype, {"invoice_id": self.id_invoice})
+        
+        if existing_name:
+        
+            request = frappe.get_doc(doctype, existing_name)
+        
+        else:
+        
+            request = frappe.new_doc(doctype)
+        
+        request.invoice_id = self.id_invoice
+        
+        request.save()
+        
+        self.last_request_name = request.name
         
     def send_minsalud_response(self, glosa_line):
                 
