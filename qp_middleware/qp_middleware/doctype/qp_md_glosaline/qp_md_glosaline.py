@@ -30,7 +30,20 @@ class qp_md_GlosaLine(Document):
 			self.set_id_glosa(glosa_external.gloss_tracking_id)
 
 			self.set_payload()
-  
+			
+			self.set_payload_status_ok()
+   
+	def set_payload_status_ok(self):
+		
+		self.payload_status = None
+		
+		self.payload_status_reference = None
+		
+	def set_payload_status_no_info(self, reference):
+		
+		self.payload_status = "Sin info MINSALUD"
+		
+		self.payload_status_reference = reference
 	def set_id_glosa(self, id_glosa):
     	
 		self.id_glosa = id_glosa

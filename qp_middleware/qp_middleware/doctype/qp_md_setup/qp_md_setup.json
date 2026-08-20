@@ -9,6 +9,7 @@
   "wait_time",
   "number_request",
   "invoices_group",
+  "glosa_match_mode",
   "enviroment",
   "code"
  ],
@@ -31,6 +32,13 @@
    "label": "Grupo de Facturas"
   },
   {
+   "default": "first",
+   "fieldname": "glosa_match_mode",
+   "fieldtype": "Select",
+   "label": "Modo de match glosa MINSALUD (first/last)",
+   "options": "\nfirst\nlast"
+  },
+  {
    "fieldname": "enviroment",
    "fieldtype": "Link",
    "label": "Enviroment",
@@ -47,7 +55,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-16 09:00:11.550893",
+ "modified": "2026-08-19 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Setup",
