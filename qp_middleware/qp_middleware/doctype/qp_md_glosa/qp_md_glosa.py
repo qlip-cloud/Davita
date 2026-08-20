@@ -90,6 +90,10 @@ class qp_md_Glosa(Document):
   
 	def setup_glosa_line(self, tracking_glosa, glosa_error_control):
 		
+		self._base_external_map = {}
+		
+		self.match_mode = self.get_match_mode()
+		
 		for glosa_line in self.glosas:
 	
 			try:
@@ -111,6 +115,10 @@ class qp_md_Glosa(Document):
 					glosa_external = self.setup_by_glosa_external(tracking_glosa, glosa_line)
 
 					glosa_line.setup_by_glosa_external(glosa_external)
+					
+					if not glosa_line.is_response_ready():
+					
+						glosa_line.set_payload_status_no_info(tracking_glosa.last_request_name)
 				
 				if not glosa_line.is_sync:
 
@@ -119,6 +127,10 @@ class qp_md_Glosa(Document):
 			except GlosaNotFoundError as error:
        
 				traceback = frappe.get_traceback()
+	  
+				if tracking_glosa.last_request_name:
+					
+					glosa_line.set_payload_status_no_info(tracking_glosa.last_request_name)
 	  
 				glosa_error_control.add_glosa_error(error, traceback)
     
@@ -129,12 +141,34 @@ class qp_md_Glosa(Document):
 				glosa_error_control.add_glosa_error_unknown(self.invoice_prefix, str(error), traceback, glosa_id = glosa_line.index_number)
 
 	def setup_by_glosa_external(self, tracking_glosa, glosa_line):
-     
-		if glosa_line.is_not_error():
-      
-			return tracking_glosa.get_last_glosa(glosa_line)
+		
+		if not glosa_line.is_not_error():
 			
-			#return tracking_glosa.search_glosa(glosa_line)
+			return None
+		
+		if glosa_line.type_line.lower() == REITERACION.lower():
+			
+			return self._base_external_map.get(self.get_base_key(glosa_line))
+		
+		glosa_external = tracking_glosa.search_glosa(glosa_line, self.match_mode)
+		
+		if glosa_external:
+			
+			self._base_external_map[self.get_base_key(glosa_line)] = glosa_external
+		
+		return glosa_external
+
+	def get_base_key(self, glosa_line):
+		
+		return (glosa_line.objection_type, glosa_line.claim_amount, glosa_line.claim_code)
+
+	def get_match_mode(self):
+		
+		setup = frappe.get_all("qp_md_Setup", fields = ["glosa_match_mode"], limit = 1)
+		
+		mode = setup[0].get("glosa_match_mode") if setup else None
+		
+		return mode if mode in ("first", "last") else "first"
    
 	def __set_glosa_verified_and_status(self, glosa_line):
     			
