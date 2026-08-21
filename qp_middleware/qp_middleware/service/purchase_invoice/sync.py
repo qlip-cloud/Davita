@@ -181,6 +181,7 @@ def create_purchase_invoices(payload, endpoint_code="create_purchase_order"):
             "Result": 1,
             "Description": str(e),
             "invoices": [],
+            "raw_response": "",
         }
 
     if error:
@@ -188,6 +189,11 @@ def create_purchase_invoices(payload, endpoint_code="create_purchase_order"):
             "Result": 1,
             "Description": response_text or "Error en la peticion a BC",
             "invoices": [],
+            "raw_response": response_text or "",
         }
 
-    return parse_purchase_invoice_response(response_json, response_text, num_invoices)
+    resultado = parse_purchase_invoice_response(
+        response_json, response_text, num_invoices
+    )
+    resultado["raw_response"] = response_text or ""
+    return resultado

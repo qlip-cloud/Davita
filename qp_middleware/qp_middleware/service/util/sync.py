@@ -1,4 +1,5 @@
 import frappe
+import html
 import json
 import requests
 import threading
@@ -136,6 +137,7 @@ SOAP_PAYLOAD_PLACEHOLDER = "__PAYLOAD__"
 
 def render_soap_payload(template, payload, strip_single_quotes=True):
     """Inserta el payload JSON en el template SOAP (funcion pura)."""
+    template = html.unescape(template)
     payload_xml = template.replace(SOAP_PAYLOAD_PLACEHOLDER, json.dumps(payload))
     if strip_single_quotes:
         payload_xml = payload_xml.replace("'", "")

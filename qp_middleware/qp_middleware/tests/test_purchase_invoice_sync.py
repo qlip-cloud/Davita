@@ -236,6 +236,19 @@ class TestRenderSoapPayload(unittest.TestCase):
         )
         self.assertIn("L'electricite", rendered)
 
+    def test_template_escapado_se_unescape_a_xml_plano(self):
+        escaped = (
+            '&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;'
+            '&lt;soap:Envelope xmlns:nav=&quot;urn:x&quot;&gt;'
+            '&lt;nav:factura&gt;__PAYLOAD__&lt;/nav:factura&gt;'
+            '&lt;/soap:Envelope&gt;'
+        )
+        rendered = render_soap_payload(escaped, [{"NoFacturaProveedor": "X"}])
+        self.assertNotIn("&lt;", rendered)
+        self.assertNotIn("&gt;", rendered)
+        self.assertIn("<nav:factura>", rendered)
+        self.assertIn('"NoFacturaProveedor": "X"', rendered)
+
 
 if __name__ == "__main__":
     unittest.main()
