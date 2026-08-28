@@ -20,7 +20,9 @@ sys.modules["frappe.model.document"] = MagicMock()
 
 from qp_middleware.qp_middleware.service.purchase_invoice.sync import (  # noqa: E402
     _search_key,
+    merge_invoice_results,
     parse_purchase_invoice_response,
+    split_invoices,
     validate_purchase_invoice_payload,
 )
 from qp_middleware.qp_middleware.service.util.sync import (  # noqa: E402
@@ -92,6 +94,101 @@ class TestValidatePurchaseInvoicePayload(unittest.TestCase):
             self._factura(vendorNumber=""),
         ])
         self.assertEqual(len(errors), 1)
+
+    def test_sin_oc_ni_recepcion_en_lineas_pasa(self):
+        """Factura de contado sin pedido ni recepcion (campos vacios) es valida."""
+        errors = validate_purchase_invoice_payload([
+            self._factura(vendorInvoiceLine=[
+                {"NoProducto": "00045", "cantidad": 10, "Precio": 5000.0,
+                 "NoLineaRecepcion": "20000", "NoRecepcion": "", "NoPedido": ""},
+            ])
+        ])
+        self.assertEqual(errors, [])
+
+
+class TestSplitInvoices(unittest.TestCase):
+
+    def _factura(self, **overrides):
+        factura = {
+            "invoiceDate": "2026-07-09",
+            "postingDate": "2026-07-09",
+            "vendorNumber": "050633410",
+            "NoFacturaProveedor": "YD0609",
+            "vendorInvoiceLine": [
+                {"NoProducto": "M000455", "cantidad": 10, "Precio": 5000.0,
+                 "NoLineaRecepcion": "20000", "NoRecepcion": "R108349",
+                 "NoPedido": "45238"},
+            ],
+        }
+        factura.update(overrides)
+        return factura
+
+    def test_todas_validas_sin_invalidas(self):
+        valid, invalid = split_invoices([self._factura()])
+        self.assertEqual(len(valid), 1)
+        self.assertEqual(invalid, {})
+
+    def test_contado_sin_oc_ni_recibo_es_valida(self):
+        factura = self._factura(vendorInvoiceLine=[
+            {"NoProducto": "00045", "cantidad": 10, "Precio": 5000.0,
+             "NoLineaRecepcion": "20000", "NoRecepcion": "", "NoPedido": ""},
+        ])
+        valid, invalid = split_invoices([factura])
+        self.assertEqual(len(valid), 1)
+        self.assertEqual(invalid, {})
+
+    def test_invalida_aislada_no_tumba_a_la_valida(self):
+        """Lote mixto: la factura valida pasa y la invalida queda con su error."""
+        valid, invalid = split_invoices([
+            self._factura(),
+            self._factura(vendorInvoiceLine=[
+                {"NoProducto": "M000455", "cantidad": "", "Precio": 5000.0},
+            ]),
+        ])
+        self.assertEqual(len(valid), 1)
+        self.assertIn(1, invalid)
+        self.assertIn("cantidad", invalid[1])
+
+    def test_varias_invalidas_se_reportan_por_posicion(self):
+        valid, invalid = split_invoices([
+            self._factura(NoFacturaProveedor=""),
+            self._factura(),
+            self._factura(vendorInvoiceLine=[]),
+        ])
+        self.assertEqual(len(valid), 1)
+        self.assertIn(0, invalid)
+        self.assertIn(2, invalid)
+        self.assertNotIn(1, invalid)
+
+    def test_vacia_retorna_valid_as_vacio(self):
+        valid, invalid = split_invoices([])
+        self.assertEqual(valid, [])
+        self.assertEqual(invalid, {})
+
+
+class TestMergeInvoiceResults(unittest.TestCase):
+
+    def test_alinea_resultados_de_bc_con_posiciones_originales(self):
+        bc_results = [{"doc_number": "0025548", "error": ""}]
+        merged = merge_invoice_results(2, {1: "Factura 1: falta el campo X"}, bc_results)
+        self.assertEqual(merged[0], {"doc_number": "0025548", "error": ""})
+        self.assertEqual(merged[1]["doc_number"], "")
+        self.assertIn("falta el campo X", merged[1]["error"])
+
+    def test_mezcla_varias_validas_y_una_invalida(self):
+        bc_results = [
+            {"doc_number": "A", "error": ""},
+            {"doc_number": "B", "error": ""},
+            {"doc_number": "C", "error": ""},
+        ]
+        merged = merge_invoice_results(4, {2: "boom"}, bc_results)
+        self.assertEqual([m["doc_number"] for m in merged], ["A", "B", "", "C"])
+        self.assertEqual(merged[2]["error"], "boom")
+
+    def test_vacia_solo_invalidas(self):
+        merged = merge_invoice_results(2, {1: "err"}, [])
+        self.assertEqual(merged[0]["doc_number"], "")
+        self.assertEqual(merged[1]["error"], "err")
 
 
 class TestSearchKey(unittest.TestCase):

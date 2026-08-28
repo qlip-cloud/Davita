@@ -39,9 +39,53 @@ REQUIRED_LINE_FIELDS = (
     "NoProducto",
     "cantidad",
     "Precio",
-    "NoPedido",
-    "NoRecepcion",
 )
+
+# Campos que se envian con la OC/recibo de la factura si los tiene; si la
+# factura no tiene orden de compra ni recepcion (p. ej. factura de contado
+# sin recibo) se envian como string vacio "" y no bloquean la creacion.
+OPTIONAL_LINE_FIELDS = ("NoPedido", "NoRecepcion")
+
+
+def _validate_factura(factura, idx):
+    """Valida las condiciones minimas de UNA factura (con su indice).
+
+    Retorna una lista de errores (vacia si la factura es valida). Permite
+    atribuir el resultado por factura en lugar de abortar todo el lote.
+    """
+    errors = []
+
+    if not isinstance(factura, dict):
+        return ["Factura {}: debe ser un objeto".format(idx)]
+
+    for field in REQUIRED_INVOICE_FIELDS:
+        if not factura.get(field):
+            errors.append(
+                "Factura {}: falta el campo {}".format(idx, field)
+            )
+
+    lines = factura.get("vendorInvoiceLine")
+    if not isinstance(lines, list) or not lines:
+        errors.append(
+            "Factura {}: vendorInvoiceLine no puede estar vacio".format(idx)
+        )
+        return errors
+
+    for line_idx, line in enumerate(lines):
+        if not isinstance(line, dict):
+            errors.append(
+                "Factura {} linea {}: debe ser un objeto".format(idx, line_idx)
+            )
+            continue
+        for field in REQUIRED_LINE_FIELDS:
+            if line.get(field) in (None, ""):
+                errors.append(
+                    "Factura {} linea {}: falta el campo {}".format(
+                        idx, line_idx, field
+                    )
+                )
+
+    return errors
 
 
 def validate_purchase_invoice_payload(payload):
@@ -49,44 +93,57 @@ def validate_purchase_invoice_payload(payload):
 
     Retorna una lista de errores (vacia si el payload es valido).
     """
-    errors = []
-
     if not isinstance(payload, list) or not payload:
         return ["El payload debe ser una lista de facturas"]
 
+    errors = []
     for idx, factura in enumerate(payload):
-        if not isinstance(factura, dict):
-            errors.append("Factura {}: debe ser un objeto".format(idx))
-            continue
-
-        for field in REQUIRED_INVOICE_FIELDS:
-            if not factura.get(field):
-                errors.append(
-                    "Factura {}: falta el campo {}".format(idx, field)
-                )
-
-        lines = factura.get("vendorInvoiceLine")
-        if not isinstance(lines, list) or not lines:
-            errors.append(
-                "Factura {}: vendorInvoiceLine no puede estar vacio".format(idx)
-            )
-            continue
-
-        for line_idx, line in enumerate(lines):
-            if not isinstance(line, dict):
-                errors.append(
-                    "Factura {} linea {}: debe ser un objeto".format(idx, line_idx)
-                )
-                continue
-            for field in REQUIRED_LINE_FIELDS:
-                if line.get(field) in (None, ""):
-                    errors.append(
-                        "Factura {} linea {}: falta el campo {}".format(
-                            idx, line_idx, field
-                        )
-                    )
-
+        errors.extend(_validate_factura(factura, idx))
     return errors
+
+
+def split_invoices(payload):
+    """Separa facturas validas e invalidas conservando la posicion original.
+
+    Retorna (valid_invoices, invalid_by_index) donde invalid_by_index mapea
+    la posicion original de cada factura invalida a su mensaje de error.
+    Permite descontaminar el lote: enviar a BC solo las validas y devolver
+    el error solo en la factura erronea, sin que afecte a las demas.
+    """
+    valid = []
+    invalid = {}
+    for idx, factura in enumerate(payload or []):
+        errors = _validate_factura(factura, idx)
+        if errors:
+            invalid[idx] = "; ".join(errors)
+        else:
+            valid.append(factura)
+    return valid, invalid
+
+
+def merge_invoice_results(payload_count, invalid_by_index, bc_invoices):
+    """Alinea los resultados de BC con las posiciones originales del payload.
+
+    Los resultados de BC llegan en el orden de las facturas validas enviadas;
+    se intercalan los errores locales en las posiciones de las invalidas para
+    que el consumidor pueda atribuir cada resultado a su factura. Si BC no
+    entrego resultado para alguna factura valida, se devuelve el error por
+    defecto de "no devolvio documento".
+    """
+    results = iter(bc_invoices or [])
+    invoices = []
+    for idx in range(payload_count):
+        if idx in invalid_by_index:
+            invoices.append({"doc_number": "", "error": invalid_by_index[idx]})
+            continue
+        try:
+            invoices.append(next(results))
+        except StopIteration:
+            invoices.append({
+                "doc_number": "",
+                "error": "BC no devolvio documento para la factura",
+            })
+    return invoices
 
 
 def _search_key(node, key):
@@ -109,6 +166,21 @@ def _search_key(node, key):
     return None
 
 
+def _extract_fault_text(fault):
+    """Extrae el texto legible de un nodo fault SOAP.
+
+    Un faultstring puede llegar como string plano o como dict con un
+    atributo y el texto en la clave '#text' (p. ej. xmltodict produce
+    {'@xml:lang': 'en-US', '#text': 'The metadata object CodeUnit 66908...'}).
+    """
+    if isinstance(fault, dict):
+        text = fault.get("#text")
+        if text:
+            return str(text).strip()
+        return str(fault).strip()
+    return str(fault).strip()
+
+
 def parse_purchase_invoice_response(response_json, response_text, num_invoices):
     """Convierte la respuesta SOAP en resultados por factura.
 
@@ -129,7 +201,7 @@ def parse_purchase_invoice_response(response_json, response_text, num_invoices):
     if fault:
         return {
             "Result": 1,
-            "Description": str(fault).strip() or response_text,
+            "Description": _extract_fault_text(fault) or response_text,
             "invoices": [],
         }
 
@@ -164,18 +236,28 @@ def parse_purchase_invoice_response(response_json, response_text, num_invoices):
 
 @frappe.whitelist()
 def create_purchase_invoices(payload, endpoint_code="create_purchase_order"):
-    errors = validate_purchase_invoice_payload(payload)
-    if errors:
+    if not isinstance(payload, list) or not payload:
         return {
             "Result": 1,
-            "Description": "; ".join(errors),
+            "Description": "El payload debe ser una lista de facturas",
             "invoices": [],
         }
 
-    num_invoices = len(payload)
+    # Descontaminacion: una factura invalida no aborta el lote. Las facturas
+    # validas se envian a BC y las invalidas devuelven su propio error en su
+    # posicion original (BC es quien decide, por ejemplo, sobre campos
+    # opcionales como NoPedido/NoRecepcion).
+    valid_invoices, invalid_by_index = split_invoices(payload)
+
+    if not valid_invoices:
+        return {
+            "Result": 1,
+            "Description": "; ".join(invalid_by_index.values()),
+            "invoices": [],
+        }
 
     try:
-        response_text, response_json, error = _send_soap(endpoint_code, payload)
+        response_text, response_json, error = _send_soap(endpoint_code, valid_invoices)
     except Exception as e:
         return {
             "Result": 1,
@@ -192,8 +274,14 @@ def create_purchase_invoices(payload, endpoint_code="create_purchase_order"):
             "raw_response": response_text or "",
         }
 
-    resultado = parse_purchase_invoice_response(
-        response_json, response_text, num_invoices
+    parsed = parse_purchase_invoice_response(
+        response_json, response_text, len(valid_invoices)
     )
-    resultado["raw_response"] = response_text or ""
-    return resultado
+    parsed["raw_response"] = response_text or ""
+    if parsed["Result"] == 1:
+        return parsed
+
+    parsed["invoices"] = merge_invoice_results(
+        len(payload), invalid_by_index, parsed["invoices"]
+    )
+    return parsed
