@@ -5,7 +5,7 @@
 from frappe.model.document import Document
 from qp_middleware.qp_middleware.service.glosa.api_invoice_service import ApiInvoiceService
 from qp_middleware.qp_middleware.service.glosa.api_glosa_service import ApiGlosaService, is_already_responded
-from qp_middleware.qp_middleware.service.glosa.exceptions import GlosaNotFoundError, ResponseStatusError, GlosaTypeLineError, GlosaObjectionLineError, InvoiceNotFoundError
+from qp_middleware.qp_middleware.service.glosa.exceptions import GlosaNotFoundError, ResponseStatusError, GlosaTypeLineError, GlosaObjectionLineError, InvoiceNotFoundError, GlosaTimeoutError
 import frappe
 import json
 GLOSA = "Glosa"
@@ -14,10 +14,16 @@ REITERACION = "Reiteración"
 
 class qp_md_Glosa(Document):
 	
-	def execute_setup_glosa(self, nit_emisor, glosa_error_control):
+	def execute_setup_glosa(self, nit_emisor, glosa_error_control, id_invoice = None):
      
 		try:
-			self.set_id_invoice_by_service(nit_emisor)
+			if id_invoice is None:
+				
+				self.set_id_invoice_by_service(nit_emisor)
+				
+			else:
+				
+				self.set_id_invoice(id_invoice)
 
 			tracking_glosa = self.get_tracking_glosa(glosa_error_control)
 			
@@ -36,6 +42,12 @@ class qp_md_Glosa(Document):
 			traceback = frappe.get_traceback()
 		
 			glosa_error_control.add_glosa_response_error(error, traceback)
+   
+		except GlosaTimeoutError as error:
+        
+			traceback = frappe.get_traceback()
+		
+			glosa_error_control.add_timeout_error(error, traceback)
    
 		except Exception as error:
       
@@ -72,6 +84,12 @@ class qp_md_Glosa(Document):
 			traceback = frappe.get_traceback()
 		
 			glosa_error_control.add_glosa_response_error(error, traceback)
+	
+		except GlosaTimeoutError as error:
+        
+			traceback = frappe.get_traceback()
+		
+			glosa_error_control.add_timeout_error(error, traceback)
 	
 		except Exception as error:
       
@@ -133,6 +151,14 @@ class qp_md_Glosa(Document):
 					glosa_line.set_payload_status_no_info(tracking_glosa.last_request_name)
 	  
 				glosa_error_control.add_glosa_error(error, traceback)
+    
+			except GlosaTimeoutError as error:
+       
+				traceback = frappe.get_traceback()
+	  
+				glosa_line.set_payload_status_timeout(tracking_glosa.last_request_name)
+	  
+				glosa_error_control.add_timeout_error(error, traceback)
     
 			except Exception as error:
        
@@ -228,6 +254,14 @@ class qp_md_Glosa(Document):
 				traceback = frappe.get_traceback()
 
 				glosa_error_control.add_glosa_error(error, traceback)
+
+			except (GlosaTimeoutError) as error:
+       
+				traceback = frappe.get_traceback()
+
+				glosa_line.set_payload_status_timeout(tracking_glosa.last_request_name)
+
+				glosa_error_control.add_timeout_error(error, traceback)
 
 			except Exception as error:
        

@@ -11,12 +11,13 @@
   "invoice_found_total",
   "glosa_found_total",
   "glosa_send_total",
-  "glosa_not_found_total",
-  "glosa_response_error_total",
-  "glosa_error_total",
-  "invoice_not_found_total",
-  "invoice_response_error_total",
-  "unknow_error_total",
+"glosa_not_found_total",
+   "glosa_response_error_total",
+   "glosa_error_total",
+   "invoice_not_found_total",
+   "invoice_response_error_total",
+   "timeout_total",
+   "unknow_error_total",
   "lines"
  ],
  "fields": [
@@ -79,6 +80,12 @@
    "fieldname": "invoice_response_error_total",
    "fieldtype": "Int",
    "label": "invoice response error total"
+  },
+  {
+   "default": "0",
+   "fieldname": "timeout_total",
+   "fieldtype": "Int",
+   "label": "timeout MINSALUD total"
   },
   {
    "default": "0",
