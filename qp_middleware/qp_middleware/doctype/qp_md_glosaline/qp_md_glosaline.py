@@ -44,6 +44,12 @@ class qp_md_GlosaLine(Document):
 		self.payload_status = "Sin info MINSALUD"
 		
 		self.payload_status_reference = reference
+	
+	def set_payload_status_timeout(self, reference = None):
+		
+		self.payload_status = "Timeout MINSALUD"
+		
+		self.payload_status_reference = reference
 	def set_id_glosa(self, id_glosa):
     	
 		self.id_glosa = id_glosa

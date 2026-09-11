@@ -1,22 +1,40 @@
 import frappe
 from frappe.utils import now, get_datetime, get_datetime_str
 from qp_middleware.qp_middleware.service.util.sync import get_response, persist
+from qp_middleware.qp_middleware.service.glosa.verification import get_setup
+import urllib.parse
 
 @frappe.whitelist()
 def handler():
     
     filters = ""
+    
+    setup = get_setup()
+    
+    last_sync = (setup or {}).get("glosa_last_sync")
+    
+    if last_sync:
+        
+        last_sync_str = get_datetime_str(get_datetime(last_sync))
+        
+        filters = urllib.parse.quote("FechaModificación ge datetime'{}'".format(last_sync_str), safe = "=,'")
 
     response_json = get_response("list_glosas", filters)
+    
+    if response_json.get("value"):
+        
+        sync_glosa_fast(response_json)
 
-    sync_glosa_fast(response_json)
-
-    move_to_glosa()
+        move_to_glosa()
+        
+        move_to_glosa_line()
+        
+        move_to_glosa_detail()
     
-    move_to_glosa_line()
-    
-    move_to_glosa_detail()
-    
+    if setup:
+        
+        frappe.db.set_value("qp_md_Setup", setup.get("name"), "glosa_last_sync", now())
+        
     frappe.db.commit()
 
 def sync_glosa_fast(json_data):

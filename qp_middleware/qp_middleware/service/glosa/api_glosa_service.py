@@ -2,7 +2,8 @@ import frappe
 import json
 from frappe.utils import flt
 from qp_authorization.use_case.bearer.authorize import send_request_status
-from qp_middleware.qp_middleware.service.glosa.exceptions import GlosaNotFoundError, ResponseStatusError, GlosaTypeLineError, GlosaObjectionLineError
+from qp_middleware.qp_middleware.service.glosa.exceptions import GlosaNotFoundError, ResponseStatusError, GlosaTypeLineError, GlosaObjectionLineError, GlosaTimeoutError, is_timeout_response
+from qp_middleware.qp_middleware.service.glosa.api_invoice_service import get_glosa_timeout
 
 DOCTYPE = "qp_md_GlosaLine"
 
@@ -12,6 +13,7 @@ class ApiGlosaService:
         
         self.id_invoice = id_invoice
         self.doctype_base = DOCTYPE
+        self.timeout = get_glosa_timeout()
         self.init_status()
         
     def init_status(self):
@@ -208,7 +210,7 @@ class ApiGlosaService:
                         
     def __send_request_status(self, endpoint, payload = "", param = "", glosa_id = "", is_query_param = False):
         
-        response, status_code = send_request_status(endpoint, payload = payload, param = param, is_query_param = is_query_param)
+        response, status_code = send_request_status(endpoint, payload = payload, param = param, is_query_param = is_query_param, timeout = self.timeout)
         
         self.assert_that_status_code_valid(response, status_code, glosa_id, endpoint)
         
@@ -222,6 +224,10 @@ class ApiGlosaService:
     
     def assert_that_status_code_valid(self, response, status_code, glosa_id, endpoint):
 
+        if is_timeout_response(response):
+            
+            raise GlosaTimeoutError(self.id_invoice, str(response), endpoint, glosa_id)
+        
         if status_code != 200 and not is_already_responded(response):
             
             raise ResponseStatusError(self.id_invoice, self.status.get(status_code, "Error desconocido"), str(response), endpoint, glosa_id)
