@@ -5,14 +5,19 @@
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
- "field_order": [
-  "wait_time",
-  "number_request",
-  "invoices_group",
-  "glosa_match_mode",
-  "enviroment",
-  "code"
- ],
+"field_order": [
+   "wait_time",
+   "number_request",
+   "invoices_group",
+   "glosa_match_mode",
+   "glosa_timeout",
+   "glosa_threads",
+   "glosa_batch_size",
+   "glosa_cursor",
+   "glosa_last_sync",
+   "enviroment",
+   "code"
+  ],
  "fields": [
   {
    "default": "5",
@@ -37,6 +42,34 @@
    "fieldtype": "Select",
    "label": "Modo de match glosa MINSALUD (first/last)",
    "options": "\nfirst\nlast"
+  },
+  {
+   "default": "30",
+   "fieldname": "glosa_timeout",
+   "fieldtype": "Int",
+   "label": "Timeout MINSALUD (seg)"
+  },
+  {
+   "default": "8",
+   "fieldname": "glosa_threads",
+   "fieldtype": "Int",
+   "label": "Hilos paralelos MINSALUD"
+  },
+  {
+   "default": "800",
+   "fieldname": "glosa_batch_size",
+   "fieldtype": "Int",
+   "label": "Glosas por corrida"
+  },
+  {
+   "fieldname": "glosa_cursor",
+   "fieldtype": "Data",
+   "label": "Cursor glosa (última procesada)"
+  },
+  {
+   "fieldname": "glosa_last_sync",
+   "fieldtype": "Datetime",
+   "label": "Última sincronización BC glosas"
   },
   {
    "fieldname": "enviroment",
