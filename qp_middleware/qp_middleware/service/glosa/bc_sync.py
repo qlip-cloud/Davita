@@ -1,5 +1,5 @@
 import frappe
-from frappe.utils import now
+from frappe.utils import now, get_datetime, get_datetime_str
 from qp_middleware.qp_middleware.service.util.sync import get_response, persist
 from qp_middleware.qp_middleware.service.glosa.verification import get_setup
 
