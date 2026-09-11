@@ -4,29 +4,31 @@
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
- "field_order": [
-  "issuer_invoice_id",
-  "due_date",
-  "total_discount",
-  "invoice_number",
-  "issue_date",
-  "total_gross_value",
-  "buyer_invoice_id",
-  "total_gross_value_attributes",
-  "invoice_value",
-  "total_charge",
-  "profile_execution_id_2",
-  "invoice_type",
-  "invoice_id",
-  "issue_time",
-  "total_taxable_base_value",
-  "total_advance_payment",
-  "operation_type_indicator",
-  "item_count",
-  "invoice_currency",
-  "cufe",
-  "lines"
- ],
+"field_order": [
+   "issuer_invoice_id",
+   "due_date",
+   "total_discount",
+   "invoice_number",
+   "issue_date",
+   "total_gross_value",
+   "buyer_invoice_id",
+   "total_gross_value_attributes",
+   "invoice_value",
+   "total_charge",
+   "profile_execution_id_2",
+   "invoice_type",
+   "invoice_id",
+   "issue_time",
+   "total_taxable_base_value",
+   "total_advance_payment",
+   "operation_type_indicator",
+   "item_count",
+   "invoice_currency",
+   "cufe",
+   "invoice_prefix",
+   "lines",
+   "response_log"
+  ],
  "fields": [
   {
    "fieldname": "issuer_invoice_id",
@@ -129,15 +131,26 @@
    "label": "cufe"
   },
   {
+   "fieldname": "invoice_prefix",
+   "fieldtype": "Data",
+   "label": "invoice_prefix"
+  },
+  {
    "fieldname": "lines",
    "fieldtype": "Table",
    "label": "Lines",
    "options": "qp_md_InvoiceLineRequest"
+  },
+  {
+   "fieldname": "response_log",
+   "fieldtype": "Table",
+   "label": "Respuestas MINSALUD",
+   "options": "qp_md_InvoiceRequestLog"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-03-24 12:52:34.277505",
+ "modified": "2026-09-11 12:55:00.000000",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_InvoiceRequest",

@@ -8,6 +8,8 @@ from qp_middleware.qp_middleware.service.glosa.exceptions import InvoiceNotFound
 @frappe.whitelist()
 def handler():
     
+    purge_invoice_log()
+    
     setup = get_setup()
     
     glosas_name, new_cursor = get_glosas_batch(setup)
@@ -23,6 +25,12 @@ def handler():
         frappe.db.set_value("qp_md_Setup", setup.get("name"), "glosa_cursor", new_cursor)
         
         frappe.db.commit()
+
+def purge_invoice_log():
+    
+    frappe.db.sql("delete from `tabqp_md_InvoiceRequestLog` where creation < (now() - interval 7 day)")
+    
+    frappe.db.commit()
         
 def get_setup():
     
@@ -163,9 +171,11 @@ def setup_glosas(glosas_name, nit_emisor, setup):
         
         glosa_error_control.count_invoice_total()
         
+        response, status_code = invoice_map.get(glosa_name, ({}, None))
+        
+        persist_invoice_audit(glosa_name, response, status_code)
+        
         try:
-            
-            response, status_code = invoice_map.get(glosa_name, ({}, None))
             
             if is_timeout_response(response):
                 
@@ -262,3 +272,66 @@ def get_id_invoice_from_response(response, glosa_name):
     first = result[0] if isinstance(result, list) else result
     
     return first.get("idFactura")
+
+def persist_invoice_audit(invoice_prefix, response, status_code):
+    
+    try:
+        
+        existing = frappe.db.exists("qp_md_InvoiceRequest", {"invoice_prefix": invoice_prefix})
+        
+        if existing:
+            
+            request = frappe.get_doc("qp_md_InvoiceRequest", existing)
+            
+        else:
+            
+            request = frappe.new_doc("qp_md_InvoiceRequest")
+        
+        request.invoice_prefix = invoice_prefix
+        
+        request.append("response_log", {
+            "endpoint": "get_invoice",
+            "status_code": status_code,
+            "status": get_audit_status(status_code, response),
+            "id_invoice": get_audit_id_invoice(response),
+            "response": json.dumps(response, ensure_ascii = False) if response else ""
+        })
+        
+        request.save(ignore_permissions = True)
+        
+    except Exception:
+        
+        frappe.log_error(
+            message = frappe.get_traceback(),
+            title = "Auditoría MINSALUD get_invoice {}".format(invoice_prefix)
+        )
+
+def get_audit_status(status_code, response):
+    
+    if response and response.get("errorInterno") == "timeout en peticion":
+        
+        return "Timeout MINSALUD"
+    
+    if status_code == 200:
+        
+        if not response or not response.get("resultado"):
+            
+            return "Factura No Encontrada"
+        
+        return "OK"
+    
+    return {400: "Parámetros inválidos", 401: "No autorizado", 500: "Error interno MINSALUD"}.get(status_code, "Status {}".format(status_code))
+
+def get_audit_id_invoice(response):
+    
+    try:
+        
+        result = (response or {}).get("resultado") or []
+        
+        first = result[0] if isinstance(result, list) and result else result
+        
+        return (first or {}).get("idFactura")
+        
+    except Exception:
+        
+        return None
