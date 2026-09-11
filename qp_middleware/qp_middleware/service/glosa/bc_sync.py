@@ -1,5 +1,5 @@
 import frappe
-from frappe.utils import now, get_datetime, get_datetime_str
+from frappe.utils import now, get_datetime
 from qp_middleware.qp_middleware.service.util.sync import get_response, persist
 from qp_middleware.qp_middleware.service.glosa.verification import get_setup
 import urllib.parse
@@ -15,11 +15,24 @@ def handler():
     
     if last_sync:
         
-        last_sync_str = get_datetime_str(get_datetime(last_sync))
+        last_sync_value = get_datetime(last_sync)
         
-        filters = urllib.parse.quote("FechaModificación ge datetime'{}'".format(last_sync_str), safe = "=,'")
-
-    response_json = get_response("list_glosas", filters)
+        last_sync_str = last_sync_value.strftime("%Y-%m-%dT%H:%M:%S")
+        
+        filters = urllib.parse.quote("FechaModificación ge {}".format(last_sync_str), safe = "=")
+    
+    try:
+        
+        response_json = get_response("list_glosas", filters)
+        
+    except Exception:
+        
+        frappe.log_error(
+            message = frappe.get_traceback(),
+            title = "Delta glosas BC no soportado; reintento sin filtro"
+        )
+        
+        response_json = get_response("list_glosas", "")
     
     if response_json.get("value"):
         
