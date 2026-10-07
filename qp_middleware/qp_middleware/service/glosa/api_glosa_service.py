@@ -1,6 +1,9 @@
 import frappe
+import json
+from frappe.utils import flt
 from qp_authorization.use_case.bearer.authorize import send_request_status
-from qp_middleware.qp_middleware.service.glosa.exceptions import GlosaNotFoundError, ResponseStatusError, GlosaTypeLineError, GlosaObjectionLineError
+from qp_middleware.qp_middleware.service.glosa.exceptions import GlosaNotFoundError, ResponseStatusError, GlosaTypeLineError, GlosaObjectionLineError, GlosaTimeoutError, is_timeout_response
+from qp_middleware.qp_middleware.service.glosa.api_invoice_service import get_glosa_timeout
 
 DOCTYPE = "qp_md_GlosaLine"
 
@@ -10,6 +13,7 @@ class ApiGlosaService:
         
         self.id_invoice = id_invoice
         self.doctype_base = DOCTYPE
+        self.timeout = get_glosa_timeout()
         self.init_status()
         
     def init_status(self):
@@ -22,6 +26,8 @@ class ApiGlosaService:
             404: "Seguimiento no encontrado",
             500: "Error interno del servidor (MINSAlUD)",
         }
+        
+        self.last_request_name = None
     
     def init_glosas(self):
         
@@ -47,14 +53,49 @@ class ApiGlosaService:
         
         raise GlosaNotFoundError(self.id_invoice, endpoint = "get_last_glosa", glosa_id = glosa_line.index_number)
             
-    def search_glosa(self, glosa_line):
-                
-        for glosa_iter in self.glosas:
+    def search_glosa(self, glosa_line, match_mode = "first"):
+        
+        records = self.__get_records_by_objection_type(glosa_line)
+        
+        matches = [glosa_iter for glosa_iter in records if self.__match_glosa(glosa_line, glosa_iter)]
+        
+        if not matches:
             
-            if (glosa_line.claim_amount == glosa_iter.gloss_value and 
-                glosa_line.notification_date == glosa_iter.formulation_date):
-                
-                return glosa_iter
+            return None
+        
+        return matches[-1] if match_mode == "last" else matches[0]
+    
+    def __get_records_by_objection_type(self, glosa_line):
+        
+        if glosa_line.is_objection_glosa():
+            
+            return getattr(self, "glosas", [])
+        
+        if glosa_line.is_objection_devolucion():
+            
+            return getattr(self, "returns", [])
+        
+        return []
+    
+    def __match_glosa(self, glosa_line, glosa_iter):
+        
+        if glosa_line.is_objection_glosa():
+            
+            return (
+                flt(glosa_line.claim_amount) == flt(glosa_iter.gloss_value) and
+                glosa_line.claim_code == glosa_iter.gloss_code_id and
+                str(glosa_line.notification_date)[:10] == str(glosa_iter.formulation_date)[:10]
+            )
+        
+        if glosa_line.is_objection_devolucion():
+            
+            return (
+                flt(glosa_line.claim_amount) == flt(glosa_iter.return_value) and
+                glosa_line.claim_code == glosa_iter.return_code_id and
+                str(glosa_line.notification_date)[:10] == str(glosa_iter.formulation_date)[:10]
+            )
+        
+        return False
         
     def get_glosas_by_id_invoice(self):
         
@@ -64,9 +105,17 @@ class ApiGlosaService:
         query_param = f"IdFactura={self.id_invoice}"
         
         response, status, status_code = self.__send_request_status(endpoint, param = query_param, is_query_param = True)
-                
-        result = get_result(response, self.id_invoice, endpoint)
         
+        try:
+                
+            result = get_result(response, self.id_invoice, endpoint)
+        
+        except GlosaNotFoundError:
+        
+            self.__persist_no_info_request("qp_md_GlosaRequest", endpoint)
+        
+            raise
+            
         return list(map(lambda glosa: self.__set_glosa_request(glosa), result))
             
     def get_returns_by_id_invoice(self):
@@ -77,9 +126,35 @@ class ApiGlosaService:
         
         response, status,status_code = self.__send_request_status(endpoint, param = query_param, is_query_param = True)
         
-        result = get_result(response, self.id_invoice, endpoint)
+        try:
+                
+            result = get_result(response, self.id_invoice, endpoint)
         
+        except GlosaNotFoundError:
+        
+            self.__persist_no_info_request("qp_md_ReturnRequest", endpoint)
+        
+            raise
+            
         return list(map(lambda glosa: self.__set_return_request(glosa), result))
+        
+    def __persist_no_info_request(self, doctype, endpoint):
+        
+        existing_name = frappe.db.exists(doctype, {"invoice_id": self.id_invoice})
+        
+        if existing_name:
+        
+            request = frappe.get_doc(doctype, existing_name)
+        
+        else:
+        
+            request = frappe.new_doc(doctype)
+        
+        request.invoice_id = self.id_invoice
+        
+        request.save()
+        
+        self.last_request_name = request.name
         
     def send_minsalud_response(self, glosa_line):
                 
@@ -135,15 +210,25 @@ class ApiGlosaService:
                         
     def __send_request_status(self, endpoint, payload = "", param = "", glosa_id = "", is_query_param = False):
         
-        response, status_code = send_request_status(endpoint, payload = payload, param = param, is_query_param = is_query_param)
+        response, status_code = send_request_status(endpoint, payload = payload, param = param, is_query_param = is_query_param, timeout = self.timeout)
         
         self.assert_that_status_code_valid(response, status_code, glosa_id, endpoint)
         
-        return response, self.status.get(status_code, "Estado no definido"), status_code
+        status = self.status.get(status_code, "Estado no definido")
+        
+        if status_code != 200 and is_already_responded(response):
+            
+            status = "Glosa ya respondida en MINSALUD"
+        
+        return response, status, status_code
     
     def assert_that_status_code_valid(self, response, status_code, glosa_id, endpoint):
 
-        if status_code != 200:
+        if is_timeout_response(response):
+            
+            raise GlosaTimeoutError(self.id_invoice, str(response), endpoint, glosa_id)
+        
+        if status_code != 200 and not is_already_responded(response):
             
             raise ResponseStatusError(self.id_invoice, self.status.get(status_code, "Error desconocido"), str(response), endpoint, glosa_id)
         
@@ -170,3 +255,25 @@ def get_result(response, id_invoice, endpoint):
         raise GlosaNotFoundError(id_invoice, endpoint = endpoint)
     
     return response.get("resultado")
+
+ALREADY_RESPONDED_MESSAGE = "ya tiene un registro previo de respuesta"
+
+def is_already_responded(response):
+    
+    if not response:
+        
+        return False
+    
+    errors = response.get("errors")
+    
+    if not errors:
+        
+        return False
+    
+    if isinstance(errors, dict):
+        
+        errors = list(errors.values())
+    
+    text = json.dumps(errors)
+    
+    return ALREADY_RESPONDED_MESSAGE in text

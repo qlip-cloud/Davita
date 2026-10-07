@@ -19,6 +19,12 @@ class qp_md_GlosaError(Document):
 
 		self.count_invoice_response_total()
 	
+	def add_timeout_error(self, error, traceback):
+	 
+		self.set_line_error(error.title, error.invoice_id, error.message, traceback, glosa_id = error.glosa_id, additional= error.description)
+
+		self.count_timeout_total()
+	
 	def add_glosa_error(self, error, traceback):
      
 		self.set_line_error(error.title, error.invoice_id, error.message, traceback, glosa_id = error.glosa_id, additional= error.description)
@@ -84,23 +90,29 @@ class qp_md_GlosaError(Document):
 		self.invoice_not_found_total += 1
   
 	def count_glosa_response_total(self):
-     
+	 
 		self.count_error_total()
   
 		self.glosa_response_error_total += 1
   
 	def count_glosa_not_found_total(self):
-     
+	 
 		self.count_error_total()
   
 		self.glosa_not_found_total += 1
 
 	def count_invoice_response_total(self):
-     
+	 
 		self.count_error_total()
   
 		self.invoice_response_error_total += 1
+
+	def count_timeout_total(self):
+	 
+		self.count_error_total()
   
+		self.timeout_total += 1
+
 	def count_error_total(self):
 	 
 		self.error_total += 1

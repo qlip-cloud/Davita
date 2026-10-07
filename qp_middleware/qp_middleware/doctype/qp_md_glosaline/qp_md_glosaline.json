@@ -37,11 +37,13 @@
   "registration_date",
   "modified_by_user",
   "modified_timestamp",
-  "is_verified",
-  "is_sync",
-  "type_line",
-  "payload"
- ],
+   "is_verified",
+   "is_sync",
+   "type_line",
+   "payload",
+   "payload_status",
+   "payload_status_reference"
+  ],
  "fields": [
   {
    "fieldname": "objection_type",
@@ -229,6 +231,17 @@
    "fieldname": "payload",
    "fieldtype": "Text",
    "label": "payload"
+  },
+  {
+   "fieldname": "payload_status",
+   "fieldtype": "Select",
+   "label": "Estado del payload",
+   "options": "\nSin info MINSALUD"
+  },
+  {
+   "fieldname": "payload_status_reference",
+   "fieldtype": "Data",
+   "label": "Referencia consulta MINSALUD"
   }
  ],
  "index_web_pages_for_search": 1,

@@ -1,22 +1,29 @@
 import frappe
 from frappe.utils import now, get_datetime, get_datetime_str
 from qp_middleware.qp_middleware.service.util.sync import get_response, persist
+from qp_middleware.qp_middleware.service.glosa.verification import get_setup
 
 @frappe.whitelist()
 def handler():
     
-    filters = ""
-
-    response_json = get_response("list_glosas", filters)
-
-    sync_glosa_fast(response_json)
-
-    move_to_glosa()
+    setup = get_setup()
     
-    move_to_glosa_line()
+    response_json = get_response("list_glosas", "")
     
-    move_to_glosa_detail()
+    if response_json.get("value"):
+        
+        sync_glosa_fast(response_json)
+
+        move_to_glosa()
+        
+        move_to_glosa_line()
+        
+        move_to_glosa_detail()
     
+    if setup:
+        
+        frappe.db.set_value("qp_md_Setup", setup.get("name"), "glosa_last_sync", now())
+        
     frappe.db.commit()
 
 def sync_glosa_fast(json_data):

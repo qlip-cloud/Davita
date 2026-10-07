@@ -66,6 +66,30 @@ class GlosaTypeLineError(Exception):
         )
         super().__init__(self.message)
         
+class GlosaTimeoutError(Exception):
+    """
+    Excepción lanzada cuando MINSALUD no responde dentro del timeout configurado.
+    """
+
+    def __init__(self, invoice_id: str, description: str = "", endpoint: str = "", glosa_id: str = ""):
+        self.invoice_id = invoice_id
+        self.glosa_id = glosa_id
+        self.title = _("Timeout MINSALUD")
+        self.description = description
+        self.endpoint = endpoint
+        self.message = _("La glosa no recibió respuesta de MINSALUD por timeout. invoice_id: '{0}'. Glosa_id: '{1}'.").format(
+            self.invoice_id, self.glosa_id
+        )
+        super().__init__(self.message)
+
+def is_timeout_response(response):
+
+    if not response:
+
+        return False
+
+    return response.get("errorInterno") == "timeout en peticion"
+
 class GlosaObjectionLineError(Exception):
     """
     Excepción lanzada cuando una Glosa no es encontrada en el servicio externo.

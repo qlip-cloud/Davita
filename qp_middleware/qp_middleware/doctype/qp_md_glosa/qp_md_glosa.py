@@ -4,8 +4,8 @@
 # import frappe
 from frappe.model.document import Document
 from qp_middleware.qp_middleware.service.glosa.api_invoice_service import ApiInvoiceService
-from qp_middleware.qp_middleware.service.glosa.api_glosa_service import ApiGlosaService
-from qp_middleware.qp_middleware.service.glosa.exceptions import GlosaNotFoundError, ResponseStatusError, GlosaTypeLineError, GlosaObjectionLineError, InvoiceNotFoundError
+from qp_middleware.qp_middleware.service.glosa.api_glosa_service import ApiGlosaService, is_already_responded
+from qp_middleware.qp_middleware.service.glosa.exceptions import GlosaNotFoundError, ResponseStatusError, GlosaTypeLineError, GlosaObjectionLineError, InvoiceNotFoundError, GlosaTimeoutError
 import frappe
 import json
 GLOSA = "Glosa"
@@ -14,10 +14,16 @@ REITERACION = "Reiteración"
 
 class qp_md_Glosa(Document):
 	
-	def execute_setup_glosa(self, nit_emisor, glosa_error_control):
+	def execute_setup_glosa(self, nit_emisor, glosa_error_control, id_invoice = None):
      
 		try:
-			self.set_id_invoice_by_service(nit_emisor)
+			if id_invoice is None:
+				
+				self.set_id_invoice_by_service(nit_emisor)
+				
+			else:
+				
+				self.set_id_invoice(id_invoice)
 
 			tracking_glosa = self.get_tracking_glosa(glosa_error_control)
 			
@@ -37,6 +43,12 @@ class qp_md_Glosa(Document):
 		
 			glosa_error_control.add_glosa_response_error(error, traceback)
    
+		except GlosaTimeoutError as error:
+        
+			traceback = frappe.get_traceback()
+		
+			glosa_error_control.add_timeout_error(error, traceback)
+   
 		except Exception as error:
       
 			traceback = frappe.get_traceback()
@@ -49,7 +61,9 @@ class qp_md_Glosa(Document):
 		
 		self.tracking_glosa_control(tracking_glosa.init_glosas, glosa_error_control)
 		
-		self.tracking_glosa_control(tracking_glosa.init_returns, glosa_error_control)
+		if any(line.is_objection_devolucion() for line in self.glosas):
+			
+			self.tracking_glosa_control(tracking_glosa.init_returns, glosa_error_control)
 
 		return tracking_glosa
    
@@ -71,6 +85,12 @@ class qp_md_Glosa(Document):
 		
 			glosa_error_control.add_glosa_response_error(error, traceback)
 	
+		except GlosaTimeoutError as error:
+        
+			traceback = frappe.get_traceback()
+		
+			glosa_error_control.add_timeout_error(error, traceback)
+	
 		except Exception as error:
       
 			traceback = frappe.get_traceback()
@@ -88,6 +108,10 @@ class qp_md_Glosa(Document):
   
 	def setup_glosa_line(self, tracking_glosa, glosa_error_control):
 		
+		self._base_external_map = {}
+		
+		self.match_mode = self.get_match_mode()
+		
 		for glosa_line in self.glosas:
 	
 			try:
@@ -104,9 +128,15 @@ class qp_md_Glosa(Document):
 		
 					self.__set_glosa_verified_and_status(glosa_line)
 
+				if not glosa_line.is_response_ready():
+
 					glosa_external = self.setup_by_glosa_external(tracking_glosa, glosa_line)
 
 					glosa_line.setup_by_glosa_external(glosa_external)
+					
+					if not glosa_line.is_response_ready():
+					
+						glosa_line.set_payload_status_no_info(tracking_glosa.last_request_name)
 				
 				if not glosa_line.is_sync:
 
@@ -116,7 +146,19 @@ class qp_md_Glosa(Document):
        
 				traceback = frappe.get_traceback()
 	  
+				if tracking_glosa.last_request_name:
+					
+					glosa_line.set_payload_status_no_info(tracking_glosa.last_request_name)
+	  
 				glosa_error_control.add_glosa_error(error, traceback)
+    
+			except GlosaTimeoutError as error:
+       
+				traceback = frappe.get_traceback()
+	  
+				glosa_line.set_payload_status_timeout(tracking_glosa.last_request_name)
+	  
+				glosa_error_control.add_timeout_error(error, traceback)
     
 			except Exception as error:
        
@@ -125,12 +167,34 @@ class qp_md_Glosa(Document):
 				glosa_error_control.add_glosa_error_unknown(self.invoice_prefix, str(error), traceback, glosa_id = glosa_line.index_number)
 
 	def setup_by_glosa_external(self, tracking_glosa, glosa_line):
-     
-		if glosa_line.is_not_error():
-      
-			return tracking_glosa.get_last_glosa(glosa_line)
+		
+		if not glosa_line.is_not_error():
 			
-			#return tracking_glosa.search_glosa(glosa_line)
+			return None
+		
+		if glosa_line.type_line.lower() == REITERACION.lower():
+			
+			return self._base_external_map.get(self.get_base_key(glosa_line))
+		
+		glosa_external = tracking_glosa.search_glosa(glosa_line, self.match_mode)
+		
+		if glosa_external:
+			
+			self._base_external_map[self.get_base_key(glosa_line)] = glosa_external
+		
+		return glosa_external
+
+	def get_base_key(self, glosa_line):
+		
+		return (glosa_line.objection_type, glosa_line.claim_amount, glosa_line.claim_code)
+
+	def get_match_mode(self):
+		
+		setup = frappe.get_all("qp_md_Setup", fields = ["glosa_match_mode"], limit = 1)
+		
+		mode = setup[0].get("glosa_match_mode") if setup else None
+		
+		return mode if mode in ("first", "last") else "first"
    
 	def __set_glosa_verified_and_status(self, glosa_line):
     			
@@ -172,7 +236,7 @@ class qp_md_Glosa(Document):
 				
 				self.__set_glosa_petition(glosa_line.index_number, glosa_line.payload, status_code, status, response)
 
-				self.set_is_sync_by_status_code(glosa_line, status_code)
+				self.set_is_sync_by_status_code(glosa_line, status_code, response)
     
 			except (GlosaObjectionLineError) as error:
        
@@ -191,20 +255,28 @@ class qp_md_Glosa(Document):
 
 				glosa_error_control.add_glosa_error(error, traceback)
 
+			except (GlosaTimeoutError) as error:
+       
+				traceback = frappe.get_traceback()
+
+				glosa_line.set_payload_status_timeout(tracking_glosa.last_request_name)
+
+				glosa_error_control.add_timeout_error(error, traceback)
+
 			except Exception as error:
        
 				traceback = frappe.get_traceback()
     
 				glosa_error_control.add_glosa_error_unknown(self.invoice_prefix, str(error), traceback, glosa_id = glosa_line.index_number)
-    	
-	def set_is_sync_by_status_code(self, glosa_line, status_code):
+	def set_is_sync_by_status_code(self, glosa_line, status_code, response = None):
 		
-		if status_code == 200:
+		if status_code == 200 or is_already_responded(response):
 			
 			glosa_line.set_is_sync()
-   
+
 	def __set_glosa_petition(self, index_number, payload, status_code, status, response):
-           
+        
+            
 			self.append("glosas_petition",{
 				"payload": payload,
 				"glosa_line_id": index_number,

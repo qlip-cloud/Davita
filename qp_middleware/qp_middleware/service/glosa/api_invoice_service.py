@@ -1,12 +1,23 @@
 import frappe
 from qp_authorization.use_case.bearer.authorize import send_request_status
-from qp_middleware.qp_middleware.service.glosa.exceptions import InvoiceNotFoundError, ResponseStatusError
+from qp_middleware.qp_middleware.service.glosa.exceptions import InvoiceNotFoundError, ResponseStatusError, GlosaTimeoutError, is_timeout_response
+
+GLOSA_TIMEOUT_DEFAULT = 30
+
+def get_glosa_timeout():
+    
+    setup = frappe.get_all("qp_md_Setup", fields = ["glosa_timeout"], limit = 1)
+    
+    value = setup[0].get("glosa_timeout") if setup else None
+    
+    return value or GLOSA_TIMEOUT_DEFAULT
 
 class ApiInvoiceService:
     
     def __init__(self, invoice_prefix, nit_emisor):
         self.invoice_prefix = invoice_prefix
         self.nit_emisor = nit_emisor
+        self.timeout = get_glosa_timeout()
         self.status = {
             200: "Lista paginada de facturas obtenida exitosamente",
             400: "Parámetros de consulta inválidos.",
@@ -38,7 +49,7 @@ class ApiInvoiceService:
         
         query_param = f"NumeroFactura={self.invoice_prefix}&NitEmisor={self.nit_emisor}"
         
-        response, status_code = send_request_status(endpoint, param = query_param, is_query_param = True)
+        response, status_code = send_request_status(endpoint, param = query_param, is_query_param = True, timeout = self.timeout)
         
         self.assert_that_status_code_valid(response, status_code, endpoint)
             
@@ -55,6 +66,10 @@ class ApiInvoiceService:
         return invoice_request
     
     def assert_that_status_code_valid(self, response, status_code, endpoint):
+    
+        if is_timeout_response(response):
+        
+            raise GlosaTimeoutError(self.invoice_prefix, str(response), endpoint)
     
         if status_code != 200:
         

@@ -30,7 +30,26 @@ class qp_md_GlosaLine(Document):
 			self.set_id_glosa(glosa_external.gloss_tracking_id)
 
 			self.set_payload()
-  
+			
+			self.set_payload_status_ok()
+   
+	def set_payload_status_ok(self):
+		
+		self.payload_status = None
+		
+		self.payload_status_reference = None
+		
+	def set_payload_status_no_info(self, reference):
+		
+		self.payload_status = "Sin info MINSALUD"
+		
+		self.payload_status_reference = reference
+	
+	def set_payload_status_timeout(self, reference = None):
+		
+		self.payload_status = "Timeout MINSALUD"
+		
+		self.payload_status_reference = reference
 	def set_id_glosa(self, id_glosa):
     	
 		self.id_glosa = id_glosa
@@ -104,9 +123,13 @@ class qp_md_GlosaLine(Document):
 	 
 		self.is_sync = True
   
+	def is_response_ready(self):
+	 
+		return self.is_not_error() and self.payload and self.payload != "null"
+
 	def is_response_valid(self):
 	 
-		return self.is_not_error() and self.id_glosa and not self.is_sync
+		return self.is_response_ready() and not self.is_sync
 
 	def is_objection_type_valid(self):
 		

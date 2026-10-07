@@ -11,12 +11,13 @@
   "invoice_found_total",
   "glosa_found_total",
   "glosa_send_total",
-  "glosa_not_found_total",
-  "glosa_response_error_total",
-  "glosa_error_total",
-  "invoice_not_found_total",
-  "invoice_response_error_total",
-  "unknow_error_total",
+"glosa_not_found_total",
+   "glosa_response_error_total",
+   "glosa_error_total",
+   "invoice_not_found_total",
+   "invoice_response_error_total",
+   "timeout_total",
+   "unknow_error_total",
   "lines"
  ],
  "fields": [
@@ -82,6 +83,12 @@
   },
   {
    "default": "0",
+   "fieldname": "timeout_total",
+   "fieldtype": "Int",
+   "label": "timeout MINSALUD total"
+  },
+  {
+   "default": "0",
    "fieldname": "invoice_total",
    "fieldtype": "Int",
    "label": "invoice total"
@@ -101,7 +108,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-04-02 09:25:20.284015",
+ "modified": "2026-09-11 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_GlosaError",
