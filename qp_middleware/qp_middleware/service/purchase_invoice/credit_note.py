@@ -3,7 +3,7 @@
 credit_note/sync.py
 ===================
 Servicio para crear Notas Credito de compra en Business Central
-(FacturasNCCompraWS / endpoint ``crear_nota_credito_compra``).
+(FacturasNCCompraWS / endpoint ``create_purchase_nc``).
 
 Proceso aislado del flujo de facturas de compra (``purchase_invoice/sync.py``):
 no modifica ``create_purchase_invoices`` ni su validacion. Reutiliza el mismo
@@ -98,7 +98,7 @@ def _send_soap(endpoint_code, payload):
 
 
 @frappe.whitelist()
-def create_credit_notes(payload, endpoint_code="crear_nota_credito_compra"):
+def create_credit_notes(payload, endpoint_code="create_purchase_nc"):
     """Crea un lote de notas credito en BC y devuelve un resultado por NC."""
     from qp_middleware.qp_middleware.service.purchase_invoice.sync import (
         merge_invoice_results,
