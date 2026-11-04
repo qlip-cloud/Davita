@@ -31,11 +31,22 @@ from qp_middleware.qp_middleware.service.purchase_invoice.credit_note import (  
 
 def _nc(**overrides):
     nc = {
+        "DocumentType": "Credit Memo",
         "invoiceDate": "2026-10-28",
         "postingDate": "2026-10-28",
         "vendorNumber": "900162414",
-        "NoNotaCreditoProveedor": "EjemploYD",
+        "puntofacturacion": "",
+        "NoFacturaProveedor": "EjemploYD",
+        "tipoFacturaDoc": "",
+        "Categoria": "",
+        "SubCategoria": "",
+        "Cufe": "",
+        "Almacen": "",
+        "formaPago": "",
         "NoFacturaAfectada": "FC70065",
+        "dimensionSetLines": [
+            {"code": "TERCERO", "valueCode": "900162414"}
+        ],
         "vendorInvoiceLine": [{
             "NoProducto": "OP0080",
             "cantidad": 1,
@@ -57,9 +68,13 @@ class TestValidateCreditNote(unittest.TestCase):
         errors = _validate_credit_note(_nc(NoFacturaAfectada=""), 0)
         self.assertTrue(any("NoFacturaAfectada" in e for e in errors))
 
-    def test_falta_numero_nc(self):
-        errors = _validate_credit_note(_nc(NoNotaCreditoProveedor=""), 0)
-        self.assertTrue(any("NoNotaCreditoProveedor" in e for e in errors))
+    def test_falta_numero_factura(self):
+        errors = _validate_credit_note(_nc(NoFacturaProveedor=""), 0)
+        self.assertTrue(any("NoFacturaProveedor" in e for e in errors))
+
+    def test_document_type_invalido(self):
+        errors = _validate_credit_note(_nc(DocumentType="Invoice"), 0)
+        self.assertTrue(any("DocumentType" in e for e in errors))
 
     def test_sin_lineas(self):
         errors = _validate_credit_note(_nc(vendorInvoiceLine=[]), 0)
@@ -72,7 +87,7 @@ class TestSplitCreditNotes(unittest.TestCase):
         valid, invalid = split_credit_notes([
             _nc(),
             _nc(NoFacturaAfectada=""),
-            _nc(NoNotaCreditoProveedor="NC-2"),
+            _nc(NoFacturaProveedor="NC-2"),
         ])
         self.assertEqual(len(valid), 2)
         self.assertEqual(list(invalid), [1])
@@ -111,7 +126,7 @@ class TestCreateCreditNotes(unittest.TestCase):
         )
         result = create_credit_notes([
             _nc(NoFacturaAfectada=""),
-            _nc(NoNotaCreditoProveedor="NC-2"),
+            _nc(NoFacturaProveedor="NC-2"),
         ])
         self.assertEqual(result["Result"], 0)
         self.assertEqual(len(send_soap.call_args[0][1]), 1)

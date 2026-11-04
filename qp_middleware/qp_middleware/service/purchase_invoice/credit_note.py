@@ -12,20 +12,24 @@ respuesta por factura:
 
     {"Result": 0, "invoices": [{"doc_number": "...", "error": ""}, ...]}
 
-El payload de una NC no lleva ``NoFacturaProveedor`` ni ``NoPedidoProveedor``;
-lleva ``NoNotaCreditoProveedor`` (numero de la NC) y ``NoFacturaAfectada``
-(numero BC de la factura de compra referenciada).
+El payload de una NC usa la misma forma que ``create_purchase_noreceipt``:
+``DocumentType="Credit Memo"``, ``NoFacturaProveedor`` (numero de la NC),
+``puntofacturacion``/``tipoFacturaDoc`` vacios y ``NoFacturaAfectada`` (numero
+BC de la factura de compra referenciada).
 """
 
 import frappe
 
 REQUIRED_CREDIT_NOTE_FIELDS = (
+    "DocumentType",
     "invoiceDate",
     "postingDate",
     "vendorNumber",
-    "NoNotaCreditoProveedor",
+    "NoFacturaProveedor",
     "NoFacturaAfectada",
 )
+
+CREDIT_NOTE_DOCUMENT_TYPE = "Credit Memo"
 
 REQUIRED_CREDIT_NOTE_LINE_FIELDS = (
     "NoProducto",
@@ -46,6 +50,14 @@ def _validate_credit_note(factura, idx):
             errors.append(
                 "Nota credito {}: falta el campo {}".format(idx, field)
             )
+
+    document_type = factura.get("DocumentType")
+    if document_type and document_type != CREDIT_NOTE_DOCUMENT_TYPE:
+        errors.append(
+            "Nota credito {}: DocumentType debe ser {}".format(
+                idx, CREDIT_NOTE_DOCUMENT_TYPE
+            )
+        )
 
     lines = factura.get("vendorInvoiceLine")
     if not isinstance(lines, list) or not lines:
