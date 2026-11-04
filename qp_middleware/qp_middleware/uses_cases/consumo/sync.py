@@ -27,7 +27,7 @@ def handler(upload_id):
 
     frappe.enqueue(
                 sync,
-                #queue='long',                
+                queue='background',                
                 is_async=True,
                 #now=True,
                 job_name="send sync consumo: "+ upload_id,
