@@ -1,15 +1,23 @@
 {
  "actions": [],
- "creation": "2023-10-05 11:06:08.185946",
+ "autoname": "field:code",
+ "creation": "2026-04-16 09:00:11.550893",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
- "field_order": [
-  "wait_time",
-  "number_request",
-  "invoices_group",
-  "enviroment"
- ],
+"field_order": [
+   "wait_time",
+   "number_request",
+   "invoices_group",
+   "glosa_match_mode",
+   "glosa_timeout",
+   "glosa_threads",
+   "glosa_batch_size",
+   "glosa_cursor",
+   "glosa_last_sync",
+   "enviroment",
+   "code"
+  ],
  "fields": [
   {
    "default": "5",
@@ -24,21 +32,63 @@
    "label": "Cantidad de peticiones"
   },
   {
+   "fieldname": "invoices_group",
+   "fieldtype": "Int",
+   "label": "Grupo de Facturas"
+  },
+  {
+   "default": "first",
+   "fieldname": "glosa_match_mode",
+   "fieldtype": "Select",
+   "label": "Modo de match glosa MINSALUD (first/last)",
+   "options": "\nfirst\nlast"
+  },
+  {
+   "default": "30",
+   "fieldname": "glosa_timeout",
+   "fieldtype": "Int",
+   "label": "Timeout MINSALUD (seg)"
+  },
+  {
+   "default": "8",
+   "fieldname": "glosa_threads",
+   "fieldtype": "Int",
+   "label": "Hilos paralelos MINSALUD"
+  },
+  {
+   "default": "800",
+   "fieldname": "glosa_batch_size",
+   "fieldtype": "Int",
+   "label": "Glosas por corrida"
+  },
+  {
+   "fieldname": "glosa_cursor",
+   "fieldtype": "Data",
+   "label": "Cursor glosa (última procesada)"
+  },
+  {
+   "fieldname": "glosa_last_sync",
+   "fieldtype": "Datetime",
+   "label": "Última sincronización BC glosas"
+  },
+  {
    "fieldname": "enviroment",
    "fieldtype": "Link",
    "label": "Enviroment",
    "options": "qp_md_Enviroment"
   },
   {
-   "fieldname": "invoices_group",
-   "fieldtype": "Int",
-   "label": "Grupo de Facturas"
+   "fieldname": "code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "code",
+   "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
- "issingle": 1,
  "links": [],
- "modified": "2024-01-15 13:00:50.073591",
+ "modified": "2026-09-11 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Setup",

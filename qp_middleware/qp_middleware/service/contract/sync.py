@@ -7,9 +7,9 @@ from qp_middleware.qp_middleware.service.util.sync import get_response, persist
 #URL = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/DavitaContratos"
 
 @frappe.whitelist()
-def handler():
+def handler(setup_list_code = None):
     
-    response_json = get_response("list_contrats")
+    response_json = get_response("list_contrats", setup_list_code = setup_list_code)
 
     sql = """
         truncate table tabqp_md_Contract

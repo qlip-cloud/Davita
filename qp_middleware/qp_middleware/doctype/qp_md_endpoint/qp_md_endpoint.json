@@ -9,7 +9,10 @@
   "title",
   "url",
   "request",
-  "code"
+  "code",
+  "setup",
+  "enviroment",
+  "type_url"
  ],
  "fields": [
   {
@@ -35,11 +38,29 @@
    "in_list_view": 1,
    "label": "Resquest",
    "options": "POST\nGET\nPATH"
+  },
+  {
+   "fetch_from": "setup.enviroment",
+   "fieldname": "enviroment",
+   "fieldtype": "Read Only",
+   "label": "enviroment"
+  },
+  {
+   "fieldname": "setup",
+   "fieldtype": "Link",
+   "label": "setup",
+   "options": "qp_md_Setup"
+  },
+  {
+   "fieldname": "type_url",
+   "fieldtype": "Select",
+   "label": "type_url",
+   "options": "with_company\nwith_company_and_filters\nwithout_company\nws_protocol"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-23 16:28:39.336147",
+ "modified": "2026-04-16 13:12:53.074992",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Endpoint",

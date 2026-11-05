@@ -1,11 +1,12 @@
 import json
 import frappe
 from frappe.utils import now
-from qp_authorization.use_case.oauth2.authorize import get_token
 from qp_middleware.qp_middleware.service.util.sync import send_petition
 from qp_middleware.qp_middleware.uses_cases.dimension_patient.sync import handler as sync_dimension
 import math
 from datetime import datetime
+import traceback
+
 @frappe.whitelist()
 def handler(upload_id):
 
@@ -81,8 +82,6 @@ def set_consumoUploadStadistic(upload_id, error = False):
 
 def send_consumos(consumos):
 
-    consumo_url = get_urls()
-
     for consumo in consumos:
 
         dimension = sync_dimension(consumo.dimension_code, consumo.nombre)
@@ -92,9 +91,9 @@ def send_consumos(consumos):
         try:
             if dimension.is_sync:
             
-                response, response_json, return_value, error = send_document([consumo.get("request")], consumo_url)
+                response, response_json, return_value, error = send_document([consumo.get("request")])
 
-                error_response =  True if error or (return_value not in ("Registro exitosamente: -;", "Registro con exito;"))else False
+                error_response =  True if error or (return_value not in ("Registro exitosamente: -;", "Registro con exito;")) else False
 
                 frappe.db.set_value('qp_md_Consumo', consumo.get("name"), {
                         'response': response,
@@ -119,7 +118,7 @@ def send_consumos(consumos):
             frappe.db.commit()
 
         except Exception as error:
-            #traceback.print_exc()
+            traceback.print_exc()
             frappe.db.set_value('qp_md_Consumo', consumo.get("name"), {
                         'response': str(error),
                         'return_value': "",
@@ -128,40 +127,35 @@ def send_consumos(consumos):
                         'is_error_connection': True
                 })
 
-def get_urls():
 
-    setup = frappe.get_doc("qp_md_Setup")
-
-    enviroment = frappe.get_doc("qp_md_Enviroment", setup.enviroment)
-
-    enpoint = frappe.get_doc("qp_md_Endpoint", "create_consumo")
-
-    return enviroment.get_url_ws_protocol(enpoint.url)
-
-def send_document(payloads, url):
+def send_document(payloads):
 
     #payloads = list(map(lambda consumo: consumo.get("request"), consumos))
-
-    token = get_token()
 
     payload_xml = """<soap:Envelope xmlns:nav="urn:microsoft-dynamics-schemas/codeunit/registroDiarioProducto" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"> <soap:Body> <nav:registroDiarioProducto> <nav:diario>{}</nav:diario> </nav:registroDiarioProducto> </soap:Body> </soap:Envelope>""".format(payloads)
     
     payload_xml = payload_xml.replace("'","")
-        
-    add_header = {
-        "SOAPAction": "#POST"
-    }
 
-    response, response_json, error = send_petition(token, url, payload_xml, add_header = add_header, is_json= False)
+    endpoint_code = "create_consumo"
     
-    if not error:
+    response, response_json, error = send_petition(endpoint_code, payload_xml, add_header = True, is_json= False)
+    
+    response_value  = None
+    
+    is_error = True
+          
+    try:
         
-        try:
-
+        if not error:
+            
             response_value = response_json.get("Soap:Envelope").get("Soap:Body").get("registroDiarioProducto_Result").get("return_value")
-
-        except Exception as error:
-                
-            return response, response_json, "",True
-
-    return response, response_json, response_value, False
+        
+            is_error = False
+            
+    except Exception as error:
+        
+        frappe.log_error(message=traceback.format_exc(), title="Error en conversión respuesta recibida")
+            
+    finally:
+            
+        return response, response_json, response_value, is_error

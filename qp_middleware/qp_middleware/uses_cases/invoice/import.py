@@ -53,11 +53,11 @@ def sync_invoices(upload_xlsx):
 
     if upload_xlsx.is_valid:
         
-        setup = frappe.get_doc("qp_md_Setup")
+        setup = frappe.get_last_doc("qp_md_Setup")
 
         enviroment = frappe.get_doc("qp_md_Enviroment", setup.enviroment)
         
-        result = document_sync(upload_xlsx, setup, enviroment)
+        result = document_sync(upload_xlsx, setup)
         
         upload_xlsx.send_success = result["send_success"]
     

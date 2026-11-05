@@ -31,7 +31,12 @@
   "created_sync",
   "request",
   "response",
-  "dimension_code"
+  "dimension_code",
+  "birthdate",
+  "country_origin",
+  "country_residence",
+  "municipality",
+  "territorial_zone"
  ],
  "fields": [
   {
@@ -176,11 +181,36 @@
    "fieldname": "tipo_atencion",
    "fieldtype": "Data",
    "label": "tipo_atencion"
+  },
+  {
+   "fieldname": "birthdate",
+   "fieldtype": "Data",
+   "label": "birthdate"
+  },
+  {
+   "fieldname": "country_origin",
+   "fieldtype": "Data",
+   "label": "country_origin"
+  },
+  {
+   "fieldname": "country_residence",
+   "fieldtype": "Data",
+   "label": "country_residence"
+  },
+  {
+   "fieldname": "municipality",
+   "fieldtype": "Data",
+   "label": "Municipality"
+  },
+  {
+   "fieldname": "territorial_zone",
+   "fieldtype": "Data",
+   "label": "Territorial zone"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-17 10:57:07.280181",
+ "modified": "2026-01-20 15:21:13.002191",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Patient",

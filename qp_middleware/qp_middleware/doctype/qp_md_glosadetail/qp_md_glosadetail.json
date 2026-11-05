@@ -1,0 +1,57 @@
+{
+ "actions": [],
+ "creation": "2026-03-18 16:46:33.611723",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "index_number",
+  "portfolio_manager",
+  "filing_manager",
+  "sales_manager",
+  "invoice_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "index_number",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "No"
+  },
+  {
+   "fieldname": "portfolio_manager",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Responsable_Cartera"
+  },
+  {
+   "fieldname": "filing_manager",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Responsable_Radicacion"
+  },
+  {
+   "fieldname": "sales_manager",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Responsable_Comercial"
+  },
+  {
+   "fieldname": "invoice_amount",
+   "fieldtype": "Currency",
+   "label": "invoice_amount"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-03-18 17:16:41.533787",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_GlosaDetail",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

@@ -54,11 +54,9 @@ def sync_invoices(multi_patient_upload):
 
     if multi_patient_upload.is_valid:
         
-        setup = frappe.get_doc("qp_md_Setup")
-
-        enviroment = frappe.get_doc("qp_md_Enviroment", setup.enviroment)
+        setup = frappe.get_last_doc("qp_md_Setup")
         
-        result = document_sync(multi_patient_upload, setup, enviroment)
+        result = document_sync(multi_patient_upload, setup)
         
         multi_patient_upload.send_success = result["send_success"]
     

@@ -1,0 +1,134 @@
+{
+ "actions": [],
+ "creation": "2026-03-18 13:03:35.646142",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "headquarter",
+  "tax_id",
+  "customer_name",
+  "customer_type",
+  "tax_regime",
+  "invoice_prefix",
+  "invoice_date",
+  "invoice_amount",
+  "filing_date",
+  "patient_id",
+  "patient_name",
+  "billed_service",
+  "service_month",
+  "details",
+  "glosas",
+  "glosas_petition"
+ ],
+ "fields": [
+  {
+   "fieldname": "headquarter",
+   "fieldtype": "Data",
+   "label": "Sede"
+  },
+  {
+   "fieldname": "tax_id",
+   "fieldtype": "Data",
+   "label": "Nit"
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Cliente"
+  },
+  {
+   "fieldname": "customer_type",
+   "fieldtype": "Data",
+   "label": "Tipo_Cliente"
+  },
+  {
+   "fieldname": "tax_regime",
+   "fieldtype": "Data",
+   "label": "Regimen"
+  },
+  {
+   "fieldname": "invoice_prefix",
+   "fieldtype": "Data",
+   "label": "Prefijo_Factura"
+  },
+  {
+   "fieldname": "invoice_date",
+   "fieldtype": "Date",
+   "label": "Fecha_Factura"
+  },
+  {
+   "fieldname": "invoice_amount",
+   "fieldtype": "Currency",
+   "label": "Valor_Factura"
+  },
+  {
+   "fieldname": "filing_date",
+   "fieldtype": "Data",
+   "label": "Fecha_Radicado_Fact"
+  },
+  {
+   "fieldname": "patient_id",
+   "fieldtype": "Data",
+   "label": "CC_Paciente"
+  },
+  {
+   "fieldname": "patient_name",
+   "fieldtype": "Data",
+   "label": "Nombre_Paciente"
+  },
+  {
+   "fieldname": "billed_service",
+   "fieldtype": "Data",
+   "label": "Servicio_Facturado"
+  },
+  {
+   "fieldname": "service_month",
+   "fieldtype": "Data",
+   "label": "Mes_Prestacion"
+  },
+  {
+   "fieldname": "glosas",
+   "fieldtype": "Table",
+   "label": "Glosas",
+   "options": "qp_md_GlosaLine"
+  },
+  {
+   "fieldname": "details",
+   "fieldtype": "Table",
+   "label": "Detalles",
+   "options": "qp_md_GlosaDetail"
+  },
+  {
+   "fieldname": "glosas_petition",
+   "fieldtype": "Table",
+   "label": "Peticiones",
+   "options": "qp_md_GlosaPetition"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-03-25 09:07:53.215062",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_Glosa",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

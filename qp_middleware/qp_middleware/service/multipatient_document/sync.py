@@ -2,11 +2,10 @@ import frappe
 import json
 import math
 from datetime import datetime
-from qp_authorization.use_case.oauth2.authorize import get_token
 
 from qp_middleware.qp_middleware.service.util.sync import send_petition
 
-def handler(upload_xlsx, setup, enviroment):
+def handler(upload_xlsx, setup):
 
     document_names = frappe.get_list("qp_md_Document", {"upload_id": upload_xlsx.name})
 
@@ -25,15 +24,6 @@ def handler(upload_xlsx, setup, enviroment):
         documents.append(document)
 
         payloads.append(payload)
-
-
-    endpoint = frappe.get_doc("qp_md_Endpoint", "create_multipatient_document")
-
-    url = enviroment.get_url_ws_protocol(endpoint.url)
-
-    #url = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/WS/DAVITA/Codeunit/RegistrarFacturasVentaWS"
-
-    #send_request(documents, setup, send_document, token, url)
     
     range_total = math.ceil(len(payloads) / setup.invoices_group)
 
@@ -41,7 +31,7 @@ def handler(upload_xlsx, setup, enviroment):
 
     for n in range(range_total):
         
-        response, response_json, error = send_document(payloads[n * setup.invoices_group : (n+1) * setup.invoices_group], url)
+        response, response_json, error = send_document(payloads[n * setup.invoices_group : (n+1) * setup.invoices_group])
         
         try:
             
@@ -94,22 +84,17 @@ def handler(upload_xlsx, setup, enviroment):
         "send_error": len(documents) - is_complete
     }
 
-def send_document(payload, url):
-
-    token = get_token()
-   
+def send_document(payload):
+  
     payload_xml = """<?xml version="1.0" encoding="utf-8"?><soap:Envelope  xmlns:nav="urn:microsoft-dynamics-schemas/codeunit/SWCrearFacturasVenta" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><nav:SWCrearFacturasVenta><nav:factura>{}</nav:factura></nav:SWCrearFacturasVenta></soap:Body></soap:Envelope>""".format(json.dumps(payload))
     
     payload_xml = payload_xml.replace("'","")
-        
-    add_header = {
-        "SOAPAction": "#POST"
-    }
-
-    response, response_json, error = send_petition(token, url, payload_xml, add_header = add_header, is_json= False)
+    
+    endpoint_code = "create_multipatient_document"
+    
+    response, response_json, error = send_petition(endpoint_code, payload_xml, add_header = True, is_json= False)
     
     return response, response_json, error
-
 
 def get_payload(document):
 

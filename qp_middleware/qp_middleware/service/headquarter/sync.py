@@ -4,11 +4,11 @@ from frappe.utils import now
 from qp_middleware.qp_middleware.service.util.sync import get_response, persist
 
 @frappe.whitelist()
-def handler():
+def handler(setup_list_code = None):
     
     filters = "Dimension_Code eq 'SEDE'"
 
-    response_json = get_response("list_headquarter", filters)
+    response_json = get_response("list_headquarter", filters, setup_list_code = setup_list_code)
 
     headquarter_code = tuple([headquarter["Code"] for headquarter in response_json["value"]])
 

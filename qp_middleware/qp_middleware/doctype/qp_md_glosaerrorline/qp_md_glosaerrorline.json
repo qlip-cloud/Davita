@@ -1,0 +1,62 @@
+{
+ "actions": [],
+ "creation": "2026-04-02 04:11:28.857226",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "invoice_id",
+  "glosa_id",
+  "message",
+  "traceback",
+  "additional"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "title"
+  },
+  {
+   "fieldname": "invoice_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "invoice_id"
+  },
+  {
+   "fieldname": "glosa_id",
+   "fieldtype": "Data",
+   "label": "glosa_id"
+  },
+  {
+   "fieldname": "message",
+   "fieldtype": "Long Text",
+   "in_list_view": 1,
+   "label": "message"
+  },
+  {
+   "fieldname": "additional",
+   "fieldtype": "Long Text",
+   "label": "additional"
+  },
+  {
+   "fieldname": "traceback",
+   "fieldtype": "Long Text",
+   "label": "traceback"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-04-02 09:38:54.788852",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_GlosaErrorLine",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

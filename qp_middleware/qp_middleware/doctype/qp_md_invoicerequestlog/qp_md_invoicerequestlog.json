@@ -1,0 +1,53 @@
+{
+ "actions": [],
+ "creation": "2026-09-11 13:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "endpoint",
+  "status_code",
+  "status",
+  "id_invoice",
+  "response"
+ ],
+ "fields": [
+  {
+   "fieldname": "endpoint",
+   "fieldtype": "Data",
+   "label": "Endpoint MINSALUD"
+  },
+  {
+   "fieldname": "status_code",
+   "fieldtype": "Int",
+   "label": "status_code"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "label": "status"
+  },
+  {
+   "fieldname": "id_invoice",
+   "fieldtype": "Data",
+   "label": "id_factura"
+  },
+  {
+   "fieldname": "response",
+   "fieldtype": "Long Text",
+   "label": "Respuesta MINSALUD"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-09-11 14:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Qp Middleware",
+ "name": "qp_md_InvoiceRequestLog",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

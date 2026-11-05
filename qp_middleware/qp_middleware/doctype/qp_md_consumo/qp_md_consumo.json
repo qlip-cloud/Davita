@@ -35,7 +35,10 @@
   "is_valid",
   "is_error_sync",
   "return_value",
-  "is_error_connection"
+  "is_error_connection",
+  "is_return",
+  "is_returned",
+  "return_root"
  ],
  "fields": [
   {
@@ -149,11 +152,12 @@
    "fieldtype": "Long Text",
    "label": "response"
   },
-  {
-   "fieldname": "upload_id",
-   "fieldtype": "Data",
-   "label": "upload_id"
-  },
+   {
+    "fieldname": "upload_id",
+    "fieldtype": "Data",
+    "label": "upload_id",
+    "search_index": 1
+   },
   {
    "fieldname": "headquarter_dynamic",
    "fieldtype": "Data",
@@ -196,11 +200,28 @@
    "fieldname": "is_error_connection",
    "fieldtype": "Check",
    "label": "is error connection"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_return",
+   "fieldtype": "Check",
+   "label": "is return"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_returned",
+   "fieldtype": "Check",
+   "label": "is returned"
+  },
+  {
+   "fieldname": "return_root",
+   "fieldtype": "Data",
+   "label": "return_root"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-14 07:16:43.048815",
+ "modified": "2026-08-07 21:45:00.000000",
  "modified_by": "Administrator",
  "module": "Qp Middleware",
  "name": "qp_md_Consumo",

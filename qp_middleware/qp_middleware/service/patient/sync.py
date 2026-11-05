@@ -1,6 +1,7 @@
 import frappe
 import json
 import requests
+import unicodedata
 
 from frappe.utils import now
 from qp_middleware.qp_middleware.service.util.sync import get_response, persist
@@ -8,9 +9,9 @@ from qp_middleware.qp_middleware.service.util.sync import get_response, persist
 #URL = "https://api.businesscentral.dynamics.com/v2.0/a1af66a5-d7b4-43a1-9663-3f02fecf8060/MIDDLEWARE/ODataV4/Company(%27DAVITA%27)/ListadoPacientesDavita"
 
 @frappe.whitelist()
-def handler():
+def handler(setup_list_code):
 
-    response_json = get_response("list_patient")
+    response_json = get_response("list_patient", setup_list_code = setup_list_code)
 
     values = []
 
@@ -29,20 +30,27 @@ def handler():
 
     for iter in response_json["value"]:
 
+        raw_ni = str(iter.get("numeroIdentificacion", ""))
+        numero_identificacion = "".join(c for c in raw_ni if unicodedata.category(c) != "Cf")
+
         tipo_identificacion = format_tipos_Identificaciones.get(iter['tipoIdentificacion'])
         
         if tipo_identificacion:
             
             if iter['tipoUsuario']:
 
-                dimension = str(tipo_identificacion + str(iter.get("numeroIdentificacion"))).upper()
+                dimension = str(tipo_identificacion + numero_identificacion).upper()
                 
                 group_code = str(dimension + '_' + iter['tipoUsuario'][0]).upper()
             
                 if not group_code in list_group_code:
 
-                    values.append((group_code, tipo_identificacion, iter['tipoIdentificacion'], iter['numeroIdentificacion'],iter['primerNombre'], iter['segundoNombre'], iter['primerApellido'],
-                        iter['segundoApellido'], iter['numeroTelefonico'], iter['correoElectronico'],iter['idPlan'], iter['tipoUsuario'][0], iter['tipoUsuario'], "Import", True, group_code, dimension, now(), now(), 'Administrator', 'Administrator'))
+                    values.append((group_code, tipo_identificacion, iter['tipoIdentificacion'], numero_identificacion, iter['primerNombre'], iter['segundoNombre'], iter['primerApellido'],
+                        iter['segundoApellido'], iter['numeroTelefonico'], iter['correoElectronico'],iter['idPlan'], iter['tipoUsuario'][0], iter['tipoUsuario'], "Import", True, group_code, dimension, iter.get('fechaNacimiento', ""), iter.get('paisOrigen', ""), iter.get('paisResidencia', ""), iter.get('Municipio', ""), iter.get('zonaTerritorial', ""), now(), now(), 'Administrator', 'Administrator'))
+
+                #else:
+
+                    #values.append((group_code, tipo_identificacion, iter.get('Municipio', ""), iter.get('zonaTerritorial', ""), now(), now(), 'Administrator', 'Administrator'))
         
         else:
 
@@ -53,8 +61,7 @@ def handler():
 
         table = "tabqp_md_Patient"
 
-        fields = "(name, tipo_identificacion, nombre_identificacion, numero_identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, numero_telefonico \
-                    ,correo_electronico, id_plan, tipo_usuario, nombre_usuario,origin, is_sync, group_code, dimension, creation, modified, modified_by, owner)"
+        fields = "(name, tipo_identificacion, nombre_identificacion, numero_identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, numero_telefonico, correo_electronico, id_plan, tipo_usuario, nombre_usuario,origin, is_sync, group_code, dimension, birthdate, country_origin, country_residence, municipality, territorial_zone, creation, modified, modified_by, owner)"
         
         persist(table, fields, values)
 

@@ -7,7 +7,7 @@ from frappe.utils.xlsxutils import read_xlsx_file_from_attached_file
 from qp_middleware.qp_middleware.service.util.sync import get_response, persist
 from datetime import date
 from datetime import datetime
-
+from frappe.utils import get_datetime, now_datetime
 def handler(upload_patient, method):
 
     rows = read_xlsx_file_from_attached_file(file_url = upload_patient.file)
@@ -35,8 +35,7 @@ def insert_data(tuple_list):
         table = "tabqp_md_Patient"
 
         fields = """(name, nombre_identificacion, tipo_identificacion,numero_identificacion,primer_apellido,segundo_apellido,primer_nombre,segundo_nombre,
-        numero_telefonico,celular,direccion,tipo_usuario,nombre_usuario,cod_responsable, tipo_atencion, fecha_mov,upload_id,group_code,dimension,origin, request,creation, 
-        modified, modified_by, owner)"""
+        numero_telefonico,celular,direccion,tipo_usuario,nombre_usuario,cod_responsable, tipo_atencion, fecha_mov,upload_id,group_code,dimension,origin, request,birthdate, country_origin, country_residence, municipality, territorial_zone, creation, modified, modified_by, owner)"""
 
         persist(table, fields, tuple_list)
 
@@ -92,7 +91,18 @@ def save_row(rows, upload_id):
 
                 error += f'Tipo de Atencion {row[12]} del Paciente {row[1]} No configurado\n'
             
+            birthdate = None
+            
+            try:
+
+                birthdate = get_validate_date(row[14]) if len(row) > 14 else ""
+
+            except Exception as error:
+                count_error += 1
+
+                error += f'Error en conversion de fecha de nacimiento del Paciente {row[1]} \n' 
                 
+            #if not code_responsable or not tipo_atencion or not birthdate:
             if not code_responsable or not tipo_atencion:
 
                 continue
@@ -103,7 +113,7 @@ def save_row(rows, upload_id):
                  
                 fecha_mov = getdate(row[13]) if not isinstance(row[13], datetime) else row[13]
 
-            except:
+            except Exception as error:
 
                 pass
         
@@ -116,7 +126,8 @@ def save_row(rows, upload_id):
                 group_code = str(dimension + '_' + row[9]).upper()
 
                 if (not group_code in list_group_code) and (not group_code in new_group_code):
-                
+                    
+                        
                     tuple_list.append(
                         (
                             group_code, 
@@ -136,7 +147,12 @@ def save_row(rows, upload_id):
                             tipo_atencion,
                             str(fecha_mov),
                             upload_id, group_code, dimension, "Excel", 
-                            set_request(row, nombre_identificacion, codigo_usuario, tipo_atencion, code_responsable) ,
+                            set_request(row, nombre_identificacion, codigo_usuario, tipo_atencion, code_responsable, birthdate),
+                            birthdate,
+                            row[15] if len(row) > 15 else "",
+                            row[16] if len(row) > 16 else "",
+                            row[17] if len(row) > 17 else "",
+                            row[18] if len(row) > 18 else "",
                             now(),now(), "Administrator", "Administrator" 
                         )
                     )
@@ -149,7 +165,7 @@ def save_row(rows, upload_id):
         if row[0] == "TIPO_IDENT":
 
             row_valid = True
-
+    
     if tuple_list:
         
         return tuple_list, total, len(tuple_list), repeat, error, count_error
@@ -184,7 +200,7 @@ def get_format(doctype, key, value):
 
     return dic_result
 
-def set_request(row, nombre_identificacion, codigo_usuario, tipo_atencion, code_responsable):
+def set_request(row, nombre_identificacion, codigo_usuario, tipo_atencion, code_responsable, birthdate):
 
     return json.dumps({
             "tipoIdentificacion": nombre_identificacion,
@@ -198,5 +214,21 @@ def set_request(row, nombre_identificacion, codigo_usuario, tipo_atencion, code_
             "idPlan": "",
             "tipoUsuario": codigo_usuario,
             "Eps": code_responsable,
-            "Modalidad": tipo_atencion
+            "Modalidad": tipo_atencion,
+            #"fechaNacimiento": birthdate,
+            #"paisOrigen": row[15] or "",
+            #"Municipio": row[17] or "",
+            #"zonaTerritorial": row[18] or ""
         })
+    
+def get_validate_date(date_str, input_format="%d/%m/%Y", output_format="%Y-%m-%d"):
+    
+    if not date_str:
+        
+        return None
+           
+    date_str = date_str.replace("-","/")
+        
+    date_obj = datetime.strptime(date_str, input_format)
+       
+    return date_obj.strftime(output_format)

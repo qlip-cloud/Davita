@@ -1,4 +1,4 @@
-# Copyright (c) 2023, Rafael Licett and Contributors
+# Copyright (c) 2026, Rafael Licett and Contributors
 # See license.txt
 
 # import frappe
