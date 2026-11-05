@@ -36,8 +36,6 @@ def import_xlsx(upload_xlsx):
         result = document_save(upload_xlsx)
 
         set_stadistic(upload_xlsx, list_group_code, list_repeat, result)
-        
-        sync_invoices(upload_xlsx)
 
     except Exception as error:
 
@@ -45,9 +43,63 @@ def import_xlsx(upload_xlsx):
 
         upload_xlsx.error = True
 
-    upload_xlsx.is_background = False
+        upload_xlsx.is_background = False
 
-    upload_xlsx.save()
+        upload_xlsx.save()
+
+        return
+
+    if upload_xlsx.is_valid:
+
+        upload_xlsx.save()
+
+        try:
+
+            frappe.enqueue(
+                        send_invoices,
+                        queue='background',
+                        is_async=True,
+                        enqueue_after_commit=True,
+                        job_name="send invoice background: "+ upload_xlsx.name,
+                        timeout=5400000,
+                        upload_name = upload_xlsx.name
+                        )
+
+        except Exception as error:
+
+            frappe.log_error(message=frappe.get_traceback(), title="Error encolando envio xlsx: "+ upload_xlsx.name)
+
+            upload_xlsx.error = True
+
+            upload_xlsx.is_background = False
+
+            upload_xlsx.save()
+
+    else:
+
+        upload_xlsx.is_background = False
+
+        upload_xlsx.save()
+
+def send_invoices(upload_name):
+
+    upload_xlsx = frappe.get_doc("qp_md_upload_xlsx", upload_name)
+
+    try:
+
+        sync_invoices(upload_xlsx)
+
+    except Exception as error:
+
+        frappe.log_error(message=frappe.get_traceback(), title="Error sincronizando xlsx: "+ upload_name)
+
+        upload_xlsx.error = True
+
+    finally:
+
+        upload_xlsx.is_background = False
+
+        upload_xlsx.save()
 
 def sync_invoices(upload_xlsx):
 

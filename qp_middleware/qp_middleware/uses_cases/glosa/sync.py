@@ -7,7 +7,7 @@ def handler():
 
     frappe.enqueue(
         run,
-        queue='long',
+        queue='background',
         is_async=True,
         job_name='sync_glosa',
         timeout=5400000
@@ -17,4 +17,10 @@ def run():
     
     bc_sync()
     
-    verification()
+    frappe.enqueue(
+        verification,
+        queue='long',
+        is_async=True,
+        job_name='sync_glosa_verification',
+        timeout=5400000
+    )

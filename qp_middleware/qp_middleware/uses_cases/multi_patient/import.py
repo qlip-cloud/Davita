@@ -37,8 +37,6 @@ def import_xlsx(multi_patient_upload):
         result = document_save(multi_patient_upload)
 
         set_stadistic(multi_patient_upload, list_group_code, list_repeat, result)
-        
-        sync_invoices(multi_patient_upload)
 
     except Exception as error:
         
@@ -46,9 +44,63 @@ def import_xlsx(multi_patient_upload):
 
         multi_patient_upload.error = True
 
-    multi_patient_upload.is_background = False
+        multi_patient_upload.is_background = False
 
-    multi_patient_upload.save()
+        multi_patient_upload.save()
+
+        return
+
+    if multi_patient_upload.is_valid:
+
+        multi_patient_upload.save()
+
+        try:
+
+            frappe.enqueue(
+                        send_invoices,
+                        queue='background',
+                        is_async=True,
+                        enqueue_after_commit=True,
+                        job_name="send multipatient background: "+ multi_patient_upload.name,
+                        timeout=5400000,
+                        upload_name = multi_patient_upload.name
+                        )
+
+        except Exception as error:
+
+            frappe.log_error(message=frappe.get_traceback(), title="Error encolando envio multipatient: "+ multi_patient_upload.name)
+
+            multi_patient_upload.error = True
+
+            multi_patient_upload.is_background = False
+
+            multi_patient_upload.save()
+
+    else:
+
+        multi_patient_upload.is_background = False
+
+        multi_patient_upload.save()
+
+def send_invoices(upload_name):
+
+    multi_patient_upload = frappe.get_doc("qp_md_MultiPatientUpload", upload_name)
+
+    try:
+
+        sync_invoices(multi_patient_upload)
+
+    except Exception as error:
+
+        frappe.log_error(message=frappe.get_traceback(), title="Error sincronizando multipatient: "+ upload_name)
+
+        multi_patient_upload.error = True
+
+    finally:
+
+        multi_patient_upload.is_background = False
+
+        multi_patient_upload.save()
 
 def sync_invoices(multi_patient_upload):
 

@@ -20,7 +20,7 @@ def handler(upload_id):
     
     frappe.enqueue(
                 confirm,
-                queue='long',                
+                queue='background',                
                 #now=True,
                 is_async=True,
                 job_name="send confirm: "+ upload_id,
